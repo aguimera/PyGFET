@@ -38,7 +38,7 @@ install_requires = ['numpy',
                     'matplotlib',
                     'pickle']
 
-console_scripts = ['PyDBView = peakevo.maingui:main',
+console_scripts = ['PyDBView = PyGFET.PyDBView',
                    ]
 
 entry_points = {
