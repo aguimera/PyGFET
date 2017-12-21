@@ -1,0 +1,482 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Nov 15 23:15:19 2016
+
+@author: aguimera
+"""
+"""
+
+
+"""
+
+import datetime
+import pymysql
+import pickle
+
+class PyFETdb():
+    def __init__(self, host='localhost', user='root', passwd='', db='PyFET',
+                 Update=True):
+        
+        self.db = pymysql.connect(host=host,    # your host, usually localhost
+                     user=user,         # your username
+                     passwd=passwd,  # your password
+                     db=db)        # name of the data base
+        
+        if Update:
+            self.UpdateAll()
+
+    def __del__(self):
+        self.db.close()                         
+ 
+    def GetId(self, Table, Value, Field='Name', NewVals=None):
+        cur = self.db.cursor()  
+        
+        query = "SELECT * FROM {} WHERE {} = %s".format(Table, Field)        
+        cur.execute(query, (Value,))
+        Res = cur.fetchall()
+        cur.close()                  
+        
+        if len(Res)==0:
+            if NewVals:
+                ID = self.NewRow(Table=Table, Fields=NewVals)                 
+            else:
+                ID = None        
+        if len(Res)==1:
+            ID = Res[0][0]
+                
+        if len(Res)>1: 
+            print 'Warning', query, Res
+            ID = Res[0][0]         
+        
+        
+        return ID
+    
+    def NewRow(self, Table, Fields):
+        cur = self.db.cursor()  
+        
+        colums = ' , '.join(Fields.keys())
+        places = ' , '.join(['%s']*len(Fields))
+        query = "INSERT INTO {}({}) VALUES ({})".format(Table,colums,places)
+        
+        cur.execute(query,Fields.values())       
+        ret = cur.lastrowid            
+        cur.close()
+        return ret 
+
+    def MultiSelect(self, Table, Conditions, FieldsOut, Order=None):
+        cur = self.db.cursor()  
+
+        Fields = ' , '.join(FieldsOut)        
+        Cond = ' %s AND '.join(Conditions.keys())        
+        sTable = ' JOIN '.join(Table)        
+        query = "SELECT {} FROM {} WHERE {} %s".format(Fields,sTable,Cond)           
+        if Order:
+            query = '{} ORDER BY {}'.format(query,Order)
+
+#        print query, Conditions.values()
+        cur.execute(query,Conditions.values()) 
+        ret = cur.fetchall()
+        cur.close()
+        return ret
+        
+    def UpdateRow(self, Table, Fields, Condition):
+        cur = self.db.cursor()        
+        
+        colums = ' = %s , '.join(Fields.keys())
+        colums = colums + ' = %s'                
+        query = "UPDATE {} SET {} WHERE {} %s".format(Table, colums, Condition[0])
+        
+        values = Fields.values()
+        values.insert(len(values),Condition[1])
+     
+        cur.execute(query,values)      
+        cur.close()
+        
+    def InsertGateCharact (self, DCVals, Fields, OverWrite=True):       
+
+        #### Set Get information in other tables        
+        Author = Fields['User']
+        Author_id = self.GetId(Table='Users', Value=Author, 
+                              NewVals={'Name': Author}) 
+        Fields.pop('User')
+        
+        #### Check if exists        
+        Rows = self.MultiSelect(Table=('Gcharacts',),
+                                Conditions={'Name=':Fields['Name'],
+                                            'MeasDate=':DCVals['DateTime'].strftime("%Y-%m-%d %H:%M:%S")},
+                                FieldsOut=('idGcharacts',))
+        
+        NewData = {'Data':pickle.dumps(DCVals),
+                   'User_id':Author_id,
+                   'MeasDate': DCVals['DateTime'],
+                   'UpdateDate':datetime.datetime.now()}
+        
+        NewData.update(Fields)
+        
+        
+        if len(Rows)==0: ### New Record         
+            Gate_id = self.NewRow(Table='Gcharacts',Fields=NewData)             
+        else:
+            print 'WARNING EXISTS', Rows
+            if OverWrite: ### OverWrite 
+                Gate_id = Rows[0][0]
+                print 'Overwrite Record id ',Gate_id                
+                self.UpdateRow(Table='Gcharacts',
+                               Fields=NewData,
+                               Condition=('idGcharacts=',Gate_id))
+        
+        return Gate_id
+        
+    def InsertCharact(self, DCVals, Fields, ACVals=None, OptFields=None, 
+                      TrtTypeFields=None, OverWrite=True):
+        
+        Author = Fields['User']
+        Wafer = Fields['Wafer']
+        Device = Fields['Device']
+        TrtType = Fields['TrtType']
+        Trt = Fields['Trt']        
+
+        #### Set Get information in other tables        
+        Author_id = self.GetId(Table='Users', Value=Author, 
+                              NewVals={'Name': Author})        
+
+        TrtType_id = self.GetId(Table='TrtTypes', Value=TrtType, 
+                              NewVals=TrtTypeFields)
+        
+        Wafer_id = self.GetId(Table='Wafers', Value=Wafer, 
+                              NewVals={'Name': Wafer})
+
+        Device_id = self.GetId(Table='Devices', Value=Device, 
+                              NewVals={'Name': Device,
+                                       'Wafer_id':Wafer_id})
+        
+        Trt_id = self.GetId(Table='Trts', Value=Trt, 
+                                 NewVals={'Name': Trt,
+                                          'Device_id':Device_id,
+                                          'Type_id':TrtType_id})         
+
+        TimeNow = datetime.datetime.now()
+
+        #######################################################################
+        ### Insert DC data
+        #######################################################################
+        ### FILL NewData structure
+        NewData = {'Trt_id':Trt_id,
+                   'User_id':Author_id,
+                   'Data':pickle.dumps(DCVals),
+                   'MeasDate': DCVals['DateTime'],
+                   'UpdateDate':TimeNow,
+                   'Gate_id':Fields['Gate_id']}
+                   
+        if 'IsOK' in DCVals: NewData['IsOK'] = DCVals['IsOK']            
+        if OptFields: NewData.update(OptFields)
+        
+        #### Check if exists        
+        Rows = self.MultiSelect(Table=('DCcharacts',),
+                                Conditions={'Trt_id=':Trt_id,
+                                            'MeasDate=':DCVals['DateTime'].strftime("%Y-%m-%d %H:%M:%S")},
+                                FieldsOut=('Trt_id','idDCcharacts'))
+        
+        if len(Rows)==0: ### New Record         
+            DCchatact_id = self.NewRow(Table='DCcharacts',Fields=NewData)             
+        else:
+            print 'WARNING EXISTS', Rows
+            if OverWrite: ### OverWrite 
+                DCchatact_id = Rows[0][1]
+                print 'Overwrite Record id ',DCchatact_id                
+                self.UpdateRow(Table='DCcharacts',
+                               Fields=NewData,
+                               Condition=('idDCcharacts=',DCchatact_id))
+
+        NewData.pop('Gate_id')
+        #######################################################################
+        ### Insert DC data
+        #######################################################################
+        if ACVals:
+            ### FILL NewData structure
+            NewData = {'Trt_id':Trt_id,
+                       'User_id':Author_id,
+                       'UpdateDate':TimeNow,
+                       'DC_id':DCchatact_id,
+                       'Data':pickle.dumps(ACVals),
+                       'MeasDate': ACVals['DateTime']}    
+            if 'IsOK' in ACVals: NewData['IsOK'] = ACVals['IsOK']
+            if OptFields: NewData.update(OptFields)
+                    
+            #### Check if exists           
+            Rows = self.MultiSelect(Table=('ACcharacts',),
+                                Conditions={'Trt_id=':Trt_id,
+                                            'MeasDate=':ACVals['DateTime'].strftime("%Y-%m-%d %H:%M:%S")},
+                                FieldsOut=('Trt_id','idACcharacts'))
+            
+            if len(Rows)==0:### New Record                 
+                self.NewRow(Table='ACcharacts',Fields=NewData)
+            else: 
+                print 'WARNING EXISTS', Rows
+                if OverWrite: ### OverWrite 
+                    ACchatact_id = Rows[0][1]
+                    print 'Overwrite Record id ',ACchatact_id                
+                    self.UpdateRow(Table='ACcharacts',
+                                   Fields=NewData,
+                                   Condition=('idACcharacts=',ACchatact_id))
+                    
+        #### Finishing
+        self.UpdateTrtMeasCounts(Trt_id)        
+        self.db.commit() 
+    
+    def UpdateAll(self):
+        cur = self.db.cursor()  
+
+        query = "SELECT idTrts FROM Trts"
+        cur.execute(query)        
+        Rows = cur.fetchall()
+        for r in Rows:
+            self.UpdateTrtMeasCounts(r[0])    
+        self.db.commit()
+        cur.close()
+        
+    def UpdateTrtMeasCounts(self, Trt_id):
+        
+        DCMeas = len(self.MultiSelect(Table=('DCcharacts',),
+                                      Conditions={'Trt_id=':Trt_id,},
+                                      FieldsOut=('Trt_id',)))           
+       
+        ACMeas = len(self.MultiSelect(Table=('ACcharacts',),
+                                  Conditions={'Trt_id=':Trt_id,},
+                                  FieldsOut=('Trt_id',)))
+        
+        cur = self.db.cursor()          
+        cur.execute("UPDATE Trts SET ACMeas = %s , DCMeas = %s WHERE idTrts = %s",
+                     (ACMeas,DCMeas,Trt_id))
+
+        cur.close()
+        return DCMeas, ACMeas
+    
+    def CreateQueryConditions (self,Conditions):
+        Cond = []        
+        values = []
+        for c in Conditions:
+            cc = ' %s OR '.join([c]*len(Conditions[c]))
+            Cond.append('({} %s)'.format(cc))   
+            for v in Conditions[c]: values.append(v)            
+        sCond = ' AND '.join(Cond)    
+    
+        return sCond, values
+    
+    def FindFillOutput (self,query,values,Output):
+        cur = self.db.cursor()  
+
+        cur.execute(query,values)       
+        res = cur.fetchall()        
+        ret = []        
+        for ir,r in enumerate(res):
+            do = {}
+            for io,of in enumerate(Output): do[of]=r[io]
+            ret.insert(len(ret),do)
+        
+        cur.close()
+        return ret
+    
+    def GetTrtsInfo(self, Conditions, Output = None):
+        if not Output:
+            Output = ('Trts.idTrts', 'Trts.Name', 
+                      'TrtTypes.idTrtTypes', 'TrtTypes.Name',  
+                      'TrtTypes.Contact', 'TrtTypes.Width', 'TrtTypes.Length')
+        Out = ','.join(Output)
+        
+        Cond, Values = self.CreateQueryConditions(Conditions)
+
+        query = """ SELECT {} 
+            FROM Trts 
+            INNER JOIN Devices ON Devices.idDevices = Trts.Device_id
+            INNER JOIN Wafers ON Wafers.idWafers = Devices.Wafer_id		  	
+            INNER JOIN TrtTypes ON TrtTypes.idTrtTypes = Trts.Type_id
+            WHERE {} """.format(Out,Cond)   
+
+        return self.FindFillOutput(query, Values, Output)
+        
+    def GetCharactInfo (self,Table,Conditions,Output):
+
+        Out = ','.join(Output)        
+        Cond, Values = self.CreateQueryConditions(Conditions)
+
+        query = """ SELECT {} 
+                FROM {} 
+                INNER JOIN Trts ON Trts.idTrts = {}.Trt_id
+                INNER JOIN TrtTypes ON TrtTypes.idTrtTypes = Trts.Type_id
+                WHERE {} 
+                ORDER BY {}.MeasDate;
+                """.format(Out,Table,Table,Cond,Table)   
+
+        return self.FindFillOutput(query, Values, Output)
+    
+    def GetCharactFromId (self, Table, Ids, Trts):
+       
+        DataF = '{}.Data'.format(Table)
+        Output = ('Trts.Name', 'TrtTypes.Name', 'TrtTypes.Width', 
+                  'TrtTypes.Length', 'TrtTypes.Pass', 'TrtTypes.Area','TrtTypes.Contact',DataF)
+
+        Cond={}
+        idf = '{}.id{}='.format(Table,Table)
+        Cond[idf]=[]
+        for s in set(Ids): Cond[idf].append(s)    
+
+        Data = {}
+        for Trt in Trts:        
+            Cond['Trts.Name=']=(Trt,)        
+            Res = self.GetCharactInfo(Table,Cond,Output)
+            
+            Data[Trt] = {}
+            for cy,re in enumerate(Res):
+                cy = 'Cy{0:03d}'.format(cy)
+                Data[Trt][cy] = pickle.loads(re[DataF])
+                for f in Output:
+                    if f.endswith('Data'):continue
+                    fp = f.split('.')
+                    if fp[0]=='Trts':
+                        Data[Trt][cy][fp[1]] = re[f]       
+                    else:
+                        fn = Data[Trt][cy].get(fp[0],{})
+                        fn [fp[1]] = re[f]       
+                        Data[Trt][cy][fp[0]]=fn
+        
+        return Data  
+                           
+    def DeleteCharact (self, Table, Ids):
+        cur = self.db.cursor()  
+        
+        query = "DELETE FROM {} WHERE id{}=%s".format(Table,Table)
+
+#        cond = 'id{}='.format(Table)
+#        out = ('Trt_id',)
+        for Id in Ids:
+#            Rows = self.MultiSelect((Table,),{cond:Id},out)
+            cur.execute(query,Id)               
+#            self.UpdateTrtMeasCounts(Rows[0][0])        
+        
+        self.db.commit() 
+        cur.close()
+        self.UpdateAll()
+
+    def GetData(self, Conditions, DC=True, AC=True, Last=False,
+                Date=None, IsCmp=None):
+
+        Output = ('Trts.idTrts', 'Trts.Name',
+                  'TrtTypes.idTrtTypes', 'TrtTypes.Name',
+                  'TrtTypes.Contact', 'TrtTypes.Width', 'TrtTypes.Length',
+                  'Devices.Name', 'Wafers.Name')
+
+        Trts = self.GetTrtsInfo(Conditions=Conditions, Output=Output)
+
+        DataDC = {}
+        DataAC = {}
+        TrtsOut = []
+        for T in Trts:
+            if DC:
+                DCVals = self.GetTrtCharact(Table='DCcharacts',
+                                            TrtId=T['Trts.idTrts'],
+                                            TrtName=T['Trts.Name'],
+                                            Last=Last,
+                                            Date=Date,
+                                            IsCmp=IsCmp)
+                if DCVals is not None:
+                    DataDC[T['Trts.Name']] = DCVals
+                    TrtsOut.append(T)
+            if AC:
+                ACVals = self.GetTrtCharact(Table='ACcharacts',
+                                            TrtId=T['Trts.idTrts'],
+                                            TrtName=T['Trts.Name'],
+                                            Last=Last,
+                                            Date=Date,
+                                            IsCmp=IsCmp)
+                if ACVals is not None:
+                    TrtsOut.append(T)
+                    DataAC[T['Trts.Name']] = ACVals
+
+        return DataDC, DataAC, TrtsOut
+
+    def GetTrtCharact(self, Table, TrtId, TrtName=None,
+                      Last=False, Date=None, IsCmp=None):
+
+        cond = {'{}.Trt_id='.format(Table): TrtId}
+        if Date is not None:
+            cond['{}.MeasDate>'.format(Table)] = Date[0]
+            cond['{}.MeasDate<'.format(Table)] = Date[1]
+
+        if IsCmp is not None:
+            cond['{}.IsCmp='.format(Table)] = IsCmp
+
+        Res = self.MultiSelect(Table=(Table,),
+                               Conditions=cond,
+                               FieldsOut=('{}.Data'.format(Table),
+                                          '{}.MeasDate'.format(Table)),
+                               Order='{}.MeasDate'.format(Table))
+
+        if len(Res) == 0:
+            return None
+
+        Vals = {}
+        if Last:
+            Vals['Cy{0:03d}'.format(0)] = pickle.loads(Res[-1][0])
+            if TrtName:
+                Vals['Cy{0:03d}'.format(0)]['Name'] = TrtName
+        else:
+            for cy, re in enumerate(Res):
+                Vals['Cy{0:03d}'.format(cy)] = pickle.loads(re[0])
+                if TrtName:
+                    Vals['Cy{0:03d}'.format(cy)]['Name'] = TrtName
+
+        return Vals
+
+
+#    
+#    def GetTrts(self, Conditions, Output = None):
+#        
+#        if not Output:
+#            Output = ('Trts.idTrts', 'Trts.Name', 
+#                      'TrtTypes.idTrtTypes', 'TrtTypes.Name',  
+#                      'TrtTypes.Contact', 'TrtTypes.Width', 'TrtTypes.Length')
+#        Out = ','.join(Output)
+#                
+#        Cond = ' %s AND '.join(Conditions.keys())
+#        Cond = Cond + '%s'
+#        query = """ SELECT {} 
+#            FROM Trts 
+#            INNER JOIN Devices ON Devices.idDevices = Trts.Device_id
+#            INNER JOIN Wafers ON Wafers.idWafers = Devices.Wafer_id		  	
+#            INNER JOIN TrtTypes ON TrtTypes.idTrtTypes = Trts.Type_id
+#            WHERE {} """.format(Out,Cond)   
+#       
+#        self.cur.execute(query,Conditions.values())        
+#        res = self.cur.fetchall()        
+#        ret = []        
+#        for ir,r in enumerate(res):
+#            do = {}
+#            for io,of in enumerate(Output): do[of]=r[io]
+#            ret.insert(len(ret),do)
+#            
+#        return ret
+#    
+
+    
+#    def GetCharactFromID (self, Table, Ids):
+#        Out = '{}.id{}, {}.Data, {}.MeasDate, Trts.Name'.format(Table,Table,Table,Table,Table)
+#        Cond = ' OR '.join(['{}.id{}=%s'.format(Table,Table)]*len(Ids))
+#        query = '''SELECT {} 
+#                FROM {} 
+#                INNER JOIN Trts ON Trts.idTrts={}.Trt_id
+#                WHERE {} ORDER BY {}.MeasDate'''.format(Out,Table,Table,Cond,Table)
+#        
+#        self.cur.execute(query,Ids)
+#        res = self.cur.fetchall()        
+#        
+#        Data = {}        
+#        for r in res:
+##            print 'Size', len(r[1])
+#            Data['{}{}'.format(r[3],r[0])] = pickle.loads(r[1])               
+#        
+#        return Data
+#        
+
+        
+        
