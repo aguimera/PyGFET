@@ -29,12 +29,12 @@ from setuptools import setup, find_packages
 _version = '0.1.0-alpha'
 
 long_description = """
-                   GUI for acquiring series of spectra and tracking a peak
+                   Library for GFET analysis tools
                    """
 
 install_requires = ['numpy', ]
 
-console_scripts = ['PyDBView = PyGFET.PyDBView:main',
+console_scripts = ['PyDBView = PyDBView.PyDBView:main',
                    ]
 
 entry_points = {'console_scripts': console_scripts,
