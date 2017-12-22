@@ -5,6 +5,7 @@ Spyder Editor
 This is a temporary script file.
 """
 
+import os
 import sys
 from PyQt5.QtWidgets import QHeaderView
 from PyQt5 import QtWidgets, uic
@@ -16,12 +17,8 @@ import PyGFET.PlotDataClass as PyFETpl
 import matplotlib.pyplot as plt
 import pickle
 
-DBview_ui = "./PyDbView.ui"  # Enter file here.
-Ui_DbView, QtBaseClass = uic.loadUiType(DBview_ui)
 
-
-class DBViewApp(QtWidgets.QMainWindow, Ui_DbView):
-
+class DBViewApp(QtWidgets.QMainWindow):
     OutFigFormats = ('svg', 'png')
     # ('IdTrt',0,0) (Header, position, string Conv, Editable)
     TrtFields = {'Trts.idTrts': ('IdTrt', 0, 0, 0),
@@ -124,8 +121,10 @@ class DBViewApp(QtWidgets.QMainWindow, Ui_DbView):
 
     def __init__(self):
         QtWidgets.QMainWindow.__init__(self)
-        Ui_DbView.__init__(self)
-        self.setupUi(self)
+
+        uipath = os.path.join(os.path.dirname(__file__), 'PyDbView.ui')
+        uic.loadUi(uipath, self)
+
         self.setWindowTitle('PyFETdb Viewer')
 
         self.DB = PyFETdb.PyFETdb(host='opter6.cnm.es',
@@ -562,18 +561,14 @@ class DBViewApp(QtWidgets.QMainWindow, Ui_DbView):
         self.DataExp = AppDataExp(self.DataDC, IsDC=True)
         self.DataExp.show()
 
-###############################################################################
 
-DataExpUi = "DataExplorer.ui"  # Enter file here.
-Ui_DataExp, QtBaseClass = uic.loadUiType(DataExpUi)
-
-
-class AppDataExp(QtWidgets.QMainWindow, Ui_DataExp):
+class AppDataExp(QtWidgets.QMainWindow):
 
     def __init__(self, ACData, CalcIrmsNok=False, IsDC=False):
-        QtWidgets.QMainWindow.__init__(self)
-        Ui_DataExp.__init__(self)
-        self.setupUi(self)
+        QtWidgets.QMainWindow.__init__(self)        
+        uipath = os.path.join(os.path.dirname(__file__), 'DataExplorer.ui')
+        uic.loadUi(uipath, self)
+
         self.setWindowTitle('Data Explorer')
         self.Data = ACData
 
