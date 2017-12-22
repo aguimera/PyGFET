@@ -36,9 +36,11 @@ install_requires = ['numpy',
                     'matplotlib',
                     'quantities',
                     'scipy',
-                    'neo']
+                    'neo>=0.5.2',
+                    'nixio']
 
-console_scripts = ['PyDBView = PyDBView.PyDBView:main', ]
+console_scripts = ['PyDBView = PyDBView.PyDBView:main',
+                   'GFETRecExp = PyGFETRecordExplorer.PyGFETRecordExplorer:main']
 
 entry_points = {'console_scripts': console_scripts, }
 
