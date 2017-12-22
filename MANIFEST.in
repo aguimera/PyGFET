@@ -1,0 +1,4 @@
+graft PyGFET
+graft PyDBView
+include LICENSE README.md
+global-exclude *.pyc
