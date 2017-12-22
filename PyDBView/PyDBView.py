@@ -7,15 +7,18 @@ This is a temporary script file.
 
 import os
 import sys
-from PyQt5.QtWidgets import QHeaderView
-from PyQt5 import QtWidgets, uic
-from PyQt5.QtCore import Qt, QItemSelectionModel
-from PyQt5.QtWidgets import QMessageBox, QFileDialog, QAction, QInputDialog
-import PyGFET.PyFETdb_v2 as PyFETdb
-import PyGFET.AnalyzeData as PyFETData
-import PyGFET.PlotDataClass as PyFETpl
+
 import matplotlib.pyplot as plt
 import pickle
+
+from qtpy.QtWidgets import QHeaderView, QMessageBox
+from qtpy.QtWidgets import QFileDialog, QAction, QInputDialog
+from qtpy import QtWidgets, uic
+from qtpy.QtCore import Qt, QItemSelectionModel
+
+import PyGFET.PyFETdb as PyFETdb
+import PyGFET.AnalyzeData as PyFETData
+import PyGFET.PlotDataClass as PyFETpl
 
 
 class DBViewApp(QtWidgets.QMainWindow):

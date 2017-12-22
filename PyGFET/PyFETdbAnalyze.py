@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as mpcolors
 import matplotlib.cm as cmx
 from PyFETDataClass import DataCharAC
-import PyFETdb_v2 as PyFETdb
+import PyFETdb as PyFETdb
 import sys
 from itertools import cycle
 import statsmodels.api as sm

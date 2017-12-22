@@ -26,13 +26,17 @@ Created on Thu Dec 21 18:30:42 2017
 
 from setuptools import setup, find_packages
 
-_version = '0.1.1-alpha'
+_version = '0.1.1a1'
 
 long_description = """
                    Library for GFET analysis tools
                    """
 
-install_requires = ['numpy', ]
+install_requires = ['numpy',
+                    'matplotlib',
+                    'quantities',
+                    'scipy',
+                    'neo']
 
 console_scripts = ['PyDBView = PyDBView.PyDBView:main', ]
 
