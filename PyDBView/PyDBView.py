@@ -16,7 +16,7 @@ import PyGFET.PlotDataClass as PyFETpl
 import matplotlib.pyplot as plt
 import pickle
 
-DBview_ui = "PyDbView.ui"  # Enter file here.
+DBview_ui = "./PyDbView.ui"  # Enter file here.
 Ui_DbView, QtBaseClass = uic.loadUiType(DBview_ui)
 
 

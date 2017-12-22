@@ -6,16 +6,16 @@ Created on Thu Dec 21 18:30:42 2017
 @author: aguimera
 """
 
-#  Copyright 2017 Carlos Pascual-Izarra <cpascual@users.sourceforge.net>
+#  Copyright 2017 Anton Guimerà Brunet <anton.guimera@csic.es>
 #
-#  This file is part of PeakEvo.
+#  This file is part of PyGFET.
 #
-#  PeakEvo is free software: you can redistribute it and/or modify
+#  PyGFET is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
 #  the Free Software Foundation, either version 3 of the License, or
 #  (at your option) any later version.
 #
-#  PeakEvo is distributed in the hope that it will be useful,
+#  PyGFET is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
@@ -26,7 +26,7 @@ Created on Thu Dec 21 18:30:42 2017
 
 from setuptools import setup, find_packages
 
-_version = '0.1.0-alpha'
+_version = '0.1.1-alpha'
 
 long_description = """
                    Library for GFET analysis tools
@@ -34,11 +34,9 @@ long_description = """
 
 install_requires = ['numpy', ]
 
-console_scripts = ['PyDBView = PyDBView.PyDBView:main',
-                   ]
+console_scripts = ['PyDBView = PyDBView.PyDBView:main', ]
 
-entry_points = {'console_scripts': console_scripts,
-                }
+entry_points = {'console_scripts': console_scripts, }
 
 classifiers = ['Development Status :: 3 - Alpha',
                'Environment :: Console',
@@ -69,7 +67,7 @@ setup(name="PyGFET",
       license="GPLv3",
       packages=find_packages(),
       classifiers=classifiers,
-      include_package_data=True,
       entry_points=entry_points,
-      install_requires=install_requires)
-
+      install_requires=install_requires,
+      include_package_data=True,
+      )
