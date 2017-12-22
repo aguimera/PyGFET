@@ -32,54 +32,44 @@ long_description = """
                    GUI for acquiring series of spectra and tracking a peak
                    """
 
-install_requires = ['numpy',
-                    'PyQt5',
-                    'scipy',
-                    'matplotlib',
-                    'pickle']
+install_requires = ['numpy', ]
 
-console_scripts = ['PyDBView = PyGFET.PyDBView',
+console_scripts = ['PyDBView = PyGFET.PyDBView:main',
                    ]
 
-entry_points = {
-                'console_scripts': console_scripts,
+entry_points = {'console_scripts': console_scripts,
                 }
 
-classifiers = [
-    'Development Status :: 3 - Alpha',
-    'Environment :: Gui',
-    'Environment :: X11 Applications :: Qt',
-    'Environment :: Win32 (MS Windows)',
-    'Intended Audience :: Science/Research',
-    'License :: OSI Approved :: GNU General Public License (GPL)',
-    'Operating System :: Microsoft :: Windows',
-    'Operating System :: POSIX',
-    'Operating System :: POSIX :: Linux',
-    'Operating System :: Unix',
-    'Operating System :: OS Independent',
-    'Programming Language :: Python',
-    'Programming Language :: Python :: 2.7',
-    'Programming Language :: Python :: 3.5',
-    'Topic :: Scientific/Engineering',
-    'Topic :: Software Development :: User Interfaces',
-]
+classifiers = ['Development Status :: 3 - Alpha',
+               'Environment :: Console',
+               'Environment :: X11 Applications :: Qt',
+               'Environment :: Win32 (MS Windows)',
+               'Intended Audience :: Science/Research',
+               'License :: OSI Approved :: GNU General Public License (GPL)',
+               'Operating System :: Microsoft :: Windows',
+               'Operating System :: POSIX',
+               'Operating System :: POSIX :: Linux',
+               'Operating System :: Unix',
+               'Operating System :: OS Independent',
+               'Programming Language :: Python',
+               'Programming Language :: Python :: 2.7',
+               'Topic :: Scientific/Engineering',
+               'Topic :: Software Development :: User Interfaces']
 
-setup(name="peakevo",
+setup(name="PyGFET",
       version=_version,
-      description="Spectra acquisition application",
+      description="GFET Analysis tools",
       long_description=long_description,
-      author="Carlos Pascual-Izarra",
-      author_email="cpascual@users.sourceforge.net",
-      maintainer="Carlos Pascual-Izarra",
-      maintainer_email="cpascual@users.sourceforge.net",
-      url="https://github.com/cpascual/peakevo",
-      download_url="https://github.com/cpascual/peakevo",
+      author="Anton Guimerà-Brunet",
+      author_email="anton.guimera@csic.es",
+      maintainer="Anton Guimerà-Brunet",
+      maintainer_email="anton.guimera@csic.es",
+      url="https://github.com/aguimera/PyGFET",
+      download_url="https://github.com/aguimera/PyGFET",
       license="GPLv3",
       packages=find_packages(),
       classifiers=classifiers,
       include_package_data=True,
       entry_points=entry_points,
-      install_requires=install_requires
-)
-
+      install_requires=install_requires)
 

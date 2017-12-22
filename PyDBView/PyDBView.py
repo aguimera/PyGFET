@@ -10,9 +10,9 @@ from PyQt5.QtWidgets import QHeaderView
 from PyQt5 import QtWidgets, uic
 from PyQt5.QtCore import Qt, QItemSelectionModel
 from PyQt5.QtWidgets import QMessageBox, QFileDialog, QAction, QInputDialog
-import PyFET.PyFETdb_v2 as PyFETdb
-import PyFET.AnalyzeData as PyFETData
-import PyFET.PlotDataClass as PyFETpl
+import PyGFET.PyFETdb_v2 as PyFETdb
+import PyGFET.AnalyzeData as PyFETData
+import PyGFET.PlotDataClass as PyFETpl
 import matplotlib.pyplot as plt
 import pickle
 
@@ -736,32 +736,50 @@ class AppDataExp(QtWidgets.QMainWindow, Ui_DataExp):
             st = s.text()
             ivds.append(int(st.split(':')[0]))
 
-        if len(ivds)==0 or len(ivgs)==0: return
-                      
-        if not self.PlotFreq: 
+        if len(ivds)==0 or len(ivgs)==0:
+            return
+
+        if not self.PlotFreq:
             self.CreateNewPlotFreq()
         if not plt.fignum_exists(self.PlotFreq.Fig.number):
             del self.PlotFreq
-            self.CreateNewPlotFreq()                
-        
+            self.CreateNewPlotFreq()
+
         self.PlotFreq.ClearAxes()
         self.PlotFreq.Plot(self.Data[trt][cy], iVds=ivds, iVgs=ivgs,
                            ColorOnVgs=True)
         self.PlotFreq.Fig.canvas.draw()
 
-    def CreateNewPlotFreq (self): 
+    def CreateNewPlotFreq(self):
         print 'New plot'
-        self.PlotFreq = PyFETpl.PyFETPlot()      
-        Axs = []        
-        for ck in self.GrpFreq.findChildren(QtWidgets.QCheckBox):    
-            if ck.isChecked(): Axs.append(ck.text())                       
+        self.PlotFreq = PyFETpl.PyFETPlot()
+        Axs = []
+        for ck in self.GrpFreq.findChildren(QtWidgets.QCheckBox):
+            if ck.isChecked():
+                Axs.append(ck.text())
         self.PlotFreq.AddAxes(Axs)
 
-###############################################################################
+
+def main():
+    import argparse
+    import pkg_resources
+
+    # Add version option
+    __version__ = pkg_resources.require("PyGFET")[0].version
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--version', action='version',
+                        version='%(prog)s {version}'.format(
+                            version=__version__))
+    parser.parse_args()
+
+    app = QtWidgets.QApplication(sys.argv)
+    w = DBViewApp()
+    w.show()
+    sys.exit(app.exec_())
 
 
 if __name__ == "__main__":
-    app = QtWidgets.QApplication(sys.argv)
-    window = DBViewApp()
-    window.show()
-    sys.exit(app.exec_())
+    main()
+
+
+
