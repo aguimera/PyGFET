@@ -1,0 +1,59 @@
+[33mcommit f6fd4fbbc44863b5af21fa4c7f9e85fa6417d142[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: jmartinezaguilar <Javier.Martinez@imb-cnm.csic.es>
+Date:   Mon Jan 8 13:38:25 2018 +0100
+
+    Add PyFETCharacterization GUI
+
+[33mcommit d92d337ef065e03724be37779a2173e14a7bd6a1[m
+Author: aguimera <anton.guimera@csic.es>
+Date:   Fri Dec 22 17:52:49 2017 +0100
+
+    add rec explorer launcher
+
+[33mcommit 22f73a807c3311e116a439c3db18d3b37ee43e1f[m
+Author: aguimera <anton.guimera@csic.es>
+Date:   Fri Dec 22 17:51:03 2017 +0100
+
+    Add record explorer launcher
+
+[33mcommit ae3415a8d3975a48ed5dc8b41b285d4a9890b0db[m
+Author: aguimera <anton.guimera@csic.es>
+Date:   Fri Dec 22 17:25:17 2017 +0100
+
+    Delete *.pyc
+
+[33mcommit b7564581ace26e0b0976ff8872031c7ed0cb08b5[m
+Author: aguimera <anton.guimera@csic.es>
+Date:   Fri Dec 22 17:18:31 2017 +0100
+
+    remove PyFETdb_v2
+
+[33mcommit f9b4bba100db714ea718fcf7aa7763a8d1ab8bfa[m
+Author: aguimera <anton.guimera@csic.es>
+Date:   Fri Dec 22 16:51:18 2017 +0100
+
+    Fix *.ui includes
+
+[33mcommit 53571e278c27f89cd3a9ed056fba92605cc690e1[m
+Author: aguimera <anton.guimera@csic.es>
+Date:   Fri Dec 22 16:23:37 2017 +0100
+
+    Pip install fixes
+
+[33mcommit f96fe49ecc1b21e350b979733548c44b3372d8fa[m
+Author: aguimera <anton.guimera@csic.es>
+Date:   Fri Dec 22 16:18:42 2017 +0100
+
+    Pip install fixes
+
+[33mcommit dfce4b3d9de21852d1ab430e28f9b4f548665945[m
+Author: aguimera <anton.guimera@csic.es>
+Date:   Fri Dec 22 10:18:41 2017 +0100
+
+    PyDBview launcher fix
+
+[33mcommit 4f234532da0df0e9da6b8ca5b21ff8d55eb5dd11[m
+Author: aguimera <anton.guimera@csic.es>
+Date:   Fri Dec 22 01:31:55 2017 +0100
+
+    First pip trial

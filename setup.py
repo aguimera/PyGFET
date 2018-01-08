@@ -34,7 +34,7 @@ long_description = """
 
 install_requires = ['numpy',
                     'matplotlib',
-                    'quantities',
+                    'quantities>=0.12',
                     'scipy',
                     'neo>=0.5.2',
                     'nixio']
