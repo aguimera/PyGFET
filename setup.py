@@ -41,6 +41,8 @@ install_requires = ['numpy',
                     'neo>=0.5.2',
                     'nixio']
 
+# Comment 01
+
 console_scripts = ['PyDBView = PyDBView.PyDBView:main',
                    'GFETRecExp = PyGFETRecordExplorer.PyGFETRecordExplorer:main']
 
