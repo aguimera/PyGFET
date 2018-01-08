@@ -4,30 +4,33 @@ Created on Thu Sep 28 16:03:58 2017
 
 @author: user
 """
-
+import os
 import sys
-from PyQt5.QtWidgets import (QHeaderView, QCheckBox, QSpinBox, QLineEdit,
-                             QDoubleSpinBox, QTextEdit, QComboBox,
-                             QTableWidget, QAction, QMessageBox, QFileDialog,
-                             QInputDialog)
-from PyQt5 import QtWidgets, uic
-from PyQt5.QtCore import Qt, QItemSelectionModel, QSettings
+
+from qtpy.QtWidgets import (QHeaderView, QCheckBox, QSpinBox, QLineEdit,
+                            QDoubleSpinBox, QTextEdit, QComboBox,
+                            QTableWidget, QAction, QMessageBox, QFileDialog,
+                            QInputDialog)
+
+from qtpy import QtWidgets, uic
+from qtpy.QtCore import Qt, QItemSelectionModel, QSettings
+
 import matplotlib.pyplot as plt
 import deepdish as dd
 import ctypes
+
+import PyGFET.DataStructures as PyData
+import PyGFET.PlotDataClass as PyFETpl
+from PyGFET.PyFETRecord import NeoRecord, PltSlot, PlotRecord
+
 import PyDAQmx as Daq
-import PyFET.AnalyzeData as PyAnalyze
-import PyFET.DataStructures as PyData
-import PyFET.PlotDataClass as PyFETpl
-from PyFET.PyFETRecord import NeoRecord, PltSlot, PlotRecord
+
 from ctypes import byref, c_int32
 import numpy as np
 from scipy import signal
 import neo
-import os.path
 import pickle
 import quantities as pq
-import gc
 import inspect
 
 
@@ -1333,11 +1336,11 @@ class CharacLivePlot():
 ###############################################################################
 
 
-GuiTestDC_ui = "GuiTestDC_v3.ui"  # Enter file here.
-Ui_GuiTestDC, QtBaseClass = uic.loadUiType(GuiTestDC_ui)
+#GuiTestDC_ui = "GuiTestDC_v3.ui"  # Enter file here.
+#Ui_GuiTestDC, QtBaseClass = uic.loadUiType(GuiTestDC_ui)
 
 
-class CharactAPP(QtWidgets.QMainWindow, Ui_GuiTestDC):
+class CharactAPP(QtWidgets.QMainWindow):
     OutFigFormats = ('svg', 'png')
 
     PlotCont = None
@@ -1374,9 +1377,9 @@ class CharactAPP(QtWidgets.QMainWindow, Ui_GuiTestDC):
     def __init__(self, parent=None):
 
         QtWidgets.QMainWindow.__init__(self)
-        Ui_GuiTestDC.__init__(self)
-        self.setupUi(self)
-        self.setWindowTitle('Measure PyFET')
+        uipath = os.path.join(os.path.dirname(__file__), 'PyFETCharactGui.ui')
+        uic.loadUi(uipath, self)
+        self.setWindowTitle('Characterization PyFET')
 
         self.InitMenu()
 
@@ -1899,8 +1902,24 @@ class CharactAPP(QtWidgets.QMainWindow, Ui_GuiTestDC):
                     fileOut = Dir + '/' + Prefix + '{}.' + ext
                     plt.savefig(fileOut.format(i))
 
-if __name__ == "__main__":
+
+def main():
+    import argparse
+    import pkg_resources
+
+    # Add version option
+    __version__ = pkg_resources.require("PyGFET")[0].version
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--version', action='version',
+                        version='%(prog)s {version}'.format(
+                            version=__version__))
+    parser.parse_args()
+
     app = QtWidgets.QApplication(sys.argv)
-    window = CharactAPP()
-    window.show()
+    w = CharactAPP()
+    w.show()
     sys.exit(app.exec_())
+
+
+if __name__ == "__main__":
+    main()
