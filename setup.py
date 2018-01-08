@@ -44,7 +44,8 @@ install_requires = ['numpy',
 # Comment 01
 
 console_scripts = ['PyDBView = PyDBView.PyDBView:main',
-                   'GFETRecExp = PyGFETRecordExplorer.PyGFETRecordExplorer:main']
+                   'GFETRecExp = PyGFETRecordExplorer.PyGFETRecordExplorer:main',
+                   'PyMeasureTools = PyGFETMeasureTools.PyFETCharactGui:main']
 
 entry_points = {'console_scripts': console_scripts, }
 
