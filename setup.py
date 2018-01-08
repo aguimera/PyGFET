@@ -28,7 +28,7 @@ from setuptools import setup, find_packages
 
 # comment AGB
 
-_version = '0.1.1a1'
+_version = '0.1.1a2'
 
 long_description = """
                    Library for GFET analysis tools
