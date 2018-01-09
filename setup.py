@@ -30,6 +30,7 @@ _version = '0.1.1a2'
 
 long_description = """
                    Library for GFET analysis tools
+                   
                    """
 
 install_requires = ['numpy',
