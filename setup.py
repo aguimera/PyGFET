@@ -37,7 +37,8 @@ install_requires = ['numpy',
                     'quantities>=0.12',
                     'scipy',
                     'neo>=0.5.2',
-                    'nixio']
+                    'nixio',
+                    'xlsxwriter']
 
 console_scripts = ['PyDBView = PyDBView.PyDBView:main',
                    'GFETRecExp = PyGFETRecordExplorer.PyGFETRecordExplorer:main',
