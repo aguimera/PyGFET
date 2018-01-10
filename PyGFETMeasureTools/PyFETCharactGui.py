@@ -1232,7 +1232,7 @@ class ContinuousAcquisitionPlots():
             if sign.endswith('_DC'):
                 sl.Position = 0
                 sl.Color = cmap.to_rgba(ind)
-                sl.DispName = 'DC'
+                sl.DispName = sign
 
             if sign.endswith('_AC'):
                 sl.Position = 1
