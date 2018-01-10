@@ -673,6 +673,7 @@ class DataProcess(ChannelsConfig, FFTBodeAnalysis):
     EventAcDataAcq = None
     EventContAcDone = None
     EventContDcDone = None
+    EventContGateDone = None
     EventSetBodeLabel = None
 
     def ClearEventsCallBacks(self):
@@ -1223,22 +1224,38 @@ class ContinuousAcquisitionPlots():
         slots = []
         cmap = cmx.ScalarMappable(mpcolors.Normalize(vmin=0, vmax=len(Rec.SigNames.keys())),
                                   cmx.jet)
+
         for ind, sign in enumerate(sorted(Rec.SigNames.keys())):
             sl = PltSlot()
             sl.rec = Rec
-            sl.Position = ind
-            sl.Color = cmap.to_rgba(ind)
-#            sl.Position = 0
+
+            if sign.endswith('_DC'):
+                sl.Position = 0
+                sl.Color = cmap.to_rgba(ind)
+                sl.DispName = 'DC'
+
+            if sign.endswith('_AC'):
+                sl.Position = 1
+                sl.Color = cmap.to_rgba(ind)
+                sl.DispName = sign
+
+            if sign.endswith('_Gate'):
+                sl.Position = 2
+                sl.DispName = sign
+
             sl.SigName = sign
-            sl.DispName = sign
+
+#            sl.Position = ind
+
 #            if sign.endswith('_DC'):
 #                sl.FiltType = ('lp', )
 #                sl.FiltOrder = (2, )
 #                sl.FiltF1 = (1, )
+
             sl.OutType = 'V'
             slots.append(sl)
-        #  Init Plot figures
 
+        #  Init Plot figures
         self.PltRecs = PlotRecord()
         self.PltRecs.CreateFig(slots)
         plt.show()
@@ -1246,6 +1263,7 @@ class ContinuousAcquisitionPlots():
     def PlotUpdate(self, Time):
         self.PltRecs.ClearAxes()
         self.PltRecs.PlotChannels(Time, Resamp=True)
+        self.PltRecs
         self.PltRecs.Fig.canvas.draw()
 
     def __del__(self):

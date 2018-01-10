@@ -445,6 +445,8 @@ class PlotRecord():
             sl.SetTstart()
             setattr(sl, 'Ax', Axs[sl.Position])
             lb = sl.Ax.get_ylabel()
+#            sl.Ax.set_ylabel(lb + ' ' + sl.DispName + '\n', rotation = 'horizontal', ha='right')
+
             sl.Ax.set_ylabel(lb + ' ' + sl.DispName)
             sl.Ax.ticklabel_format(axis='y', style='sci', scilimits=(-2, 2))
 
@@ -647,6 +649,7 @@ class PlotRecord():
             sl.PlotSignal(Time, Resamp=Resamp)
 
         sl.Ax.set_xlim(Time[0], Time[1])
+#        sl.Ax.legend(loc='upper left')
 
     def PlotEvents(self, Time, (EventRec, EventName)):
 
