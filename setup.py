@@ -32,7 +32,8 @@ long_description = """
                    Library for GFET analysis tools                   
                    """
 
-install_requires = ['numpy',
+install_requires = ['pymysql',
+                    'numpy',
                     'matplotlib',
                     'quantities>=0.12',
                     'scipy',
