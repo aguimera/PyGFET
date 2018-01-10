@@ -22,15 +22,29 @@ from matplotlib.backends.backend_pdf import PdfPages
 #%% Find conditions in DB
 
 plt.close('all')
+plt.ion()
 
 CharTable = 'DCcharacts'
 DeviceNames = ('B10179W15-T1', )
 
 Conditions = {'Devices.Name=': DeviceNames,
-              'CharTable.IsOK>': (0, )}
+              'CharTable.IsOK>': (0, ),
+              'CharTable.Ph>': (5, ),
+              'CharTable.Ph<': (8, ),
+              'CharTable.IonStrength=': (0.1,),
+              'CharTable.FuncStep=': ('pyrene-NH2',)}
 
 TrtsList = Dban.FindCommonParametersValues(Table=CharTable,
                                            Parameter='Trts.Name',
+                                           Conditions=Conditions)
+
+
+print 'found Phs ', Dban.FindCommonParametersValues(Table=CharTable,
+                                           Parameter='CharTable.Ph',
+                                           Conditions=Conditions)
+
+print 'found IonStrength ', Dban.FindCommonParametersValues(Table=CharTable,
+                                           Parameter='CharTable.IonStrength',
                                            Conditions=Conditions)
 
 Groups = {}
@@ -59,7 +73,7 @@ Dban.MultipleSearch(Func=Dban.PlotXYVars,
 
 plt.show()     
 
-
+#
 #==============================================================================
 # CondBase2 = {}
 # CondBase2['Table'] = CharTable
