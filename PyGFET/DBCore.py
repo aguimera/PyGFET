@@ -303,10 +303,6 @@ class PyFETdb():
     def GetCharactFromId(self, Table, Ids, Trts, Last=False, GetGate=False):
 
         DataF = '{}.Data'.format(Table)
-#        DataPh =  '{}.Ph'.format(Table)
-#        DataPh =  '{}.Ph'.format(Table)
-#        DataPh =  '{}.Ph'.format(Table)
-#        DataPh =  '{}.Ph'.format(Table)
         Output = ['Trts.Name',
                   'TrtTypes.Name',
                   'TrtTypes.Width',
@@ -314,7 +310,12 @@ class PyFETdb():
                   'TrtTypes.Pass',
                   'TrtTypes.Area',
                   'TrtTypes.Contact',
-                  DataF]
+                  DataF,
+                  '{}.Ph'.format(Table),
+                  '{}.Solution'.format(Table),
+                  '{}.IonStrength'.format(Table),
+                  '{}.FuncStep'.format(Table),
+                  '{}.AnalyteCon'.format(Table)]
 
         GidF = None
         if GetGate:
@@ -369,11 +370,15 @@ class PyFETdb():
                     fp = f.split('.')
                     if fp[0] == 'Trts':
                         Data[Trt][cy][fp[1]] = re[f]
+                    elif fp[0] == Table:
+                        fn = Data[Trt][cy].get('Info', {})
+                        fn[fp[1]] = re[f]
+                        Data[Trt][cy]['Info'] = fn
                     else:
                         fn = Data[Trt][cy].get(fp[0], {})
                         fn[fp[1]] = re[f]
                         Data[Trt][cy][fp[0]] = fn
-                
+
         return Data
 
     def GetGateFromId(self, idg):

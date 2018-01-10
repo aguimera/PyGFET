@@ -10,12 +10,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.colors as mpcolors
 import matplotlib.cm as cmx
-from PyFETDataClass import DataCharAC
-import PyFETdb as PyFETdb
 import sys
 from itertools import cycle
 import statsmodels.api as sm
 import xlsxwriter as xlsw
+
+from PyGFET.DataClass import DataCharAC
+import PyGFET.DBCore as PyFETdb
 
 
 def PlotMeanStd(Data, Xvar, Yvar, Vds=None, Ax=None, Ud0Norm=True, Color='r',

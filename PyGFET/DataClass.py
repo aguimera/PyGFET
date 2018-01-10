@@ -375,6 +375,18 @@ class DataCharDC(object):
     def GetTypeName(self, **kwargs):
         return self.TrtTypes['Name']
 
+    def GetPh(self, **kwargs):
+        return self.Info['Ph']
+
+    def GetIonSt(self, **kwargs):
+        return self.Info['IonStrength']
+
+    def GetFuncStep(self, **kwargs):
+        return self.Info['FuncStep']
+
+    def GetAnalyteCon(self, **kwargs):
+        return self.Info['AnalyteCon']
+
     def GetGds(self, Vgs=None, Vds=None, Ud0Norm=False):
         Gds = 1 / self.GetRds(Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm)
         return Gds
