@@ -26,11 +26,10 @@ Created on Thu Dec 21 18:30:42 2017
 
 from setuptools import setup, find_packages
 
-_version = '0.1.1a2'
+_version = '0.1.1a4rc'
 
 long_description = """
-                   Library for GFET analysis tools
-                   
+                   Library for GFET analysis tools                   
                    """
 
 install_requires = ['numpy',
@@ -41,8 +40,8 @@ install_requires = ['numpy',
                     'nixio',
                     'xlsxwriter']
 
-console_scripts = ['PyDBView = PyDBView.PyDBView:main',
-                   'GFETRecExp = PyGFETRecordExplorer.PyGFETRecordExplorer:main',
+console_scripts = ['GFETDbView = PyGFET.GuiDBView.GuiDBView:main',
+                   'GFETRecExp = PyGFET.GuiRecordView.GuiRecordExplorer:main',
                    'PyCharactGui = PyGFETMeasureTools.PyFETCharactGui:main']
 
 entry_points = {'console_scripts': console_scripts, }

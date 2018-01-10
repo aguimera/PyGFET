@@ -97,10 +97,4 @@ ENV/
 # mkdocs documentation
 /site
 
-# mypy
-.mypy_cache/
-/MANIFEST.in
-/PyGFETRecordExplorer/PyGFETRecordExplorer.py
-/PyGFETRecordExplorer/RecordExplorer2.ui
-/PyGFETRecordExplorer/__init__.py
-/PyGFET/PyFETdbXlsReport.py
+
