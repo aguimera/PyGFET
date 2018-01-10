@@ -32,7 +32,8 @@ import neo
 import pickle
 import quantities as pq
 import inspect
-
+import matplotlib.cm as cmx
+import matplotlib.colors as mpcolors
 
 """This example is a PyDAQmx version of the ContAcq_IntClk.c example
 It illustrates the use of callback functions
@@ -1220,10 +1221,14 @@ class ContinuousAcquisitionPlots():
 
     def __init__(self, Rec):
         slots = []
+        cmap = cmx.ScalarMappable(mpcolors.Normalize(vmin=0, vmax=len(Rec.SigNames.keys())),
+                                  cmx.jet)
         for ind, sign in enumerate(sorted(Rec.SigNames.keys())):
             sl = PltSlot()
             sl.rec = Rec
             sl.Position = ind
+            sl.Color = cmap.to_rgba(ind)
+#            sl.Position = 0
             sl.SigName = sign
             sl.DispName = sign
 #            if sign.endswith('_DC'):
