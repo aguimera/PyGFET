@@ -9,7 +9,8 @@ import sys
 import ctypes
 
 import PyGFET.DataStructures as PyData
-from PyGFET.PyFETRecord import NeoRecord
+#from PyGFET.PyFETRecord import NeoRecord
+from PyGFET.RecordCore import NeoRecord
 
 import PyDAQmx as Daq
 
