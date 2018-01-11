@@ -13,22 +13,24 @@ from qtpy.QtWidgets import (QHeaderView, QCheckBox, QSpinBox, QLineEdit,
                             QInputDialog)
 
 from qtpy import QtWidgets, uic
-from qtpy.QtCore import Qt, QItemSelectionModel, QSettings
+#from qtpy.QtCore import Qt, QItemSelectionModel, QSettings
 
 import matplotlib.pyplot as plt
 import deepdish as dd
-import ctypes
+#import ctypes
 
-import PyGFET.DataStructures as PyData
+
+#import PyGFET.DataStructures as PyData
 import PyGFET.PlotDataClass as PyFETpl
-from PyGFET.PyFETRecord import NeoRecord, PltSlot, PlotRecord
+import PyGFET.CharactCore as PyCharact
+from PyGFET.RecordPlot import PltSlot, PlotRecord
 
-import PyDAQmx as Daq
+#import PyDAQmx as Daq
 
-from ctypes import byref, c_int32
+#from ctypes import byref, c_int32
 import numpy as np
-from scipy import signal
-import neo
+#from scipy import signal
+#import neo
 import pickle
 import quantities as pq
 import inspect
@@ -218,7 +220,7 @@ class CharactAPP(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
 
         QtWidgets.QMainWindow.__init__(self)
-        uipath = os.path.join(os.path.dirname(__file__), 'PyFETCharactGui.ui')
+        uipath = os.path.join(os.path.dirname(__file__), 'GuiCharact.ui')
         uic.loadUi(uipath, self)
         self.setWindowTitle('Characterization PyFET')
 
@@ -320,9 +322,12 @@ class CharactAPP(QtWidgets.QMainWindow):
 
         Config = self.GetConfig(self.GrConfig)
         self.TimePlotConfig(Config)
-        self.Charac = Charact(Channels=Channels,
-                              GateChannel=GateChannel,
-                              Configuration=Config)
+        self.Charact = PyCharact.Charact(Channels=Channels,
+                                         GateChannel=GateChannel,
+                                         Configuration=Config)
+#        self.Charac = Charact(Channels=Channels,
+#                              GateChannel=GateChannel,
+#                              Configuration=Config)
 
         # Define events callbacks
         self.Charac.EventCharSweepDone = self.CharSweepDoneCallBack
