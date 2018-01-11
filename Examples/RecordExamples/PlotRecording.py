@@ -16,7 +16,7 @@ import matplotlib.colors as mpcolors
 
 plt.close('all')
 
-RecordFile = 'TestData2.h5'
+RecordFile = 'TestData.h5'
 
 RecDC = NeoRecord(RecordFile, UnitGain=1)
 
@@ -29,12 +29,12 @@ for i, Sname in enumerate(sorted(RecDC.SigNames.keys())):
     sl.DispName = Sname
     sl.OutType = 'V'
     Slots.append(sl)
-    
+
 for i, Sname in enumerate(sorted(RecDC.SigNames.keys())):
     sl = PltSlot()
-    sl.FiltType = ('hp', )
+    sl.FiltType = ('lp', )
     sl.FiltOrder = (3, )
-    sl.FiltF1 = (10, )
+    sl.FiltF1 = (1, )
     sl.Color = 'b'
     sl.rec = RecDC
     sl.Position = i
@@ -44,15 +44,16 @@ for i, Sname in enumerate(sorted(RecDC.SigNames.keys())):
     Slots.append(sl)
 
 PltRecs = PlotRecord()
-PltRecs.CreateFig(Slots)
+PltRecs.CreateFig(Slots, ShowLegend=True)
 
 Tstart = 0*pq.s
 Tstop = 50*pq.s
 TShow = (Tstart, Tstop)
 
 PltRecs.ClearAxes()
-PltRecs.PlotChannels(TShow, Resamp=False)  
- 
+PltRecs.PlotChannels(TShow, Resamp=False)
+
+
 #Reltime=0
 #def f(Reltime,PltRecs):
 #    Z=np.ones((4,4))

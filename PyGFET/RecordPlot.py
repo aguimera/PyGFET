@@ -269,7 +269,11 @@ class PltSlot():
 
             elif self.PlotType == 'Wave':
                 sig = self.GetSignal(Time, Resamp)
-                self.Ax.plot(sig.times, sig, self.Line, color=self.Color)
+                self.Ax.plot(sig.times,
+                             sig,
+                             self.Line,
+                             color=self.Color,
+                             label=self.DispName)
 
                 if self.Ymin == 0 and self.Ymax == 0:
                     ylim = (np.min(sig), np.max(sig))  # TODO autoscale
@@ -290,7 +294,8 @@ class PlotRecord():
             while sl.Ax.lines:
                 sl.Ax.lines[0].remove()
 
-    def CreateFig(self, Slots):
+    def CreateFig(self, Slots, ShowLegend=False):
+        self.ShowLegend = ShowLegend
         self.Slots = Slots
 
         Pos = []
@@ -512,7 +517,11 @@ class PlotRecord():
             sl.PlotSignal(Time, Resamp=Resamp)
 
         sl.Ax.set_xlim(Time[0], Time[1])
-#        sl.Ax.legend(loc='upper left')
+        sl.Ax.relim()
+        sl.Ax.autoscale_view()
+        plt.draw()
+        if self.ShowLegend:
+            sl.Ax.legend(loc='upper left')
 
     def PlotEvents(self, Time, (EventRec, EventName)):
 
