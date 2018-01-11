@@ -29,9 +29,6 @@ DeviceNames = ('B10179W15-T1', )
 
 Conditions = {'Devices.Name=': DeviceNames,
               'CharTable.IsOK>': (0, ),
-              'CharTable.Ph>': (5, ),
-              'CharTable.Ph<': (8, ),
-              'CharTable.IonStrength=': (0.1,),
               'CharTable.FuncStep=': ('pyrene-NH2',)}
 
 TrtsList = Dban.FindCommonParametersValues(Table=CharTable,
@@ -39,11 +36,11 @@ TrtsList = Dban.FindCommonParametersValues(Table=CharTable,
                                            Conditions=Conditions)
 
 
-print 'found Phs ', Dban.FindCommonParametersValues(Table=CharTable,
+PhList = Dban.FindCommonParametersValues(Table=CharTable,
                                            Parameter='CharTable.Ph',
                                            Conditions=Conditions)
 
-print 'found IonStrength ', Dban.FindCommonParametersValues(Table=CharTable,
+IonStrenList = Dban.FindCommonParametersValues(Table=CharTable,
                                            Parameter='CharTable.IonStrength',
                                            Conditions=Conditions)
 
@@ -62,17 +59,35 @@ for TrtN in sorted(TrtsList):
     Cgr['Conditions'] = Cond
     Groups[TrtN] = Cgr
 
-dat, t= Dban.GetFromDB(Conditions=Cond, Table=CharTable, Last=False)
-
-Dban.MultipleSearch(Func=Dban.PlotXYVars,
-                    Groups=Groups,
-                    Xvar='Ph',
-                    Yvar='Ud0',
-                    Vgs=None,
-                    Vds=None)
-
-plt.show()     
-
+    dat, t= Dban.GetFromDB(Conditions=Cond, Table=CharTable, Last=False)
+    
+    #Dban.MultipleSearch(Func=Dban.PlotXYVars,
+    #                    Groups=Groups,
+    #                    Xvar='Ph',
+    #                    Yvar='Ud0',
+    #                    Vgs=None,
+    #                    Vds=None)
+    #
+    #plt.show()     
+    #
+    ##%%
+    #
+    #plt.close('all')
+    
+    Dats = dat[TrtN]
+    
+    x = np.ones([len(Dats)])
+    y = np.ones([len(Dats)])
+    z = np.ones([len(Dats)])
+    for i, d in enumerate(Dats):
+        y[i] = d.GetPh()
+        x[i] = d.GetIonSt()
+        z[i] = d.GetUd0()
+    
+    plt.figure()
+    plt.tricontourf(x,y,z,100,cmap='seismic')
+    plt.plot(x,y,'ko')
+    plt.colorbar()
 #
 #==============================================================================
 # CondBase2 = {}
