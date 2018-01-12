@@ -73,6 +73,7 @@ for i, Sname in enumerate(sorted(RecDC.SigNames.keys())):
 
 PltRecs = PlotRecord()
 PltRecs.LegNlabCol = 1
+PltRecs.ShowAxis = True
 PltRecs.CreateFig(Slots, ShowLegend=False)
 
 Tstart = 0*pq.s

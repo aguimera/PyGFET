@@ -246,7 +246,6 @@ class PltSlot():
 
     def PlotSignal(self, Time, Resamp=True):
         if self.Ax:
-            print self.Ax
             if self.PlotType == 'Spectrogram':
                 sig = self.GetSignal(Time, Resamp=False)
 
@@ -290,6 +289,7 @@ class PlotRecord():
     Axs = None  # (Axhandler, Autoscale)
     LegNlabCol = 4  # Number of labels per col in legend
     LegFontSize = 'x-small'
+    ShowAxis = True
 
     def ClearAxes(self):
         for sl in self.Slots:
@@ -297,15 +297,30 @@ class PlotRecord():
                 sl.Ax.lines[0].remove()
 
     def FormatFigure(self):
+        if self.ShowAxis:            
+            for (Ax, _) in self.Axs:
+    #            Ax.get_yaxis().set_visible(False)
+                Ax.get_xaxis().set_visible(False)
+                Ax.spines['top'].set_visible(False)
+                Ax.spines['right'].set_visible(False)
+    #            Ax.spines['left'].set_visible(False)
+                Ax.spines['bottom'].set_visible(False)
+                Ax.ticklabel_format(axis='y', style='sci', scilimits=(-2, 2))
+        
+            TimeAx = self.Axs[-1][0]
+            TimeAx.set_xlabel('Time [s]')
+            TimeAx.get_xaxis().set_visible(True)
+        else:
+            for (Ax, _) in self.Axs:
+                Ax.get_yaxis().set_visible(False)
+                Ax.get_xaxis().set_visible(False)
+                Ax.spines['top'].set_visible(False)
+                Ax.spines['right'].set_visible(False)
+                Ax.spines['left'].set_visible(False)
+                Ax.spines['bottom'].set_visible(False)
+            
         self.Fig.tight_layout()
         self.Fig.subplots_adjust(hspace=0)
-        for (Ax, _) in self.Axs:
-#            Ax.get_yaxis().set_visible(False)
-#            Ax.get_xaxis().set_visible(False)
-            Ax.spines['top'].set_visible(False)
-            Ax.spines['right'].set_visible(False)
-            Ax.spines['left'].set_visible(False)
-            Ax.spines['bottom'].set_visible(False)
 
     def CreateFig(self, Slots, ShowLegend=False):
         self.ShowLegend = ShowLegend
@@ -335,9 +350,7 @@ class PlotRecord():
                                  ha='center')
                 sl.Ax.yaxis.set_label_coords(-0.1, 0.3)
 
-            sl.Ax.ticklabel_format(axis='y', style='sci', scilimits=(-2, 2))
-
-            if not(sl.Ymin == 0 and sl.Ymax == 0):
+            if not(sl.Ymin == 0 and sl.Ymax == 0):  # Check autoscale
                 self.Axs[sl.Position][1] = False
 
 #            if sl.PlotType == 'Spectrogram':
