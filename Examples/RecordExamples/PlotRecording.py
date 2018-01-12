@@ -44,7 +44,7 @@ for i, Sname in enumerate(sorted(RecDC.SigNames.keys())):
     Slots.append(sl)
 
 PltRecs = PlotRecord()
-PltRecs.CreateFig(Slots, ShowLegend=True)
+PltRecs.CreateFig(Slots, ShowLegend=False)
 
 Tstart = 0*pq.s
 Tstop = 50*pq.s

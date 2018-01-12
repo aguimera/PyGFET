@@ -246,6 +246,7 @@ class PltSlot():
 
     def PlotSignal(self, Time, Resamp=True):
         if self.Ax:
+            print self.Ax
             if self.PlotType == 'Spectrogram':
                 sig = self.GetSignal(Time, Resamp=False)
 
@@ -288,6 +289,7 @@ class PltSlot():
 class PlotRecord():
     FigFFT = None
     AxFFT = None
+    Axs = None
 
     def ClearAxes(self):
         for sl in self.Slots:
@@ -304,18 +306,45 @@ class PlotRecord():
 
         self.Fig, A = plt.subplots(max(Pos) + 1, 1, sharex=True)
         if type(A).__module__ == np.__name__:
-            Axs = A
+            self.Axs = A
         else:
-            Axs = []
-            Axs.append(A)
+            self.Axs = []
+            self.Axs.append(A)
 
+
+#        for Axes in self.Axs:
+#            print Axes
+#            for sl in self.Slots:
+#                sl.SetTstart()
+#                setattr(sl, 'Ax', Axes)
+#    
+#                if not ShowLegend:
+#                    lb = sl.Ax.get_ylabel()
+#                    sl.Ax.set_ylabel(lb + ' ' + sl.DispName + '\n', rotation = 'horizontal', ha='center')
+#                    sl.Ax.yaxis.set_label_coords(-0.1, 0.3)
+#    
+#                sl.Ax.ticklabel_format(axis='y', style='sci', scilimits=(-2, 2))
+#    
+#    #            if sl.PlotType == 'Spectrogram':
+#    #                sl.Ax.set_yscale('log')
+#    
+#                if not sl.FiltType[0] == '':
+#                    print sl.FiltType, sl.FiltF1, sl.FiltF2, sl.FiltOrder
+#                    sl.Filter = Filter(Type=sl.FiltType,
+#                                       Freq1=sl.FiltF1,
+#                                       Freq2=sl.FiltF2,
+#                                       Order=sl.FiltOrder)
+#
+        ###    
         for sl in self.Slots:
             sl.SetTstart()
-            setattr(sl, 'Ax', Axs[sl.Position])
-            lb = sl.Ax.get_ylabel()
-#            sl.Ax.set_ylabel(lb + ' ' + sl.DispName + '\n', rotation = 'horizontal', ha='right')
+            setattr(sl, 'Ax', self.Axs[sl.Position])
 
-            sl.Ax.set_ylabel(lb + ' ' + sl.DispName)
+            if not ShowLegend:
+                lb = sl.Ax.get_ylabel()
+                sl.Ax.set_ylabel(lb + ' ' + sl.DispName + '\n', rotation = 'horizontal', ha='center')
+                sl.Ax.yaxis.set_label_coords(-0.1, 0.3)
+
             sl.Ax.ticklabel_format(axis='y', style='sci', scilimits=(-2, 2))
 
 #            if sl.PlotType == 'Spectrogram':
@@ -509,6 +538,7 @@ class PlotRecord():
             return
 
         for sl in self.Slots:
+
             if ResampPoints:
                 sl.ResamplePoints = ResampPoints
             if ResampFs:
@@ -520,8 +550,13 @@ class PlotRecord():
         sl.Ax.relim()
         sl.Ax.autoscale_view()
         plt.draw()
+
         if self.ShowLegend:
-            sl.Ax.legend(loc='upper left')
+
+#            sl.Ax.legend(bbox_to_anchor=(0,1.02,1,0.2), loc="lower left",
+#                         mode="expand", borderaxespad=0, ncol=len(self.Axs))
+            sl.Ax.legend(bbox_to_anchor=(0.5, -0.05), loc='upper center',
+                         fancybox=True, shadow=True, ncol=len(self.Axs))
 
     def PlotEvents(self, Time, (EventRec, EventName)):
 
@@ -529,4 +564,3 @@ class PlotRecord():
         for te in Te:
             for sl in self.Slots:
                 sl.PlotEvent(te)
-
