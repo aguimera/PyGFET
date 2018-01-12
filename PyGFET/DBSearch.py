@@ -8,6 +8,7 @@ Created on Fri Jan 12 13:12:37 2018
 
 from PyGFET.DataClass import DataCharAC
 import PyGFET.DBCore as PyFETdb
+import numpy as np
 
 
 def CheckConditionsCharTable(Conditions, Table):
@@ -108,3 +109,27 @@ def GetFromDB(Conditions, Table='ACcharacts', Last=True, GetGate=True,
         Data[Trtn] = Chars
 
     return Data, Trts
+
+
+def UpdateCharTableField(Conditions, Value,
+                         Table='ACcharacts', Field='Comments'):
+
+    Conditions = CheckConditionsCharTable(Conditions, Table)
+
+    MyDb = PyFETdb.PyFETdb(host='opter6.cnm.es',
+                           user='pyfet',
+                           passwd='p1-f3t17',
+                           db='pyFET')
+
+    out = '{}.id{}'.format(Table, Table)
+    re = MyDb.GetCharactInfo(Table=Table,
+                             Conditions=Conditions,
+                             Output=(out, ))
+
+    field = '{}.{}'.format(Table, Field)
+    fields = {field: Value}
+    for r in re:
+        condition = ('{}.id{}='.format(Table, Table), r.values()[0])
+        MyDb.UpdateRow(Table=Table, Fields=fields, Condition=condition)
+
+    MyDb.db.commit()

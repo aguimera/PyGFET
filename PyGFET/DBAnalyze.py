@@ -14,8 +14,18 @@ import sys
 from itertools import cycle
 import statsmodels.api as sm
 import xlsxwriter as xlsw
-
 from PyGFET.DBSearch import GetFromDB
+
+
+def CreateCycleColors(Vals):
+    ncolors = len(Vals)
+    cmap = cmx.ScalarMappable(mpcolors.Normalize(vmin=0, vmax=ncolors),
+                              cmx.jet)
+    colors = []
+    for i in range(ncolors):
+        colors.append(cmap.to_rgba(i))
+
+    return cycle(colors)
 
 
 def PlotMeanStd(Data, Xvar, Yvar, Vds=None, Ax=None, Ud0Norm=True, Color='r',
@@ -151,16 +161,6 @@ def PlotXYVars(Data, Xvar, Yvar, Vgs, Vds, Ud0Norm=True, label=None,
 #    Ax.ticklabel_format(axis='y', style='sci', scilimits=scilimits)
 
 
-def GetUD0(Data, Vds=None, **kwargs):
-    Ud0 = np.array([])
-    for Trtn, Datas in Data.iteritems():
-        for Dat in Datas:
-            ud0 = Dat.GetUd0(Vds)
-            if ud0 is not None:
-                Ud0 = np.hstack((Ud0, ud0)) if Ud0.size else ud0
-    return Ud0
-
-
 def GetParam(Data, Param, Vgs=None, Vds=None, Ud0Norm=False, **kwargs):
     Vals = np.array([])
     for Trtn, Datas in Data.iteritems():
@@ -178,9 +178,7 @@ def GetParam(Data, Param, Vgs=None, Vds=None, Ud0Norm=False, **kwargs):
     return Vals
 
 
-
-
-def MultipleSearchParam(Plot=True, Boxplot=False, **kwargs):
+def SearchAndGetParam(Groups, Plot=True, Boxplot=False, **kwargs):
     if Plot:
         fig, Ax = plt.subplots()
         xLab = []
@@ -191,7 +189,6 @@ def MultipleSearchParam(Plot=True, Boxplot=False, **kwargs):
         xlssheet = xlswbook.add_worksheet('W1')
 
     Vals = {}
-    Groups = kwargs['Groups']
     for iGr, (Grn, Grc) in enumerate(sorted(Groups.iteritems())):
         print 'Getting data for ', Grn
         Data, Trts = GetFromDB(**Grc)
@@ -242,21 +239,9 @@ def MultipleSearchParam(Plot=True, Boxplot=False, **kwargs):
     return Vals
 
 
-def CreateCycleColors(Vals):
-    ncolors = len(Vals)
-    cmap = cmx.ScalarMappable(mpcolors.Normalize(vmin=0, vmax=ncolors),
-                              cmx.jet)
-    colors = []
-    for i in range(ncolors):
-        colors.append(cmap.to_rgba(i))
-
-    return cycle(colors)
-
-
-def MultipleSearch(Func=PlotMeanStd, **kwargs):
-    col = CreateCycleColors(kwargs['Groups'])
+def SearchAndPlot(Groups, Func=PlotMeanStd, **kwargs):
+    col = CreateCycleColors(Groups)
     fig, Ax = plt.subplots()
-    Groups = kwargs['Groups']
 
     if 'XlsFile' in kwargs.keys():
         xlswbook = xlsw.Workbook(kwargs['XlsFile'])
@@ -397,22 +382,3 @@ def CalcTLM(Groups, Vds=None, Ax=None, Color=None,
     ContactVals['LT'] = LT
 
     return ContactVals
-
-
-#==============================================================================
-#     AxRc.plot(VGS, Rc, color=Color, label=Label)
-#     AxRc.fill_between(VGS, RcMax, RcMin,
-#                       color=Color,
-#                       linewidth=0.0,
-#                       alpha=0.3)
-#     AxRs.plot(VGS, Rsheet, '--', color=Color)
-#     AxRs.fill_between(VGS, RsheetMax, RsheetMin,
-#                       color=Color,
-#                       linewidth=0.0,
-#                       alpha=0.3)
-##==============================================================================
-#
-#
-#    AxRc.set_ylabel('Rc')
-#    AxRs.set_ylabel('Rsheet')
-#    AxRc.legend()

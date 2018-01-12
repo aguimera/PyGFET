@@ -2,49 +2,60 @@
 """
 Created on Mon Jan 08 17:23:06 2018
 
-@author: eduard
+@author: aguimera
 """
 
-import matplotlib.colors as mpcolors
-import matplotlib.cm as cmx
 import PyGFET.DBAnalyze as Dban
-#==============================================================================
-# from PyFET.ExportTools import SaveOpenSigures
-#==============================================================================
+import PyGFET.DBSearch as DbSearch
 import matplotlib.pyplot as plt
 import numpy as np
-from statsmodels.sandbox.regression.predstd import wls_prediction_std
-import statsmodels.api as sm
+import PyGFET.DBCore as PyFETdb
 
-import datetime
-from matplotlib.backends.backend_pdf import PdfPages
 
-#%% Find conditions in DB
+def UpdateCharTableField(Conditions, Value, Table='ACcharacts', Field='Comments'):
+    Conditions = DbSearch.CheckConditionsCharTable(Conditions, Table)
+
+    MyDb = PyFETdb.PyFETdb(host='opter6.cnm.es',
+                           user='pyfet',
+                           passwd='p1-f3t17',
+                           db='pyFET')
+
+    out = '{}.id{}'.format(Table, Table)
+    re = MyDb.GetCharactInfo(Table=Table, Conditions=Conditions, Output=(out,))
+
+    field = '{}.{}'.format(Table, Field)
+    fields = {field:Value}    
+    for r in re:
+        condition = ('{}.id{}='.format(Table, Table), r.values()[0])
+        MyDb.UpdateRow(Table=Table, Fields=fields, Condition=condition)
+
+    MyDb.db.commit()
+
+#    print re
 
 plt.close('all')
-plt.ion()
 
 CharTable = 'DCcharacts'
 DeviceNames = ('B10179W15-T1',)
 
 Conditions = {'Devices.Name=': DeviceNames,
               'CharTable.IsOK>': (0, ),
-              'CharTable.FuncStep=': ('pyrene-NH2',),
-              'CharTable.Ph<>': (7.0,),
-              'CharTable.Ph>': (1,)}
+              'CharTable.Comments like':('IonCal%', )}
 
-TrtsList = Dban.FindCommonParametersValues(Table=CharTable,
-                                           Parameter='Trts.Name',
-                                           Conditions=Conditions)
+TrtsList = DbSearch.FindCommonValues(Table=CharTable,
+                                     Parameter='Trts.Name',
+                                     Conditions=Conditions)
 
 
-PhList = Dban.FindCommonParametersValues(Table=CharTable,
-                                           Parameter='CharTable.Ph',
-                                           Conditions=Conditions)
+PhList = DbSearch.FindCommonValues(Table=CharTable,
+                                   Parameter='CharTable.Ph',
+                                   Conditions=Conditions)
 
-IonStrenList = Dban.FindCommonParametersValues(Table=CharTable,
-                                           Parameter='CharTable.IonStrength',
-                                           Conditions=Conditions)
+IonStrenList = DbSearch.FindCommonValues(Table=CharTable,
+                                         Parameter='CharTable.IonStrength',
+                                         Conditions=Conditions)
+
+#UpdateCharTableField(Conditions,'IonCal 1',Table=CharTable)
 
 Groups = {}
 # Fixed Conditions
@@ -54,43 +65,29 @@ CondBase['Last'] = False
 CondBase['Conditions'] = Conditions
 
 
-for TrtN in sorted(TrtsList):
-    Cgr = CondBase.copy()
-    Cond = CondBase['Conditions'].copy()
-    Cond.update({'Trts.Name=': (TrtN, )})
-    Cgr['Conditions'] = Cond
-    Groups[TrtN] = Cgr
-
-    dat, t= Dban.GetFromDB(Conditions=Cond, Table=CharTable, Last=False)
-    
-    #Dban.MultipleSearch(Func=Dban.PlotXYVars,
-    #                    Groups=Groups,
-    #                    Xvar='Ph',
-    #                    Yvar='Ud0',
-    #                    Vgs=None,
-    #                    Vds=None)
-    #
-    #plt.show()     
-    #
-    ##%%
-    #
-    #plt.close('all')
-    
-    Dats = dat[TrtN]
-    
-    x = np.ones([len(Dats)])
-    y = np.ones([len(Dats)])
-    z = np.ones([len(Dats)])
-    for i, d in enumerate(Dats):
-        y[i] = d.GetPh()
-        x[i] = d.GetIonSt()
-        z[i] = d.GetUd0()
-    
-    plt.figure()
-    plt.tricontourf(x,y,z,100,cmap='seismic')
-    plt.plot(x,y,'ko')
-    plt.colorbar()
+#for TrtN in sorted(TrtsList):
+#    Cgr = CondBase.copy()
+#    Cond = CondBase['Conditions'].copy()
+#    Cond.update({'Trts.Name=': (TrtN, )})
+#    Cgr['Conditions'] = Cond
+#    Groups[TrtN] = Cgr
 #
+#    dat, t= Dban.GetFromDB(Conditions=Cond, Table=CharTable, Last=False)    
+#    Dats = dat[TrtN]
+#    
+#    x = np.ones([len(Dats)])
+#    y = np.ones([len(Dats)])
+#    z = np.ones([len(Dats)])
+#    for i, d in enumerate(Dats):
+#        y[i] = d.GetPh()
+#        x[i] = d.GetIonSt()
+#        z[i] = d.GetUd0()
+#    
+#    plt.figure()
+#    plt.tricontourf(x,y,z,100,cmap='seismic')
+#    plt.plot(x,y,'ko')
+#    plt.colorbar()
+##
 #==============================================================================
 # CondBase2 = {}
 # CondBase2['Table'] = CharTable
