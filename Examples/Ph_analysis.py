@@ -25,11 +25,13 @@ plt.close('all')
 plt.ion()
 
 CharTable = 'DCcharacts'
-DeviceNames = ('B10179W15-T1', )
+DeviceNames = ('B10179W15-T1',)
 
 Conditions = {'Devices.Name=': DeviceNames,
               'CharTable.IsOK>': (0, ),
-              'CharTable.FuncStep=': ('pyrene-NH2',)}
+              'CharTable.FuncStep=': ('pyrene-NH2',),
+              'CharTable.Ph<>': (7.0,),
+              'CharTable.Ph>': (1,)}
 
 TrtsList = Dban.FindCommonParametersValues(Table=CharTable,
                                            Parameter='Trts.Name',

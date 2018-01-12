@@ -276,11 +276,9 @@ class PltSlot():
                              color=self.Color,
                              label=self.DispName)
 
-                if self.Ymin == 0 and self.Ymax == 0:
-                    ylim = (np.min(sig), np.max(sig))  # TODO autoscale
+                if not(self.Ymin == 0 and self.Ymax == 0):
+                    ylim = (self.Ymin, self.Ymax)
                     self.Ax.set_ylim(ylim)
-                else:
-                    self.Ax.set_ylim((self.Ymin, self.Ymax))
 
     def PlotEvent(self, Time, color='r--'):
         self.Ax.plot((Time, Time), (1, -1), color, alpha=0.5)
@@ -289,7 +287,9 @@ class PltSlot():
 class PlotRecord():
     FigFFT = None
     AxFFT = None
-    Axs = None
+    Axs = None  # (Axhandler, Autoscale)
+    LegNlabCol = 4  # Number of labels per col in legend
+    LegFontSize = 'x-small'
 
     def ClearAxes(self):
         for sl in self.Slots:
@@ -306,46 +306,28 @@ class PlotRecord():
 
         self.Fig, A = plt.subplots(max(Pos) + 1, 1, sharex=True)
         if type(A).__module__ == np.__name__:
-            self.Axs = A
+            self.Axs = []
+            for a in A:
+                self.Axs.append([a, True])
         else:
             self.Axs = []
-            self.Axs.append(A)
+            self.Axs.append([A, True])
 
-
-#        for Axes in self.Axs:
-#            print Axes
-#            for sl in self.Slots:
-#                sl.SetTstart()
-#                setattr(sl, 'Ax', Axes)
-#    
-#                if not ShowLegend:
-#                    lb = sl.Ax.get_ylabel()
-#                    sl.Ax.set_ylabel(lb + ' ' + sl.DispName + '\n', rotation = 'horizontal', ha='center')
-#                    sl.Ax.yaxis.set_label_coords(-0.1, 0.3)
-#    
-#                sl.Ax.ticklabel_format(axis='y', style='sci', scilimits=(-2, 2))
-#    
-#    #            if sl.PlotType == 'Spectrogram':
-#    #                sl.Ax.set_yscale('log')
-#    
-#                if not sl.FiltType[0] == '':
-#                    print sl.FiltType, sl.FiltF1, sl.FiltF2, sl.FiltOrder
-#                    sl.Filter = Filter(Type=sl.FiltType,
-#                                       Freq1=sl.FiltF1,
-#                                       Freq2=sl.FiltF2,
-#                                       Order=sl.FiltOrder)
-#
-        ###    
         for sl in self.Slots:
             sl.SetTstart()
-            setattr(sl, 'Ax', self.Axs[sl.Position])
+            setattr(sl, 'Ax', self.Axs[sl.Position][0])
 
             if not ShowLegend:
                 lb = sl.Ax.get_ylabel()
-                sl.Ax.set_ylabel(lb + ' ' + sl.DispName + '\n', rotation = 'horizontal', ha='center')
+                sl.Ax.set_ylabel(lb + ' ' + sl.DispName + '\n',
+                                 rotation='horizontal',
+                                 ha='center')
                 sl.Ax.yaxis.set_label_coords(-0.1, 0.3)
 
             sl.Ax.ticklabel_format(axis='y', style='sci', scilimits=(-2, 2))
+
+            if not(sl.Ymin == 0 and sl.Ymax == 0):
+                self.Axs[sl.Position][1] = False
 
 #            if sl.PlotType == 'Spectrogram':
 #                sl.Ax.set_yscale('log')
@@ -531,6 +513,19 @@ class PlotRecord():
 
         return DevACVals
 
+    def AddLegend(self, Ax):
+        nLines = len(Ax.lines)
+        nlc = self.LegNlabCol
+        if nLines > nlc:
+            ncol = (nLines / nlc) + ((nLines % nlc) > 0)
+        else:
+            ncol = 1
+        Ax.legend(loc='best',
+                  fancybox=True,
+                  shadow=True,
+                  ncol=ncol,
+                  fontsize=self.LegFontSize)
+
     def PlotChannels(self, Time, Resamp=True,
                      ResampPoints=None, ResampFs=None):
 
@@ -547,16 +542,12 @@ class PlotRecord():
             sl.PlotSignal(Time, Resamp=Resamp)
 
         sl.Ax.set_xlim(Time[0], Time[1])
-        sl.Ax.relim()
-        sl.Ax.autoscale_view()
-        plt.draw()
 
         if self.ShowLegend:
-
-#            sl.Ax.legend(bbox_to_anchor=(0,1.02,1,0.2), loc="lower left",
-#                         mode="expand", borderaxespad=0, ncol=len(self.Axs))
-            sl.Ax.legend(bbox_to_anchor=(0.5, -0.05), loc='upper center',
-                         fancybox=True, shadow=True, ncol=len(self.Axs))
+            for (Ax, AutoScale) in self.Axs:
+                self.AddLegend(Ax)
+                if AutoScale:
+                    Ax.autoscale(enable=True, axis='y', tight=True)
 
     def PlotEvents(self, Time, (EventRec, EventName)):
 

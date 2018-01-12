@@ -28,7 +28,9 @@ for i, Sname in enumerate(sorted(RecDC.SigNames.keys())):
     sl.SigName = Sname
     sl.DispName = Sname
     sl.OutType = 'V'
-    Slots.append(sl)
+#    sl.Ymax = 0.5e-3
+#    sl.Ymin = -0.5e-3
+    Slots.append(sl)    
 
 for i, Sname in enumerate(sorted(RecDC.SigNames.keys())):
     sl = PltSlot()
@@ -39,12 +41,26 @@ for i, Sname in enumerate(sorted(RecDC.SigNames.keys())):
     sl.rec = RecDC
     sl.Position = i
     sl.SigName = Sname
-    sl.DispName = Sname
+    sl.DispName = Sname + 'F'
+    sl.OutType = 'V'
+    Slots.append(sl)
+    
+for i, Sname in enumerate(sorted(RecDC.SigNames.keys())):
+    sl = PltSlot()
+    sl.FiltType = ('hp', )
+    sl.FiltOrder = (3, )
+    sl.FiltF1 = (1, )
+    sl.Color = 'r'
+    sl.rec = RecDC
+    sl.Position = i
+    sl.SigName = Sname
+    sl.DispName = Sname + 'F2'
     sl.OutType = 'V'
     Slots.append(sl)
 
 PltRecs = PlotRecord()
-PltRecs.CreateFig(Slots, ShowLegend=False)
+PltRecs.LegNlabCol = 1
+PltRecs.CreateFig(Slots, ShowLegend=True)
 
 Tstart = 0*pq.s
 Tstop = 50*pq.s

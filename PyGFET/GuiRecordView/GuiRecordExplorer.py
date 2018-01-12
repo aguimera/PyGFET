@@ -19,6 +19,7 @@ from qtpy.QtWidgets import QFileDialog, QColorDialog, QInputDialog, QAction
 from PyGFET.RecordCore import NeoRecord
 from PyGFET.RecordPlot import PltSlot, PlotRecord, threshold_detection
 
+
 class RecordExplorer(QtWidgets.QMainWindow):
     OutFigFormats = ('svg', 'png')
     DevDCVals = None
