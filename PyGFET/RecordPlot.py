@@ -296,6 +296,17 @@ class PlotRecord():
             while sl.Ax.lines:
                 sl.Ax.lines[0].remove()
 
+    def FormatFigure(self):
+        self.Fig.tight_layout()
+        self.Fig.subplots_adjust(hspace=0)
+        for (Ax, _) in self.Axs:
+#            Ax.get_yaxis().set_visible(False)
+#            Ax.get_xaxis().set_visible(False)
+            Ax.spines['top'].set_visible(False)
+            Ax.spines['right'].set_visible(False)
+            Ax.spines['left'].set_visible(False)
+            Ax.spines['bottom'].set_visible(False)
+
     def CreateFig(self, Slots, ShowLegend=False):
         self.ShowLegend = ShowLegend
         self.Slots = Slots
@@ -313,11 +324,11 @@ class PlotRecord():
             self.Axs = []
             self.Axs.append([A, True])
 
-        for sl in self.Slots:
+        for sl in self.Slots:  ## init slots axis
             sl.SetTstart()
             setattr(sl, 'Ax', self.Axs[sl.Position][0])
 
-            if not ShowLegend:
+            if not ShowLegend:  # Add labels to axis
                 lb = sl.Ax.get_ylabel()
                 sl.Ax.set_ylabel(lb + ' ' + sl.DispName + '\n',
                                  rotation='horizontal',
@@ -338,6 +349,7 @@ class PlotRecord():
                                    Freq1=sl.FiltF1,
                                    Freq2=sl.FiltF2,
                                    Order=sl.FiltOrder)
+        self.FormatFigure()
 
     def PlotHist(self, Time, Resamp=False, Binds=250):
         fig, Ax = plt.subplots()
