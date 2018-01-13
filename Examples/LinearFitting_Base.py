@@ -11,34 +11,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 import PyGFET.DBCore as PyFETdb
 
-
-def UpdateCharTableField(Conditions, Value, Table='ACcharacts', Field='Comments'):
-    Conditions = DbSearch.CheckConditionsCharTable(Conditions, Table)
-
-    MyDb = PyFETdb.PyFETdb(host='opter6.cnm.es',
-                           user='pyfet',
-                           passwd='p1-f3t17',
-                           db='pyFET')
-
-    out = '{}.id{}'.format(Table, Table)
-    re = MyDb.GetCharactInfo(Table=Table, Conditions=Conditions, Output=(out,))
-
-    field = '{}.{}'.format(Table, Field)
-    fields = {field:Value}    
-    for r in re:
-        condition = ('{}.id{}='.format(Table, Table), r.values()[0])
-        MyDb.UpdateRow(Table=Table, Fields=fields, Condition=condition)
-
-    MyDb.db.commit()
-
-#    print re
-
 plt.close('all')
 
 CharTable = 'DCcharacts'
-DeviceNames = ('B10179W15-T1',)
+DeviceNames = ('B10179W15-T1-Ch05',)
 
-Conditions = {'Devices.Name=': DeviceNames,
+Conditions = {'Trts.Name=': DeviceNames,
               'CharTable.IsOK>': (0, ),
               'CharTable.Comments like':('IonCal%', )}
 
@@ -46,23 +24,120 @@ TrtsList = DbSearch.FindCommonValues(Table=CharTable,
                                      Parameter='Trts.Name',
                                      Conditions=Conditions)
 
-
-PhList = DbSearch.FindCommonValues(Table=CharTable,
-                                   Parameter='CharTable.Ph',
-                                   Conditions=Conditions)
-
-IonStrenList = DbSearch.FindCommonValues(Table=CharTable,
-                                         Parameter='CharTable.IonStrength',
-                                         Conditions=Conditions)
-
-#UpdateCharTableField(Conditions,'IonCal 1',Table=CharTable)
-
-Groups = {}
 # Fixed Conditions
-CondBase = {}
-CondBase['Table'] = CharTable
-CondBase['Last'] = False
-CondBase['Conditions'] = Conditions
+GroupBase = {}
+GroupBase['Table'] = CharTable
+GroupBase['Last'] = False
+GroupBase['Conditions'] = Conditions
+
+for TrtN in TrtsList:
+    Conditions.update({'Trts.Name=': (TrtN,)})
+
+    Dban.PlotGroupBy(GroupBase=GroupBase,
+                     GroupBy='CharTable.IonStrength',
+                     Xvar='Vgs',
+                     Yvar='Ids',
+                     PlotOverlap=True,
+                     Ud0Norm=False)
+
+    Dat, _ = DbSearch.GetFromDB(**GroupBase)
+    ValY = np.array([])
+    ValX = np.array([])
+    
+    for dat in Dat[TrtN]:
+        valx = dat.GetUd0()
+        valy = dat.GetIonStrength()
+        ValY = np.hstack((ValY, valy)) if ValY.size else np.array(valy)
+        ValX = np.hstack((ValX, valx)) if ValX.size else valx
+
+# Debug plot    
+
+    
+    
+#    
+#            Conditions.update({'CharTable.IonStrength=':(Conc,)})
+#            
+#            vy = Dban.MultipleSearchParam(Groups={'1': CondBase},
+#                                            Plot=False,
+#                                            Boxplot=False,
+#                                            Param='Ud0').values()[0][0,0]
+#            
+
+#        f,ax2=plt.subplots()
+#        if Type=='IonStrength':
+#            ax2.semilogx(ValX, ValY, 'o', color=color, label=Trt)
+#            ax2.set_xlabel('IonStrength [M]')
+#    #==============================================================================
+#    #         ValX = np.log10(ValX)
+#    #==============================================================================
+#            X = sm.add_constant(np.log10(ValX))
+#            
+#        else:    
+#            ax2.plot(ValX, ValY, 'o', color=color, label=Trt)    
+#            X = sm.add_constant(ValX)
+#            ax2.xlabel('pH')
+#        
+#        ax2.set_ylabel('CNP [V]')
+#        res=sm.OLS(ValY, X).fit()
+#        R2=np.vstack((R2,res.rsquared)) if R2.size else res.rsquared
+#        prstd, iv_l, iv_u = wls_prediction_std(res)    
+#        
+#        ax2.plot(ValX, res.fittedvalues,'k--')
+#        ax2.fill_between(ValX, iv_u, iv_l,
+#                         color=color,
+#                         linewidth=0.0,
+#                         alpha=0.3)
+#        Res = np.vstack((Res,res.params)) if Res.size else res.params
+#        slope=res.params[1]*1000
+#        ax2.legend(loc='best')
+#    #==============================================================================
+#    #     plt.title('slope= %.1f mV r2= %.1f' % slope % res.rsquared)
+#    #==============================================================================
+#        ax2.set_title('slope= {:.2f} mV'.format(slope) + ' r2={:.3f}'.format(res.rsquared))
+#        pdf.savefig()
+#    d = pdf.infodict()
+#    d['Title'] = 'ph-ion sensibility analysis'
+#    d['Author'] = u'Eduard Masvidal Codina'
+#    d['Subject'] = 'ph-ion sensibility analysis'
+##==============================================================================
+##     d['Keywords'] = 'PdfPages multipage keywords author title subject'
+##==============================================================================
+##==============================================================================
+##     d['CreationDate'] = datetime.datetime(2009, 11, 13)
+##==============================================================================
+#    d['CreationDate'] = datetime.datetime.today()
+##==============================================================================
+##     d['ModDate'] = datetime.datetime.today()
+##==============================================================================
+##==============================================================================
+## plt.legend(loc='best')
+##==============================================================================
+#slope=[]
+#slope=Res[:,1]
+#slope=slope.reshape(len(slope),1)
+#slope[R2<0.95]=np.nan
+#R2[R2<0.95]=np.nan
+#print np.nanmean(slope)
+#print np.nanstd(slope)
+#print np.nanmean(R2)
+#    plt.plot(ValX,ValY)    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 #for TrtN in sorted(TrtsList):

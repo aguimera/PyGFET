@@ -14,7 +14,7 @@ import sys
 from itertools import cycle
 import statsmodels.api as sm
 import xlsxwriter as xlsw
-from PyGFET.DBSearch import GetFromDB
+from PyGFET.DBSearch import GetFromDB, FindCommonValues
 
 
 def CreateCycleColors(Vals):
@@ -278,6 +278,23 @@ def SearchAndPlot(Groups, Func=PlotMeanStd, **kwargs):
         xlswbook.close()
 
     return fig, Ax
+
+
+def PlotGroupBy(GroupBase, GroupBy, **kwargs):
+
+    GroupList = FindCommonValues(Table=GroupBase['Table'],
+                                          Conditions=GroupBase['Conditions'],
+                                          Parameter=GroupBy)
+
+    Groups = {}
+    for Item in sorted(GroupList):
+        Cgr = GroupBase.copy()
+        Cond = GroupBase['Conditions'].copy()
+        Cond.update({'{}='.format(GroupBy): (Item,)})
+        Cgr['Conditions'] = Cond
+        Groups[Item] = Cgr
+
+    return SearchAndPlot(Groups=Groups, **kwargs)
 
 
 def CalcTLM(Groups, Vds=None, Ax=None, Color=None,
