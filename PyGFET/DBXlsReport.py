@@ -6,7 +6,7 @@ Created on Wed Jul  5 12:51:22 2017
 @author: aguimera
 """
 import PyGFET.DBCore as PyFETdb
-from PyGFET.PyFETDataClass import PyFETPlotDataClass as PyFETplt
+from PyGFET.DataClass import PyFETPlotDataClass as PyFETplt
 import PyGFET.DBAnalyze as Dban
 import matplotlib.pyplot as plt
 from matplotlib import ticker
@@ -483,9 +483,9 @@ class GenXlsReport():
         self.TmpPath = tempfile.mkdtemp(suffix='PyFET')
 # Find devicelist that will be reported
         GroupBy = 'Devices.Name'
-        self.DevicesList = Dban.FindCommonParametersValues(Table='DCcharacts',
-                                                           Parameter=GroupBy,
-                                                           Conditions=Conditions)
+        self.DevicesList = Dban.FindCommonValues(Table='DCcharacts',
+                                                 Parameter=GroupBy,
+                                                 Conditions=Conditions)
 # Init Db connection
         self.Mydb = PyFETdb.PyFETdb(host='opter6.cnm.es',
                                     user='pyfet',
@@ -547,13 +547,13 @@ class GenXlsReport():
         try:
 # Insert Line plots
             for ipl, LiPlots in enumerate(self.SummaryLinePlots):
-                Fig, _ = Dban.MultipleSearch(Groups=Grs, **LiPlots)
+                Fig, _ = Dban.SearchAndPlot(Groups=Grs, **LiPlots)
                 fname = tempfile.mktemp(suffix='.png', dir=self.TmpPath)
                 Fig.savefig(fname, dpi=self.FigsDpi)
                 Sheet.insert_image(idev+4+ipl*self.SummaryPlotSpacing, 7, fname)
 # Insert Boxplots
             for ipl, BoxPlots in enumerate(self.SummaryBoxPlots):
-                Dban.MultipleSearchParam(Groups=Grs, **BoxPlots)
+                Dban.SearchAndGetParam(Groups=Grs, **BoxPlots)
                 fname = tempfile.mktemp(suffix='.png', dir=self.TmpPath)
                 plt.gcf().savefig(fname, dpi=self.FigsDpi)
                 Sheet.insert_image(idev+4+ipl*self.SummaryPlotSpacing, 0, fname)
