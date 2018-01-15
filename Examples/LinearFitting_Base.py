@@ -10,71 +10,111 @@ import PyGFET.DBSearch as DbSearch
 import matplotlib.pyplot as plt
 import numpy as np
 import PyGFET.DBCore as PyFETdb
-from statsmodels.sandbox.regression.predstd import wls_prediction_std
-import statsmodels.api as sm
+import xlsxwriter
+import tempfile
+import shutil
+import datetime
+import PyGFET.DBXlsReport as XlsRep
 
 plt.close('all')
 
 CharTable = 'DCcharacts'
-DeviceNames = ('B10179W15-T1-Ch05',)
+AnalyteStep = 'Tromb'
+#DeviceNames = ('B10114W2-Xip1N','B10803W17-Xip1S')
+#DeviceNames = ('B10803W17-Xip1S', )
+#DeviceNames = ('B10114W2-Xip1N', )
+#DeviceNames = ('B10803W17-Xip2N', )
+DeviceNames = ('B10803W17-Xip6N', )
 
-Conditions = {'Trts.Name=': DeviceNames,
+Conditions = {'Devices.Name=': DeviceNames,
               'CharTable.IsOK>': (0, ),
-              'CharTable.Comments like':('IonCal%', )}
+              'CharTable.IonStrength=': (0.001,),
+              'CharTable.FuncStep=': (AnalyteStep, )}
 
-TrtsList = DbSearch.FindCommonValues(Table=CharTable,
-                                     Parameter='Trts.Name',
-                                     Conditions=Conditions)
-
-# Fixed Conditions
 GroupBase = {}
 GroupBase['Table'] = CharTable
 GroupBase['Last'] = False
 GroupBase['Conditions'] = Conditions
 
-for TrtN in TrtsList:
-    color = 'r*'
-    Conditions.update({'Trts.Name=': (TrtN,)})
+XlsLFit = XlsRep.GenXlsFittingReport('testb.xls', GroupBase)
 
-    Dban.PlotGroupBy(GroupBase=GroupBase,
-                     GroupBy='CharTable.IonStrength',
-                     Xvar='Vgs',
-                     Yvar='Ids',
-                     PlotOverlap=True,
-                     Ud0Norm=False)
+XlsLFit.XVar = 'AnalyteCon'
 
-    Dban.PlotGroupBy(GroupBase=GroupBase,
-                     GroupBy='CharTable.IonStrength',
-                     Xvar='Vgs',
-                     Yvar='GM',
-                     PlotOverlap=True,
-                     Ud0Norm=False)
-
-    Dat, _ = DbSearch.GetFromDB(**GroupBase)
-    ValY = np.array([])
-    ValX = np.array([])
-    
-    for dat in Dat[TrtN]:
-        valy = dat.GetUd0()
-        valx = dat.GetIonStrength()
-        ValY = np.vstack((ValY, valy)) if ValY.size else valy
-        ValX = np.vstack((ValX, valx)) if ValX.size else valx
+XlsLFit.GenFullReport()
+XlsLFit.close()
 
 
-    ValX = np.log10(ValX)
-    plt.figure()
-    plt.plot(ValX, ValY, '*') 
-    
-    X = sm.add_constant(ValX)
-    res=sm.OLS(ValY, X).fit()
-#    R2=np.vstack((R2,res.rsquared)) if R2.size else res.rsquared
-    prstd, iv_l, iv_u = wls_prediction_std(res)    
-    
-    plt.plot(ValX, res.fittedvalues,'k--')
-    plt.fill_between(ValX, iv_u, iv_l,
-                     color=color,
-                     linewidth=0.0,
-                     alpha=0.3)
+
+#
+#CharTable = 'DCcharacts'
+#DeviceNames = ('B10179W15-T1',)
+#
+#Conditions = {'Devices.Name=': DeviceNames,
+#              'CharTable.IsOK>': (0, ),
+#              'CharTable.Comments like':('IonCal%', )}
+#
+## Fixed Conditions
+#GroupBase = {}
+#GroupBase['Table'] = CharTable
+#GroupBase['Last'] = False
+#GroupBase['Conditions'] = Conditions
+#
+#XlsRep = XlsRep.GenXlsFittingReport('test.xls', GroupBase)
+#XlsRep.GenFullReport()
+#XlsRep.close()
+
+
+
+#GroupBy = 'Trts.Name'
+#TrtsList = Dban.FindCommonValues(Parameter=GroupBy,
+#                                             **GroupBase)
+#
+#for TrtN in TrtsList:
+#    color = 'r*'
+#    Conditions.update({'Trts.Name=': (TrtN,)})
+#
+#    Dban.PlotGroupBy(GroupBase=GroupBase,
+#                     GroupBy='CharTable.IonStrength',
+#                     Xvar='Vgs',
+#                     Yvar='Ids',
+#                     PlotOverlap=True,
+#                     Ud0Norm=False)
+#
+#    Dban.PlotGroupBy(GroupBase=GroupBase,
+#                     GroupBy='CharTable.IonStrength',
+#                     Xvar='Vgs',
+#                     Yvar='GM',
+#                     PlotOverlap=True,
+#                     Ud0Norm=False)
+#
+#    Dat, _ = DbSearch.GetFromDB(**GroupBase)
+#    ValY = np.array([])
+#    ValX = np.array([])
+#    
+#    for dat in Dat[TrtN]:
+#        valy = dat.GetUd0()
+#        valx = dat.GetIonStrength()
+#        ValY = np.vstack((ValY, valy)) if ValY.size else valy
+#        ValX = np.vstack((ValX, valx)) if ValX.size else valx
+#    
+#    si = np.argsort(ValX[:,0])
+#    ValX = ValX[si,0]
+#    ValY = ValY[si,0]
+#    
+#    ValX = np.log10(ValX)
+#    plt.figure()
+#    plt.plot(ValX, ValY, '*') 
+#    
+#    X = sm.add_constant(ValX)
+#    res=sm.OLS(ValY, X).fit()
+##    R2=np.vstack((R2,res.rsquared)) if R2.size else res.rsquared
+#    prstd, iv_l, iv_u = wls_prediction_std(res)    
+#    
+#    plt.plot(ValX, res.fittedvalues,'k--')
+#    plt.fill_between(ValX, iv_u, iv_l,
+#                     color='b',
+#                     linewidth=0.0,
+#                     alpha=0.3)
 
     
     

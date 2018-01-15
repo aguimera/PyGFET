@@ -8,6 +8,7 @@ Created on Wed Jul  5 12:51:22 2017
 import PyGFET.DBCore as PyFETdb
 from PyGFET.DataClass import PyFETPlotDataClass as PyFETplt
 import PyGFET.DBAnalyze as Dban
+import PyGFET.DBSearch as DbSearch
 import matplotlib.pyplot as plt
 from matplotlib import ticker
 from matplotlib import cm
@@ -19,6 +20,8 @@ import tempfile
 import shutil
 import sys
 from itertools import cycle
+from statsmodels.sandbox.regression.predstd import wls_prediction_std
+import statsmodels.api as sm
 
 Cortical16Map = {'Shape': (4, 4),
                  'Ch01': (2, 3),
@@ -219,23 +222,22 @@ class GenXlsDeviceHistory():
     def __init__(self, FileName, Conditions):
         self.dbConditions = Conditions
         GroupBy = 'Trts.Name'
-        self.TrtsList = Dban.FindCommonParametersValues(Table='DCcharacts',
+        self.TrtsList = Dban.FindCommonValues(Table='DCcharacts',
                                                         Parameter=GroupBy,
                                                         Conditions=Conditions)
         GroupBy = 'Devices.Name'
-        self.DeviceName = Dban.FindCommonParametersValues(Table='DCcharacts',
+        self.DeviceName = Dban.FindCommonValues(Table='DCcharacts',
                                                           Parameter=GroupBy,
                                                           Conditions=Conditions)
 
         self.WorkBook = xlsxwriter.Workbook(FileName)
-        self.WorkBook.add_format()
 
         self.Fbold = self.WorkBook.add_format({'bold': True})
         self.FOK = self.WorkBook.add_format({'num_format': '###.00E+2',
                                              'font_color': 'black'})
         self.FNOK = self.WorkBook.add_format({'num_format': '###.00E+2',
                                               'font_color': 'red'})
-        self.TmpPath = tempfile.mkdtemp(suffix='PyFET')
+        self.TmpPath = tempfile.mkdtemp(suffix='PyGFET')
 
 # Init Db connection
         self.Mydb = PyFETdb.PyFETdb(host='opter6.cnm.es',
@@ -282,8 +284,6 @@ class GenXlsDeviceHistory():
 
     def GenTrtReport(self, TrtName):
         Sheet = self.WorkBook.sheetnames[TrtName]
-        Sheet.write(0, 0, 'Trt Name', self.Fbold)
-        Sheet.write(0, 1, TrtName)
 
         for v in self.TrtInfoFields.values():
             Sheet.write(v[1], 0, v[0], self.Fbold)
@@ -781,4 +781,153 @@ class GenXlsReport():
     def close(self):
         self.WorkBook.close()
         shutil.rmtree(self.TmpPath)
+
+
+class GenXlsFittingReport():
+    FigsDpi = 150  # Resolution for figures!
+
+    XVar = 'IonStrength'
+    XVarLog = True
+    YVar = 'Ud0'
+    YVarLog = False
+    TrtInfoFields = {'Trts.Name': ('Trt Name', 0, 0),
+                     'VTrts.DCMeas': ('DCMeas', 1, 0),
+                     'VTrts.ACMeas': ('ACMeas', 2, 0),
+                     'VTrts.GMeas': ('GMeas', 3, 0),
+                     'TrtTypes.Name': ('Trt Type', 4, 0),
+                     'TrtTypes.Length': ('Lenght', 5, 0),
+                     'TrtTypes.Width': ('Width', 6, 0),
+                     'TrtTypes.Pass': ('Pass', 7, 0),
+                     'TrtTypes.Area': ('Area', 8, 0),
+                     'TrtTypes.Contact': ('Contact', 9, 0),
+                     'Trts.Comments': ('T-Comments', 10, 0)}
+
+    def __init__(self, FileName, GroupBase):
+        GroupBy = 'Trts.Name'
+        self.GroupBase = GroupBase
+        self.TrtsList = Dban.FindCommonValues(Parameter=GroupBy,
+                                              **GroupBase)
+
+        self.WorkBook = xlsxwriter.Workbook(FileName)
+
+        self.Fbold = self.WorkBook.add_format({'bold': True})
+        self.FOK = self.WorkBook.add_format({'num_format': '###.00E+2',
+                                             'font_color': 'black'})
+        self.FNOK = self.WorkBook.add_format({'num_format': '###.00E+2',
+                                              'font_color': 'red'})
+        self.TmpPath = tempfile.mkdtemp(suffix='PyGFET')
+
+# Init Db connection
+        self.Mydb = PyFETdb.PyFETdb(host='opter6.cnm.es',
+                                    user='pyfet',
+                                    passwd='p1-f3t17',
+                                    db='pyFET')
+
+        self.WorkBook.add_worksheet('Summary')
+        for TrtName in sorted(self.TrtsList):
+            self.WorkBook.add_worksheet(TrtName)
+
+    def GenFullReport(self):
+        Sheet = self.WorkBook.sheetnames['Summary']
+        Sheet.write(0, 0, 'Trt Name', self.Fbold)
+        Sheet.write(0, 1, 'Offset', self.Fbold)
+        Sheet.write(0, 2, 'Slope', self.Fbold)
+        Sheet.write(0, 3, 'R2', self.Fbold)
+
+        for it, TrtName in enumerate(self.TrtsList):
+            Res = self.GenTrtReport(TrtName)
+
+            Sheet.write(it+1, 0, TrtName, self.Fbold)
+            Sheet.write(it+1, 1, Res.params[0])
+            Sheet.write(it+1, 2, Res.params[1])
+            Sheet.write(it+1, 3, Res.rsquared)
+            plt.close('all')
+
+    def GenTrtReport(self, TrtName):
+        Sheet = self.WorkBook.sheetnames[TrtName]
+        Sheet.write(0, 0, 'Trt Name', self.Fbold)
+        Sheet.write(0, 1, TrtName)
+
+# Insert Trt info fields
+        for v in self.TrtInfoFields.values():
+            Sheet.write(v[1], 0, v[0], self.Fbold)
+        Tinf = self.Mydb.GetTrtsInfo(Conditions={'Trts.Name=': (TrtName, )},
+                                     Output=self.TrtInfoFields.keys())
+        for k, val in Tinf[0].iteritems():
+            row = self.TrtInfoFields[k][1]
+            col = 1
+            Sheet.write(row, col, val)
+
+# Insert debug Ids Plot
+        self.GroupBase['Conditions'].update({'Trts.Name=': (TrtName,)})
+        fig, _ = Dban.PlotGroupBy(GroupBase=self.GroupBase,
+                                  GroupBy='CharTable.{}'.format(self.XVar),
+                                  Xvar='Vgs',
+                                  Yvar='Ids',
+                                  PlotOverlap=True,
+                                  Ud0Norm=False)
+        fname = tempfile.mktemp(suffix='.png', dir=self.TmpPath)
+        fig.savefig(fname, dpi=self.FigsDpi)
+        Sheet.insert_image(0, 13, fname)
+
+# Calc and insert linear fitting
+        RowOff = 26
+        Sheet.set_column(0, 0, width=20)
+        Sheet.write(RowOff-1, 0, 'Time', self.Fbold)
+        Sheet.write(RowOff-1, 1, self.XVar, self.Fbold)
+        Sheet.write(RowOff-1, 2, self.YVar, self.Fbold)
+        Dat, _ = DbSearch.GetFromDB(**self.GroupBase)
+        ValY = np.array([])
+        ValX = np.array([])
+        for ip, dat in enumerate(Dat[TrtName]):
+            funcx = dat.__getattribute__('Get' + self.XVar)
+            funcy = dat.__getattribute__('Get' + self.YVar)
+            valx = funcx()
+            valy = funcy()
+            ValY = np.vstack((ValY, valy)) if ValY.size else valy
+            ValX = np.vstack((ValX, valx)) if ValX.size else valx
+            valT = dat.GetTime()
+            val = valT[0, 0].astype(datetime.datetime).strftime('%x %X')
+            Sheet.write(ip + RowOff, 0, val)
+            Sheet.write(ip + RowOff, 1, valx)
+            Sheet.write(ip + RowOff, 2, valy)
+
+        si = np.argsort(ValX[:, 0])
+        ValX = ValX[si, 0]
+        ValY = ValY[si, 0]
+
+        ValX = np.log10(ValX)
+        plt.figure()
+        plt.plot(ValX, ValY, '*')
+
+        X = sm.add_constant(ValX)
+        Res = sm.OLS(ValY, X).fit()
+        prstd, iv_l, iv_u = wls_prediction_std(Res)
+
+        plt.plot(ValX, Res.fittedvalues, 'k--')
+        plt.fill_between(ValX, iv_u, iv_l,
+                         color='b',
+                         linewidth=0.0,
+                         alpha=0.3)
+
+        fname = tempfile.mktemp(suffix='.png', dir=self.TmpPath)
+        plt.gcf().savefig(fname, dpi=self.FigsDpi)
+        Sheet.insert_image(0, 3, fname)
+
+        Sheet.write(RowOff, 6, 'OffSet')
+        Sheet.write(RowOff, 7, 'Slope')
+        Sheet.write(RowOff, 8, 'R2')
+        Sheet.write(RowOff+1, 6, Res.params[0])
+        Sheet.write(RowOff+1, 7, Res.params[1])
+        Sheet.write(RowOff+1, 8, Res.rsquared)
+        
+        return Res        
+        
+    def close(self):
+        self.WorkBook.close()
+        shutil.rmtree(self.TmpPath)
+
+
+
+
 

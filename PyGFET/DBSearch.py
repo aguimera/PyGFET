@@ -20,7 +20,7 @@ def CheckConditionsCharTable(Conditions, Table):
     return Conditions
 
 
-def FindCommonValues(Parameter, Conditions, Table='ACcharacts'):
+def FindCommonValues(Parameter, Conditions, Table='ACcharacts', **kwargs):
     Conditions = CheckConditionsCharTable(Conditions, Table)
 
     if Parameter.startswith('CharTable'):

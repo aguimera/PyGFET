@@ -7,8 +7,8 @@ Created on Wed Jul  5 12:51:22 2017
 """
 import matplotlib.colors as mpcolors
 import matplotlib.cm as cmx
-import PyFET.PyFETdbAnalyze as Dban
-from PyFET.ExportTools import SaveOpenSigures
+import PyGFET.DBAnalyze as Dban
+from PyGFET.ExportTools import SaveOpenSigures
 import matplotlib.pyplot as plt
 import numpy as np
 from statsmodels.sandbox.regression.predstd import wls_prediction_std
@@ -30,7 +30,7 @@ Conditions = {'Devices.Name=': DeviceNames,
               'CharTable.IonStrength=': (0.001,),
               'CharTable.FuncStep=': (AnalyteStep, )}
 
-AnalyteConList = Dban.FindCommonParametersValues(Table=CharTable,
+AnalyteConList = Dban.FindCommonValues(Table=CharTable,
                                                  Parameter='CharTable.AnalyteCon',
                                                  Conditions=Conditions)
 
@@ -56,7 +56,7 @@ for AnalyteCon in AnalyteConList:
 
 #%%    
     
-Vals = Dban.MultipleSearchParam(Groups=Groups,
+Vals = Dban.SearchAndGetParam(Groups=Groups,
                                 Plot=True,
                                 Boxplot=False,
                                 Param='Ud0',
@@ -76,11 +76,11 @@ Conditions = {'Devices.Name=': DeviceNames,
               'CharTable.IonStrength=': (0.001,),
               'CharTable.FuncStep=': (AnalyteStep, )}
 
-TrtsList = Dban.FindCommonParametersValues(Table=CharTable,
+TrtsList = Dban.FindCommonValues(Table=CharTable,
                                            Parameter='Trts.Name',
                                            Conditions=Conditions)
 
-AnalyteConList = Dban.FindCommonParametersValues(Table=CharTable,
+AnalyteConList = Dban.FindCommonValues(Table=CharTable,
                                                  Parameter='CharTable.AnalyteCon',
                                                  Conditions=Conditions)
 
@@ -102,7 +102,7 @@ for itrt, Trt in enumerate(sorted(TrtsList)):
     for Conc in sorted(AnalyteConList):
         Conditions.update({'CharTable.AnalyteCon=':(Conc,)})
 
-        vy = Dban.MultipleSearchParam(Groups={'1': CondBase},
+        vy = Dban.SearchAndGetParam(Groups={'1': CondBase},
                                         Plot=False,
                                         Boxplot=False,
                                         Param='Ud0').values()[0][0,0]
