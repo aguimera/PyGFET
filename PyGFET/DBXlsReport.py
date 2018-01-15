@@ -5,9 +5,9 @@ Created on Wed Jul  5 12:51:22 2017
 
 @author: aguimera
 """
-import PyGFET.PyFETdb as PyFETdb
+import PyGFET.DBCore as PyFETdb
 from PyGFET.PyFETDataClass import PyFETPlotDataClass as PyFETplt
-import PyGFET.PyFETdbAnalyze as Dban
+import PyGFET.DBAnalyze as Dban
 import matplotlib.pyplot as plt
 from matplotlib import ticker
 from matplotlib import cm
@@ -143,7 +143,7 @@ class GenXlsDeviceHistory():
                                          'Ud0Norm': True})}
 
     DCTimePlotPars = ('Ids', 'Rds', 'GM', 'Ig')
-    ACTimePlotPars = ('Ids', 'GM', 'Vrms','Irms')
+    ACTimePlotPars = ('Ids', 'GM', 'Vrms', 'Irms')
 
     TimePars = ('Ud0', 'Rds', 'Ids', 'GM', 'Vrms')
     TimeParsArgs = ({'Vgs': None, 'Vds': None},

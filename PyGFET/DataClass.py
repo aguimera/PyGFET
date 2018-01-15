@@ -321,7 +321,9 @@ class DataCharDC(object):
         else:
             return self.Vgs
 
-    def _GetParam(self, Param, Vgs=None, Vds=None, Ud0Norm=False, Normlize=False):
+    def _GetParam(self, Param, Vgs=None, Vds=None,
+                  Ud0Norm=False, Normlize=False):
+
         iVds = self.GetVdsIndexes(Vds)
         if len(iVds) == 0:
             return None
@@ -376,16 +378,16 @@ class DataCharDC(object):
         return self.TrtTypes['Name']
 
     def GetPh(self, **kwargs):
-        return self.Info['Ph']
+        return np.array(self.Info['Ph'])[None, None]
 
     def GetIonStrength(self, **kwargs):
-        return self.Info['IonStrength']
+        return np.array(self.Info['IonStrength'])[None, None]
 
     def GetFuncStep(self, **kwargs):
         return self.Info['FuncStep']
 
     def GetAnalyteCon(self, **kwargs):
-        return self.Info['AnalyteCon']
+        return np.array(self.Info['AnalyteCon'])[None, None]
 
     def GetGds(self, Vgs=None, Vds=None, Ud0Norm=False):
         Gds = 1 / self.GetRds(Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm)

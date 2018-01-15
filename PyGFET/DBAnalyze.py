@@ -283,8 +283,8 @@ def SearchAndPlot(Groups, Func=PlotMeanStd, **kwargs):
 def PlotGroupBy(GroupBase, GroupBy, **kwargs):
 
     GroupList = FindCommonValues(Table=GroupBase['Table'],
-                                          Conditions=GroupBase['Conditions'],
-                                          Parameter=GroupBy)
+                                 Conditions=GroupBase['Conditions'],
+                                 Parameter=GroupBy)
 
     Groups = {}
     for Item in sorted(GroupList):

@@ -10,6 +10,8 @@ import PyGFET.DBSearch as DbSearch
 import matplotlib.pyplot as plt
 import numpy as np
 import PyGFET.DBCore as PyFETdb
+from statsmodels.sandbox.regression.predstd import wls_prediction_std
+import statsmodels.api as sm
 
 plt.close('all')
 
@@ -31,6 +33,7 @@ GroupBase['Last'] = False
 GroupBase['Conditions'] = Conditions
 
 for TrtN in TrtsList:
+    color = 'r*'
     Conditions.update({'Trts.Name=': (TrtN,)})
 
     Dban.PlotGroupBy(GroupBase=GroupBase,
@@ -40,17 +43,38 @@ for TrtN in TrtsList:
                      PlotOverlap=True,
                      Ud0Norm=False)
 
+    Dban.PlotGroupBy(GroupBase=GroupBase,
+                     GroupBy='CharTable.IonStrength',
+                     Xvar='Vgs',
+                     Yvar='GM',
+                     PlotOverlap=True,
+                     Ud0Norm=False)
+
     Dat, _ = DbSearch.GetFromDB(**GroupBase)
     ValY = np.array([])
     ValX = np.array([])
     
     for dat in Dat[TrtN]:
-        valx = dat.GetUd0()
-        valy = dat.GetIonStrength()
-        ValY = np.hstack((ValY, valy)) if ValY.size else np.array(valy)
-        ValX = np.hstack((ValX, valx)) if ValX.size else valx
+        valy = dat.GetUd0()
+        valx = dat.GetIonStrength()
+        ValY = np.vstack((ValY, valy)) if ValY.size else valy
+        ValX = np.vstack((ValX, valx)) if ValX.size else valx
 
-# Debug plot    
+
+    ValX = np.log10(ValX)
+    plt.figure()
+    plt.plot(ValX, ValY, '*') 
+    
+    X = sm.add_constant(ValX)
+    res=sm.OLS(ValY, X).fit()
+#    R2=np.vstack((R2,res.rsquared)) if R2.size else res.rsquared
+    prstd, iv_l, iv_u = wls_prediction_std(res)    
+    
+    plt.plot(ValX, res.fittedvalues,'k--')
+    plt.fill_between(ValX, iv_u, iv_l,
+                     color=color,
+                     linewidth=0.0,
+                     alpha=0.3)
 
     
     
