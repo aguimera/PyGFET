@@ -14,9 +14,18 @@ import sys
 from itertools import cycle
 import statsmodels.api as sm
 import xlsxwriter as xlsw
+from PyGFET.DBSearch import GetFromDB, FindCommonValues
 
-from PyGFET.DataClass import DataCharAC
-import PyGFET.DBCore as PyFETdb
+
+def CreateCycleColors(Vals):
+    ncolors = len(Vals)
+    cmap = cmx.ScalarMappable(mpcolors.Normalize(vmin=0, vmax=ncolors),
+                              cmx.jet)
+    colors = []
+    for i in range(ncolors):
+        colors.append(cmap.to_rgba(i))
+
+    return cycle(colors)
 
 
 def PlotMeanStd(Data, Xvar, Yvar, Vds=None, Ax=None, Ud0Norm=True, Color='r',
@@ -152,16 +161,6 @@ def PlotXYVars(Data, Xvar, Yvar, Vgs, Vds, Ud0Norm=True, label=None,
 #    Ax.ticklabel_format(axis='y', style='sci', scilimits=scilimits)
 
 
-def GetUD0(Data, Vds=None, **kwargs):
-    Ud0 = np.array([])
-    for Trtn, Datas in Data.iteritems():
-        for Dat in Datas:
-            ud0 = Dat.GetUd0(Vds)
-            if ud0 is not None:
-                Ud0 = np.hstack((Ud0, ud0)) if Ud0.size else ud0
-    return Ud0
-
-
 def GetParam(Data, Param, Vgs=None, Vds=None, Ud0Norm=False, **kwargs):
     Vals = np.array([])
     for Trtn, Datas in Data.iteritems():
@@ -179,107 +178,7 @@ def GetParam(Data, Param, Vgs=None, Vds=None, Ud0Norm=False, **kwargs):
     return Vals
 
 
-def CheckConditionsCharTable(Conditions, Table):
-    for k in Conditions.keys():
-        if k.startswith('CharTable'):
-            nk = k.replace('CharTable', Table)
-            Conditions.update({nk: Conditions[k]})
-            del(Conditions[k])
-    return Conditions
-
-
-def FindCommonParametersValues(Parameter, Conditions, Table='ACcharacts'):
-    Conditions = CheckConditionsCharTable(Conditions, Table)
-
-    if Parameter.startswith('CharTable'):
-        Parameter = Parameter.replace('CharTable', Table)
-
-    MyDb = PyFETdb.PyFETdb(host='opter6.cnm.es',
-                           user='pyfet',
-                           passwd='p1-f3t17',
-                           db='pyFET')
-#    MyDb = PyFETdb.PyFETdb()
-
-    Output = (Parameter,)
-    Res = MyDb.GetCharactInfo(Table=Table,
-                              Conditions=Conditions,
-                              Output=Output)
-
-    del (MyDb)
-    #  Generate a list of tupples with devices Names and comments
-    Values = []
-    for Re in Res:
-        Values.append(Re[Parameter])
-
-    return set(Values)
-
-
-def GetFromDB(Conditions, Table='ACcharacts', Last=True, GetGate=True,
-              OutilerFilter=None):
-    Conditions = CheckConditionsCharTable(Conditions, Table)
-
-    MyDb = PyFETdb.PyFETdb(host='opter6.cnm.es',
-                           user='pyfet',
-                           passwd='p1-f3t17',
-                           db='pyFET')
-
-#    MyDb = PyFETdb.PyFETdb()
-
-    DataD, Trts = MyDb.GetData2(Conditions=Conditions,
-                                Table=Table,
-                                Last=Last,
-                                GetGate=GetGate)
-
-    del(MyDb)
-
-    Data = {}
-    for Trtn, Cys in DataD.iteritems():
-        print Trtn
-        Chars = []
-        for Cyn, Dat in Cys.iteritems():
-            Char = DataCharAC(Dat)
-            Chars.append(Char)
-        Data[Trtn] = Chars
-
-    if OutilerFilter is None:
-        return Data, Trts
-
-#   Find Outliers
-    Vals = np.array([])
-    for Trtn, Datas in Data.iteritems():
-        for Dat in Datas:
-            func = Dat.__getattribute__('Get' + OutilerFilter['Param'])
-            Val = func(Vgs=OutilerFilter['Vgs'],
-                       Vds=OutilerFilter['Vds'],
-                       Ud0Norm=OutilerFilter['Ud0Norm'])
-            if Val is not None:
-                Vals = np.hstack((Vals, Val)) if Vals.size else Val
-
-    p25 = np.percentile(Vals, 25)
-    p75 = np.percentile(Vals, 75)
-    lower = p25 - 1.5 * (p75 - p25)
-    upper = p75 + 1.5 * (p75 - p25)
-
-    Data = {}
-    for Trtn, Cys in DataD.iteritems():
-        Chars = []
-        for Cyn, Dat in Cys.iteritems():
-            Char = DataCharAC(Dat)
-            func = Char.__getattribute__('Get' + OutilerFilter['Param'])
-            Val = func(Vgs=OutilerFilter['Vgs'],
-                       Vds=OutilerFilter['Vds'],
-                       Ud0Norm=OutilerFilter['Ud0Norm'])
-
-            if (Val <= lower or Val >= upper):
-                print 'Outlier Removed ->', Val, Trtn, Cyn
-            else:
-                Chars.append(Char)
-        Data[Trtn] = Chars
-
-    return Data, Trts
-
-
-def MultipleSearchParam(Plot=True, Boxplot=False, **kwargs):
+def SearchAndGetParam(Groups, Plot=True, Boxplot=False, **kwargs):
     if Plot:
         fig, Ax = plt.subplots()
         xLab = []
@@ -290,7 +189,6 @@ def MultipleSearchParam(Plot=True, Boxplot=False, **kwargs):
         xlssheet = xlswbook.add_worksheet('W1')
 
     Vals = {}
-    Groups = kwargs['Groups']
     for iGr, (Grn, Grc) in enumerate(sorted(Groups.iteritems())):
         print 'Getting data for ', Grn
         Data, Trts = GetFromDB(**Grc)
@@ -341,21 +239,9 @@ def MultipleSearchParam(Plot=True, Boxplot=False, **kwargs):
     return Vals
 
 
-def CreateCycleColors(Vals):
-    ncolors = len(Vals)
-    cmap = cmx.ScalarMappable(mpcolors.Normalize(vmin=0, vmax=ncolors),
-                              cmx.jet)
-    colors = []
-    for i in range(ncolors):
-        colors.append(cmap.to_rgba(i))
-
-    return cycle(colors)
-
-
-def MultipleSearch(Func=PlotMeanStd, **kwargs):
-    col = CreateCycleColors(kwargs['Groups'])
+def SearchAndPlot(Groups, Func=PlotMeanStd, **kwargs):
+    col = CreateCycleColors(Groups)
     fig, Ax = plt.subplots()
-    Groups = kwargs['Groups']
 
     if 'XlsFile' in kwargs.keys():
         xlswbook = xlsw.Workbook(kwargs['XlsFile'])
@@ -392,6 +278,23 @@ def MultipleSearch(Func=PlotMeanStd, **kwargs):
         xlswbook.close()
 
     return fig, Ax
+
+
+def PlotGroupBy(GroupBase, GroupBy, **kwargs):
+
+    GroupList = FindCommonValues(Table=GroupBase['Table'],
+                                          Conditions=GroupBase['Conditions'],
+                                          Parameter=GroupBy)
+
+    Groups = {}
+    for Item in sorted(GroupList):
+        Cgr = GroupBase.copy()
+        Cond = GroupBase['Conditions'].copy()
+        Cond.update({'{}='.format(GroupBy): (Item,)})
+        Cgr['Conditions'] = Cond
+        Groups[Item] = Cgr
+
+    return SearchAndPlot(Groups=Groups, **kwargs)
 
 
 def CalcTLM(Groups, Vds=None, Ax=None, Color=None,
@@ -496,22 +399,3 @@ def CalcTLM(Groups, Vds=None, Ax=None, Color=None,
     ContactVals['LT'] = LT
 
     return ContactVals
-
-
-#==============================================================================
-#     AxRc.plot(VGS, Rc, color=Color, label=Label)
-#     AxRc.fill_between(VGS, RcMax, RcMin,
-#                       color=Color,
-#                       linewidth=0.0,
-#                       alpha=0.3)
-#     AxRs.plot(VGS, Rsheet, '--', color=Color)
-#     AxRs.fill_between(VGS, RsheetMax, RsheetMin,
-#                       color=Color,
-#                       linewidth=0.0,
-#                       alpha=0.3)
-##==============================================================================
-#
-#
-#    AxRc.set_ylabel('Rc')
-#    AxRs.set_ylabel('Rsheet')
-#    AxRc.legend()

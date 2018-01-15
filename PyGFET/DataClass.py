@@ -378,7 +378,7 @@ class DataCharDC(object):
     def GetPh(self, **kwargs):
         return self.Info['Ph']
 
-    def GetIonSt(self, **kwargs):
+    def GetIonStrength(self, **kwargs):
         return self.Info['IonStrength']
 
     def GetFuncStep(self, **kwargs):
