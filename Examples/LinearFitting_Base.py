@@ -20,15 +20,17 @@ plt.close('all')
 
 CharTable = 'DCcharacts'
 AnalyteStep = 'Tromb'
-#DeviceNames = ('B10114W2-Xip1N','B10803W17-Xip1S')
-#DeviceNames = ('B10803W17-Xip1S', )
-#DeviceNames = ('B10114W2-Xip1N', )
-#DeviceNames = ('B10803W17-Xip2N', )
-DeviceNames = ('B10803W17-Xip6N', )
+
+DeviceNames = ('B10114W2-Xip1N',
+               'B10803W17-Xip1S',
+               'B10803W17-Xip2N',
+               'B10803W17-Xip6N',
+               'B10803W17-Xip4N',
+               'B10803W17-Xip4E')
 
 Conditions = {'Devices.Name=': DeviceNames,
               'CharTable.IsOK>': (0, ),
-              'CharTable.IonStrength=': (0.001,),
+              'CharTable.IonStrength=': (0.001, 0.01),
               'CharTable.FuncStep=': (AnalyteStep, )}
 
 GroupBase = {}
@@ -36,16 +38,14 @@ GroupBase['Table'] = CharTable
 GroupBase['Last'] = False
 GroupBase['Conditions'] = Conditions
 
-XlsLFit = XlsRep.GenXlsFittingReport('testb.xls', GroupBase)
-
+XlsLFit = XlsRep.GenXlsFittingReport('testb2.xls', GroupBase)
 XlsLFit.XVar = 'AnalyteCon'
-
 XlsLFit.GenFullReport()
 XlsLFit.close()
 
 
 
-#
+
 #CharTable = 'DCcharacts'
 #DeviceNames = ('B10179W15-T1',)
 #

@@ -834,7 +834,7 @@ class GenXlsFittingReport():
         Sheet.write(0, 2, 'Slope', self.Fbold)
         Sheet.write(0, 3, 'R2', self.Fbold)
 
-        for it, TrtName in enumerate(self.TrtsList):
+        for it, TrtName in enumerate(sorted(self.TrtsList)):
             Res = self.GenTrtReport(TrtName)
 
             Sheet.write(it+1, 0, TrtName, self.Fbold)
@@ -868,7 +868,7 @@ class GenXlsFittingReport():
                                   Ud0Norm=False)
         fname = tempfile.mktemp(suffix='.png', dir=self.TmpPath)
         fig.savefig(fname, dpi=self.FigsDpi)
-        Sheet.insert_image(0, 13, fname)
+        Sheet.insert_image(0, 14, fname)
 
 # Calc and insert linear fitting
         RowOff = 26
@@ -912,7 +912,7 @@ class GenXlsFittingReport():
 
         fname = tempfile.mktemp(suffix='.png', dir=self.TmpPath)
         plt.gcf().savefig(fname, dpi=self.FigsDpi)
-        Sheet.insert_image(0, 3, fname)
+        Sheet.insert_image(0, 4, fname)
 
         Sheet.write(RowOff, 6, 'OffSet')
         Sheet.write(RowOff, 7, 'Slope')

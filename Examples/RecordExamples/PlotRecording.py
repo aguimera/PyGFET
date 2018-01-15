@@ -27,37 +27,37 @@ for i, Sname in enumerate(sorted(RecDC.SigNames.keys())):
     sl.Position = i
     sl.SigName = Sname
     sl.DispName = Sname
-    sl.ResampleFs = 10e3*pq.Hz
+#    sl.ResampleFs = 10e3*pq.Hz
     sl.OutType = 'V'
     sl.Color = 'b'
     Slots.append(sl)    
-
-for i, Sname in enumerate(sorted(RecDC.SigNames.keys())):
-    sl = PltSlot()
-    sl.rec = RecDC
-    sl.Position = i
-    sl.SigName = Sname
-    sl.DispName = Sname
-    sl.OutType = 'V'
-    sl.ResampleFs = 10*pq.Hz
-#    sl.Ymax = 0.5e-3
-#    sl.Ymin = -0.5e-3
-    Slots.append(sl)    
-
-
+#
 #for i, Sname in enumerate(sorted(RecDC.SigNames.keys())):
 #    sl = PltSlot()
-#    sl.FiltType = ('lp', )
-#    sl.FiltOrder = (3, )
-#    sl.FiltF1 = (1, )
-#    sl.Color = 'b'
 #    sl.rec = RecDC
 #    sl.Position = i
 #    sl.SigName = Sname
-#    sl.DispName = Sname + 'F'
+#    sl.DispName = Sname
 #    sl.OutType = 'V'
-#    Slots.append(sl)
-#    
+#    sl.ResampleFs = 10*pq.Hz
+##    sl.Ymax = 0.5e-3
+##    sl.Ymin = -0.5e-3
+#    Slots.append(sl)    
+
+#
+for i, Sname in enumerate(sorted(RecDC.SigNames.keys())):
+    sl = PltSlot()
+    sl.FiltType = ('hp', )
+    sl.FiltOrder = (3, )
+    sl.FiltF1 = (5, )
+    sl.Color = 'r'
+    sl.rec = RecDC
+    sl.Position = i
+    sl.SigName = Sname
+    sl.DispName = Sname + 'F'
+    sl.OutType = 'V'
+    Slots.append(sl)
+    
 #for i, Sname in enumerate(sorted(RecDC.SigNames.keys())):
 #    sl = PltSlot()
 #    sl.FiltType = ('hp', )
@@ -81,7 +81,7 @@ Tstop = 50*pq.s
 TShow = (Tstart, Tstop)
 
 PltRecs.ClearAxes()
-PltRecs.PlotChannels(TShow, Resamp=True)
+PltRecs.PlotChannels(TShow, Resamp=False)
 
 
 #Reltime=0
