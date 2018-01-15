@@ -77,7 +77,7 @@ class ContinuousAcquisitionPlots():
 
         #  Init Plot figures
         self.PltRecs = PlotRecord()
-        self.PltRecs.CreateFig(slots)
+        self.PltRecs.CreateFig(slots, ShowLegend=True)
         plt.show()
 
     def PlotUpdate(self, Time):
@@ -322,7 +322,7 @@ class CharactAPP(QtWidgets.QMainWindow):
 
         Config = self.GetConfig(self.GrConfig)
         self.TimePlotConfig(Config)
-        self.Charact = PyCharact.Charact(Channels=Channels,
+        self.Charac = PyCharact.Charact(Channels=Channels,
                                          GateChannel=GateChannel,
                                          Configuration=Config)
 #        self.Charac = Charact(Channels=Channels,
@@ -345,7 +345,6 @@ class CharactAPP(QtWidgets.QMainWindow):
             self.Charac.IVGainAC = float(self.QGainDC.text())
         else:
             self.Charac.IVGainAC = float(self.QGainAC.text())
-
         self.Charac.IVGainDC = float(self.QGainDC.text())
         self.Charac.IVGainGate = float(self.QGainGate.text())
         self.Charac.Rhardware = float(self.QRhardware.text())

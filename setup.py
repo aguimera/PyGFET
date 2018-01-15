@@ -43,7 +43,8 @@ install_requires = ['pymysql',
 
 console_scripts = ['GFETDbView = PyGFET.GuiDBView.GuiDBView:main',
                    'GFETRecExp = PyGFET.GuiRecordView.GuiRecordExplorer:main',
-                   'PyCharactGui = PyGFETMeasureTools.PyFETCharactGui:main']
+                   'GFETCharactGui = PyGFET.GuiMeasure.GuiCharact:main']
+#                   'PyCharactGui = PyGFETMeasureTools.PyFETCharactGui:main']
 
 entry_points = {'console_scripts': console_scripts, }
 
