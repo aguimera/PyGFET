@@ -51,6 +51,7 @@ class ReadAnalog(Daq.Task):
 
     def __init__(self, InChans, Range=5.0):
 
+        print 'ReadAnalog Init'
         Daq.Task.__init__(self)
         self.Channels = InChans
 
@@ -64,6 +65,7 @@ class ReadAnalog(Daq.Task):
         self.AutoRegisterDoneEvent(0)
 
     def GetDevName(self,):
+        print 'ReadAnalog GetDevName'
         # Get Device Name of Daq Card
         n = 1024
         buff = ctypes.create_string_buffer(n)
@@ -293,7 +295,6 @@ class ChannelsConfig():
                 print ch, ' AC -> ', self.aiChannels[ch][1], self.ACChannelIndex[ch]
 
         self.Inputs = ReadAnalog(InChans=InChans)
-
         # events linking
         self.Inputs.EveryNEvent = self.EveryNEventCallBack
         self.Inputs.DoneEvent = self.DoneEventCallBack
