@@ -11,6 +11,7 @@ import pickle
 
 
 class PyFETdb():
+    PrintQuery = False
 
     def __init__(self, host='localhost', user='root', passwd='', db='PyFET',
                  Update=True):
@@ -25,7 +26,8 @@ class PyFETdb():
 
     def _execute(self, query, values, LastRowID=False):
         cur = self.db.cursor()
-#        print query, values
+        if self.PrintQuery:
+            print query, values
         try:
             cur.execute(query, values)
         except:
@@ -284,7 +286,7 @@ class PyFETdb():
         Out = ','.join(Output)
         Cond, Values = self.CreateQueryConditions(Conditions)
 
-        query = """ SELECT {}
+        query = """ SELECT distinct {}
                     FROM {}
                     INNER JOIN Trts ON Trts.idTrts = {}.Trt_id
                     INNER JOIN TrtTypes ON TrtTypes.idTrtTypes = Trts.Type_id
