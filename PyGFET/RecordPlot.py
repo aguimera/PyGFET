@@ -348,7 +348,7 @@ class PlotRecord():
                 sl.Ax.set_ylabel(lb + ' ' + sl.DispName + '\n',
                                  rotation='horizontal',
                                  ha='center')
-                sl.Ax.yaxis.set_label_coords(-0.1, 0.3)
+                sl.Ax.yaxis.set_label_coords(-0.1, 0.3) # TODO Check this label
 
             if not(sl.Ymin == 0 and sl.Ymax == 0):  # Check autoscale
                 self.Axs[sl.Position][1] = False
