@@ -504,8 +504,12 @@ class PyFETPlotDataClass(PlotDataClass.PyFETPlotBase):
             except:  # catch *all* exceptions
                 print sys.exc_info()[0]
 
-    def PlotDataSet(self, DataDict, Trts, Vgs=None, Vds=None, Ud0Norm=False,
+    def PlotDataSet(self, DataDict, Trts=None,
+                    Vgs=None, Vds=None, Ud0Norm=False,
                     PltIsOK=True, ColorOn='Trt', MarkOn='Cycle'):
+
+        if Trts is None:
+            Trts = DataDict.keys()
 
         Par = []
         for TrtN in sorted(Trts):
