@@ -241,7 +241,11 @@ def SearchAndGetParam(Groups, Plot=True, Boxplot=False, **kwargs):
 
 def SearchAndPlot(Groups, Func=PlotMeanStd, **kwargs):
     col = CreateCycleColors(Groups)
-    fig, Ax = plt.subplots()
+    
+    if 'Ax' not in kwargs.keys():
+        fig, Ax = plt.subplots()
+    else:
+        Ax = kwargs['Ax']
 
     if 'XlsFile' in kwargs.keys():
         xlswbook = xlsw.Workbook(kwargs['XlsFile'])
@@ -277,7 +281,7 @@ def SearchAndPlot(Groups, Func=PlotMeanStd, **kwargs):
     if 'XlsFile' in kwargs.keys():
         xlswbook.close()
 
-    return fig, Ax
+    return plt.gcf(), Ax
 
 
 def PlotGroupBy(GroupBase, GroupBy, **kwargs):

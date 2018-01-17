@@ -88,7 +88,8 @@ class PyFETPlotBase:
                 ax.lines[0].remove()
 
     def SetAxesXLabels(self, Xvar=None):
-        print 'empty'
+#        print 'empty'
+        a = None
 
     def SetAxesLabels(self, fontsize='medium', labelsize=5,
                       scilimits=(-2, 2), RdsLim=(100, 15e3)):

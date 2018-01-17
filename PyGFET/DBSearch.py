@@ -10,7 +10,6 @@ from PyGFET.DataClass import DataCharAC
 import PyGFET.DBCore as PyFETdb
 import numpy as np
 
-
 def CheckConditionsCharTable(Conditions, Table):
     for k in Conditions.keys():
         if k.startswith('CharTable'):
@@ -72,7 +71,6 @@ def GetFromDB(Conditions, Table='ACcharacts', Last=True, GetGate=True,
             Char = DataCharAC(Dat)
             Chars.append(Char)
         Data[Trtn] = Chars
-
     if OutilerFilter is None:
         return Data, Trts
 
@@ -126,10 +124,17 @@ def UpdateCharTableField(Conditions, Value,
                              Conditions=Conditions,
                              Output=(out, ))
 
-    field = '{}.{}'.format(Table, Field)
-    fields = {field: Value}
-    for r in re:
-        condition = ('{}.id{}='.format(Table, Table), r.values()[0])
-        MyDb.UpdateRow(Table=Table, Fields=fields, Condition=condition)
+    print re
+    text = "Do you wan to update {} in {} for {} y/n ?".format(Field, Table, Value)
+    inText = raw_input(text)
+    if inText =='y':
+        print 'Updated'
+        field = '{}.{}'.format(Table, Field)
+        fields = {field: Value}
+        for r in re:
+            condition = ('{}.id{}='.format(Table, Table), r.values()[0])
+            MyDb.UpdateRow(Table=Table, Fields=fields, Condition=condition)
+    else:
+        print 'Cancelled'
 
     MyDb.db.commit()

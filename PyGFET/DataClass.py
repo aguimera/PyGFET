@@ -300,7 +300,7 @@ class DataCharDC(object):
 
     def GetIg(self, Vgs=None, Vds=None, Ud0Norm=False):
         if 'Ig' not in self.__dict__:
-            print 'No Gate data'
+#            print 'No Gate data'
             return None
         return self._GetParam('Ig', Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm)
 

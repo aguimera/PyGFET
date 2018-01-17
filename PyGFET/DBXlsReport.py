@@ -896,7 +896,11 @@ class GenXlsFittingReport():
         ValX = ValX[si, 0]
         ValY = ValY[si, 0]
 
-        ValX = np.log10(ValX)
+        if self.XVarLog:
+            ValX = np.log10(ValX)
+        if self.YVarLog:
+            ValY = np.log10(ValY)
+
         plt.figure()
         plt.plot(ValX, ValY, '*')
 
