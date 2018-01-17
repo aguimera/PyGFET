@@ -28,7 +28,7 @@ def CreateCycleColors(Vals):
     return cycle(colors)
 
 
-def PlotMeanStd(Data, Xvar, Yvar, Vds=None, Ax=None, Ud0Norm=True, Color='r',
+def PlotMeanStd(Data, Xvar, Yvar, Vgs=None, Vds=None, Ax=None, Ud0Norm=True, Color='r',
                 PlotOverlap=False, PlotOverlapMean=False,
                 label=None, ScaleFactor=1, **kwargs):
 
@@ -64,6 +64,10 @@ def PlotMeanStd(Data, Xvar, Yvar, Vds=None, Ax=None, Ud0Norm=True, Color='r',
                     VxMin.append(np.min(Valx))
     VxMax = np.min(VxMax)
     VxMin = np.max(VxMin)
+    if np.min(Vgs)>VxMin:
+        VxMin=np.min(Vgs)
+    if np.max(Vgs)<VxMax:
+        VxMax=np.max(Vgs)
     ValX = np.linspace(VxMin, VxMax, PointsInRange)
     ValY = np.array([])
 
@@ -223,9 +227,11 @@ def SearchAndGetParam(Groups, Plot=True, Boxplot=False, **kwargs):
         Ax.set_ylabel(kwargs['Param'])
         Ax.grid()
         Ax.ticklabel_format(axis='y', style='sci', scilimits=(2, 2))
-        Ax.set_xlim(min(xPos)-0.5, max(xPos)+0.5)
-        title = 'Vgs {} Vds {}'.format(kwargs['Vgs'], kwargs['Vds'])
-        plt.title(title)
+        if len(xPos)>1:
+            Ax.set_xlim(min(xPos)-0.5, max(xPos)+0.5)
+        if 'Vgs' in kwargs and 'Vds' in kwargs:
+            title = 'Vgs {} Vds {}'.format(kwargs['Vgs'], kwargs['Vds'])
+            plt.title(title)
         plt.tight_layout()
         if 'xscale' in kwargs.keys():
             Ax.set_xscale(kwargs['xscale'])
