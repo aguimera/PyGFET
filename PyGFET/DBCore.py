@@ -317,7 +317,8 @@ class PyFETdb():
                   '{}.Solution'.format(Table),
                   '{}.IonStrength'.format(Table),
                   '{}.FuncStep'.format(Table),
-                  '{}.AnalyteCon'.format(Table)]
+                  '{}.AnalyteCon'.format(Table),
+                  '{}.Comments'.format(Table)]
 
         GidF = None
         if GetGate:

@@ -230,6 +230,10 @@ class DataCharDC(object):
             return GM[:, None]
         return GM.transpose()
 
+    def GetGMV(self, **kwargs):
+        kwargs.update({'Normlize': True})
+        return np.abs(self.GetGM(**kwargs))
+
     def GetGMMax(self, Vds=None, Normlize=False, Ud0Norm=False):
         iVds = self.GetVdsIndexes(Vds)
         if len(iVds) == 0:
@@ -359,6 +363,9 @@ class DataCharDC(object):
             return PAR[:, None]
         return PAR.transpose()
 
+    def GetName(self, **kwargs):
+        return self.Name
+
     def GetWL(self, **kwargs):
         return self.TrtTypes['Width']/self.TrtTypes['Length']
 
@@ -385,6 +392,9 @@ class DataCharDC(object):
 
     def GetFuncStep(self, **kwargs):
         return self.Info['FuncStep']
+
+    def GetComments(self, **kwargs):
+        return self.Info['Comments']
 
     def GetAnalyteCon(self, **kwargs):
         return np.array(self.Info['AnalyteCon'])[None, None]

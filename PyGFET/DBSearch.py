@@ -72,7 +72,7 @@ def GetFromDB(Conditions, Table='ACcharacts', Last=True, GetGate=True,
             Chars.append(Char)
         Data[Trtn] = Chars
     if OutilerFilter is None:
-        return Data, Trts
+        return Data, list(Trts)
 
 #   Find Outliers
     Vals = np.array([])
@@ -106,7 +106,7 @@ def GetFromDB(Conditions, Table='ACcharacts', Last=True, GetGate=True,
                 Chars.append(Char)
         Data[Trtn] = Chars
 
-    return Data, Trts
+    return Data, list(Trts)
 
 
 def UpdateCharTableField(Conditions, Value,

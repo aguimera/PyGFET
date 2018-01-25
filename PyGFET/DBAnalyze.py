@@ -64,10 +64,11 @@ def PlotMeanStd(Data, Xvar, Yvar, Vgs=None, Vds=None, Ax=None, Ud0Norm=True, Col
                     VxMin.append(np.min(Valx))
     VxMax = np.min(VxMax)
     VxMin = np.max(VxMin)
-    if np.min(Vgs)>VxMin:
-        VxMin=np.min(Vgs)
-    if np.max(Vgs)<VxMax:
-        VxMax=np.max(Vgs)
+    if Vgs is not None:
+        if np.min(Vgs) > VxMin:
+            VxMin = np.min(Vgs)
+        if np.max(Vgs) < VxMax:
+            VxMax = np.max(Vgs)
     ValX = np.linspace(VxMin, VxMax, PointsInRange)
     ValY = np.array([])
 
@@ -250,8 +251,7 @@ def SearchAndPlot(Groups, Func=PlotMeanStd, **kwargs):
     
     if 'Ax' not in kwargs.keys():
         fig, Ax = plt.subplots()
-    else:
-        Ax = kwargs['Ax']
+        kwargs['Ax'] = Ax
 
     if 'XlsFile' in kwargs.keys():
         xlswbook = xlsw.Workbook(kwargs['XlsFile'])
@@ -266,7 +266,6 @@ def SearchAndPlot(Groups, Func=PlotMeanStd, **kwargs):
                     kwargs['xlsSheet'] = xlssheet
 
                 Func(Data,
-                     Ax=Ax,
                      Color=col.next(),
                      label=Grn,
                      **kwargs)
@@ -274,6 +273,8 @@ def SearchAndPlot(Groups, Func=PlotMeanStd, **kwargs):
                 print Grn, 'ERROR --> ', sys.exc_info()[0]
         else:
             print 'Empty data for ', Grn
+
+    Ax = kwargs['Ax']
 
     handles, labels = Ax.get_legend_handles_labels()
     hh = []
