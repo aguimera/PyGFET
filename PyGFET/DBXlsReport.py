@@ -1052,12 +1052,12 @@ class GenXlsFittingReport(XlsReportBase):
 
     def InsertCalMap(self, Sheet, Loc, TrtName, CalMap):
 
-        Cond = self.GroupBase['Conditions'].copy()
-        Cond.update({'Trts.Name=': (TrtName,)})
+        Gr = self.GroupBase.copy()
+        Gr['Conditions'].update({'Trts.Name=': (TrtName,)})
         CalFlag = {'{} like'.format(self.DBCalField): CalMap}
-        Cond.update(CalFlag)
+        Gr['Conditions'].update(CalFlag)
 
-        dat, _ = Dban.GetFromDB(Conditions=Cond, Table=CharTable, Last=False)    
+        dat, _ = Dban.GetFromDB(**Gr)
         Dats = dat[TrtName]
 
         x = np.ones([len(Dats)])
@@ -1085,27 +1085,27 @@ class GenXlsFittingReport(XlsReportBase):
         self.InsertFigure(Sheet, Loc)
 
 
-if __name__ == "__main__":
-    plt.ioff()
-
-    plt.close('all')   
-    
-    CharTable = 'DCcharacts'
-    DeviceNames = ('B10803W17-Xip7N','B10803W17-Xip7S')
-    Conditions = {'Devices.Name=': DeviceNames,
-                  'CharTable.IsOK>': (0, ),
-                  'CharTable.AnalyteCon<': (1e-7, )}
-    
-    GroupBase = {}
-    GroupBase['Table'] = CharTable
-    GroupBase['Last'] = False
-    GroupBase['Conditions'] = Conditions
-    
-    GenFit = GenXlsFittingReport('../testfb.xls', GroupBase)
-    GenFit.DBCalField = 'CharTable.FuncStep'
-    GenFit.DBCalFlags = ('Tromb', )
-    GenFit.GenFullReport()
-    GenFit.close()
+#if __name__ == "__main__":
+#    plt.ioff()
+#
+#    plt.close('all')   
+#    
+#    CharTable = 'DCcharacts'
+#    DeviceNames = ('B10803W17-Xip7N','B10803W17-Xip7S')
+#    Conditions = {'Devices.Name=': DeviceNames,
+#                  'CharTable.IsOK>': (0, ),
+#                  'CharTable.AnalyteCon<': (1e-7, )}
+#    
+#    GroupBase = {}
+#    GroupBase['Table'] = CharTable
+#    GroupBase['Last'] = False
+#    GroupBase['Conditions'] = Conditions
+#    
+#    GenFit = GenXlsFittingReport('../testfb.xls', GroupBase)
+#    GenFit.DBCalField = 'CharTable.FuncStep'
+#    GenFit.DBCalFlags = ('Tromb', )
+#    GenFit.GenFullReport()
+#    GenFit.close()
 
 #    plt.close('all')   
 #    
