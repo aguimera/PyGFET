@@ -501,6 +501,7 @@ class CharactAPP(QtWidgets.QMainWindow):
             if self.Charac.CharactRunning:
                 self.Cycle = 0
                 self.LblCycle.setText(str(self.Cycle))
+                self.Charac.SetBias(Vds=0, Vgs=0)
                 self.StopSweep()
                 self.Charac.StopCharac()
 
