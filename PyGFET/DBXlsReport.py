@@ -156,9 +156,7 @@ class XlsReportBase(object):
                      'Wafers.Comments': ('W-Comments', 6, 0)}
 
     InfoDCMeasValues = {'Time': ('Meas Date', 0, {}),
-                        'Vds': ('Vds', 1, {'Vgs': -0.1,
-                                           'Vds': None,
-                                           'Ud0Norm': True}),
+                        'Vds': ('Vds', 1, {}),
                         'Ud0': ('Ud0', 2, {'Vgs': -0.1,
                                            'Vds': None,
                                            'Ud0Norm': True}),
@@ -460,7 +458,10 @@ class XlsReportBase(object):
                     val = val[0, 0].astype(datetime.datetime).strftime('%x %X')
                     Sheet.set_column(col, col, width=20)
 
-                Sheet.write(row, col, val, Format)
+                try:
+                    Sheet.write(row, col, val, Format)
+                except:
+                    print 'Error writing', par, val
             DictOff += len(Dict)
 
     def WriteTrtMeasHist(self, TrtName, Sheet, Loc, Vertical=False):

@@ -359,6 +359,8 @@ class DataCharDC(object):
         if not hasattr(PAR, '__iter__'):
             return PAR[None, None]
         s = PAR.shape
+        if len(s) == 0:
+            return PAR[None, None]
         if len(s) == 1:
             return PAR[:, None]
         return PAR.transpose()
