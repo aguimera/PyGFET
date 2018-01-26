@@ -265,6 +265,8 @@ class XlsReportBase(object):
         # Init temp folder
         self.TmpPath = tempfile.mkdtemp(suffix='PyFET')
 
+        self.DevGroups = {}
+
         # Init Db connection TODO hide credentials
         self.Mydb = PyFETdb.PyFETdb(host='opter6.cnm.es',
                                     user='pyfet',
