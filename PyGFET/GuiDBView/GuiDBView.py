@@ -122,6 +122,12 @@ class DBViewApp(QtWidgets.QMainWindow):
         CloseFigsAction.triggered.connect(self.CloseFigures)
         fileMenu.addAction(CloseFigsAction)
 
+        toolsMenu = mainMenu.addMenu('Tools')
+        DevRepAction = QAction('Xls Device Report', self)
+        DevRepAction.setStatusTip('Generate Device Report')
+        DevRepAction.triggered.connect(self.DevReport)
+        toolsMenu.addAction(DevRepAction)
+
     def __init__(self):
         QtWidgets.QMainWindow.__init__(self)
 
@@ -207,6 +213,22 @@ class DBViewApp(QtWidgets.QMainWindow):
         self.LstContact.itemSelectionChanged.disconnect(self.LstContactChange)
         self.LstPass.itemSelectionChanged.disconnect(self.LstPassChange)
         self.LstArea.itemSelectionChanged.disconnect(self.LstAreaChange)
+
+    def DevReport(self):        
+        Vals = []
+        for r in self.Trts:
+            Vals.append(r['Wafers.Name'])
+
+        Prefix, okPressed = QInputDialog.getText(self,
+                                                 'Prefix',
+                                                 'Prefix for files',
+                                                 text='Figure')
+
+        print list(set(Vals))
+        
+        FileName = QFileDialog.getSaveFileName(self,
+                                               "Output File", "",
+                                               "Excel (*.xlsx)")
 
     def CloseFigures(self):
         plt.close('all')

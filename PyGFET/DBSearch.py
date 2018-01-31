@@ -10,6 +10,60 @@ from PyGFET.DataClass import DataCharAC
 import PyGFET.DBCore as PyFETdb
 import numpy as np
 
+
+def GenGroups(GroupBase, GroupBy):
+    GroupList = FindCommonValues(Table=GroupBase['Table'],
+                                 Conditions=GroupBase['Conditions'],
+                                 Parameter=GroupBy)
+
+    Groups = {}
+    for Item in sorted(GroupList):
+        Cgr = GroupBase.copy()
+        Cond = GroupBase['Conditions'].copy()
+        Cond.update({'{}='.format(GroupBy): (Item,)})
+        Cgr['Conditions'] = Cond
+        Groups[Item] = Cgr
+
+    return Groups
+
+
+def GenBiosensGroups(CondBase,
+                     GroupBy='CharTable.FuncStep',
+                     AnalyteStep='Tromb',
+                     AnalyteGroupBy='CharTable.AnalyteCon'):
+
+    Cond = CondBase.copy()
+    Conditions = Cond['Conditions'].copy()
+    FuncStepList = FindCommonValues(Table=Cond['Table'],
+                                    Parameter=GroupBy,
+                                    Conditions=Conditions)
+    Conditions = Cond['Conditions'].copy()
+    Conditions['{}='.format(GroupBy)] = (AnalyteStep,)
+    AnalyteConList = FindCommonValues(Table=Cond['Table'],
+                                      Parameter=AnalyteGroupBy,
+                                      Conditions=Conditions)
+
+    Groups = {}
+    for FuncStep in FuncStepList:
+        if FuncStep == AnalyteStep:
+            for AnalyteCon in AnalyteConList:
+                Cgr = CondBase.copy()
+
+                Cond = CondBase['Conditions'].copy()
+                Cgr['Conditions'] = Cond
+                Cond.update({'{}='.format(AnalyteGroupBy): (AnalyteCon, )})
+                Groups['{} {}'.format(FuncStep, AnalyteCon)] = Cgr
+        else:
+            Cgr = CondBase.copy()
+
+            Cond = CondBase['Conditions'].copy()
+            Cgr['Conditions'] = Cond
+            Cond.update({'{}='.format(GroupBy): (FuncStep,)})
+            Groups[FuncStep] = Cgr
+
+    return Groups
+
+
 def CheckConditionsCharTable(Conditions, Table):
     for k in Conditions.keys():
         if k.startswith('CharTable'):

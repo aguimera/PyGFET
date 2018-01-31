@@ -908,10 +908,17 @@ class FittingReport(object):
         Sheet.write(RowOff, col, self.XVar, self.XlsRep.Fbold)
         Sheet.write(RowOff, col+1, self.YVar, self.XlsRep.Fbold)
 
-        Dat, Trts = DbSearch.GetFromDB(**self.GroupBase)
+        Grs = DbSearch.GenGroups(GroupBase=self.GroupBase,
+                                 GroupBy='CharTable.{}'.format(self.XVar))
+        DatFit = []
+        for gr in Grs.values():
+            Dat, Trts = DbSearch.GetFromDB(**gr)
+            for dat in Dat[Trts[0]]:
+                DatFit.append(dat)
+
         ValY = np.array([])
         ValX = np.array([])
-        for ip, dat in enumerate(Dat[Trts[0]]):
+        for ip, dat in enumerate(DatFit):
             row = RowOff + ip + 1
             self.XlsRep.WriteMeasValues(Sheet,
                                         DictList=(self.InfoMeasValues, ),

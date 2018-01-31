@@ -19,7 +19,7 @@ import statsmodels.api as sm
 import datetime
 from matplotlib.backends.backend_pdf import PdfPages
 
-#%% Find conditions in DB
+#%% Find r in DB
 
 plt.close('all')
 plt.ion()
