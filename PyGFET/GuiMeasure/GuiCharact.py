@@ -659,6 +659,7 @@ class CharactAPP(QtWidgets.QMainWindow):
     def StopSweep(self):
         print 'Stop'
         self.SetEnableObjects(val=True, Objects=self.SweepEnableObjects)
+        self.Charac.SetBias(Vds=0, Vgs=0)
         self.ButSweep.setText('Start')
         self.ChckSaveData.setChecked(False)
 
