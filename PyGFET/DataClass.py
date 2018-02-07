@@ -311,15 +311,15 @@ class DataCharDC(object):
     def CheckVgsRange(self, Vgs, iVds, Ud0Norm):
         if Vgs is not None:
             for ivd in iVds:
-                if Ud0Norm is not None:
-                    vg = Vgs + self.Ud0[ivd]
+                if Ud0Norm is None or Ud0Norm == False:
+                    vg = Vgs
                     VgsM = self.Vgs
                 else:
-                    vg = Vgs
+                    vg = Vgs + self.Ud0[ivd]
                     VgsM = self.Vgs
 
                 if (np.min(vg) < np.min(VgsM)) or (np.max(vg) > np.max(VgsM)):
-                    print 'Vgs range not valid', vg, VgsM, self.Ud0
+                    print self.Name, 'Vgs range not valid', vg, VgsM, self.Ud0
                     return None
             return Vgs
         else:
