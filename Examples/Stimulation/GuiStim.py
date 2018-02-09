@@ -157,11 +157,7 @@ class CharactAPP(QtWidgets.QMainWindow):
 
         if self.Charac is not None:
             self.Charac.__del__()
-
-        Config = self.GetConfig(self.GrConfig)
-        self.TimePlotConfig(Config)
-        self.Charac = PyCharact.Charact(Channels=Channels,
-                                        GateChannel=GateChannel)
+        self.Charac = PyCharact.Charact(Channels=Channels, GateChannel=None)
 
         # Define events callbacks
         self.Charac.EventContinuousDone = self.CharContDataCallback
@@ -183,6 +179,9 @@ class CharactAPP(QtWidgets.QMainWindow):
                 Config.append(str(n.text()))
         return Config[0]
 
+    def SetEnableObjects(self, val, Objects):
+        for obj in Objects:
+            obj.setEnabled(val)
 
 # Continuous Acquisition
 ###############################################################################
@@ -207,7 +206,8 @@ class CharactAPP(QtWidgets.QMainWindow):
                 del self.PlotCont
                 return
 
-            self.SetTestSignalConfig()
+#            self.SetTestSignalConfig()
+            print 'InitContMeas'
             self.Charac.InitContMeas(Vin=self.SpnSVinTP.value(),
                                      Fs=self.SpnFsTime.value(),
                                      Refresh=self.SpnRefresh.value(),
@@ -267,14 +267,6 @@ class CharactAPP(QtWidgets.QMainWindow):
             if self.PlotCont:
                 self.PlotCont.PlotUpdate(Time=time)
 
-# Stop Events
-###############################################################################
-    def StopSweep(self):
-        print 'Stop'
-        self.SetEnableObjects(val=True, Objects=self.SweepEnableObjects)
-        self.Charac.SetBias(Vds=0, Vgs=0)
-        self.ButSweep.setText('Start')
-        self.ChckSaveData.setChecked(False)
 
 # Save Data Events
 ###############################################################################

@@ -206,22 +206,22 @@ class WriteAnalog(Daq.Task):
 class ChannelsConfig():
 
     # Daq card connections mapping 'Chname' : (DCout, ACout)
-    aiChannels = {'Ch01': ('ai8'),
-                  'Ch02': ('ai9'),
-                  'Ch03': ('ai10'),
-                  'Ch04': ('ai11'),
-                  'Ch05': ('ai12'),
-                  'Ch06': ('ai13'),
-                  'Ch07': ('ai14'),
-                  'Ch08': ('ai15'),
-                  'Ch09': ('ai24'),
-                  'Ch10': ('ai25'),
-                  'Ch11': ('ai26'),
-                  'Ch12': ('ai27'),
-                  'Ch13': ('ai28'),
-                  'Ch14': ('ai29'),
-                  'Ch15': ('ai30'),
-                  'Ch16': ('ai31')}
+    aiChannels = {'Ch01': ('ai8',),
+                  'Ch02': ('ai9',),
+                  'Ch03': ('ai10',),
+                  'Ch04': ('ai11',),
+                  'Ch05': ('ai12',),
+                  'Ch06': ('ai13',),
+                  'Ch07': ('ai14',),
+                  'Ch08': ('ai15',),
+                  'Ch09': ('ai24',),
+                  'Ch10': ('ai25',),
+                  'Ch11': ('ai26',),
+                  'Ch12': ('ai27',),
+                  'Ch13': ('ai28',),
+                  'Ch14': ('ai29',),
+                  'Ch15': ('ai30',),
+                  'Ch16': ('ai31',)}
 
 # ChannelIndex = {'Ch01': (0-31, 0-15)}-->> {Chname: (input index, sort index)}
     DCChannelIndex = None
@@ -240,9 +240,11 @@ class ChannelsConfig():
     GateDataEveryNEvent = None
 
     def DelInputs(self):
+        print 'DelInputs'
         self.Inputs.ClearTask()
 
     def InitInputs(self, Channels, GateChannel=None,):
+        print 'InitIputs'
         if self.Inputs is not None:
             self.DelInputs()
 
@@ -273,18 +275,19 @@ class ChannelsConfig():
         self.Inputs.EveryNEvent = self.EveryNEventCallBack
         self.Inputs.DoneEvent = self.DoneEventCallBack
 
-    def __init__(self, Channels, ChVg=None, ChVs=None,
+    def __init__(self, Channels, GateChannel=None, ChVg=None, ChVs=None,
                  ChVds=None, ChVsig='ao0'):
-
         self.InitConfig = {}
         self.InitConfig['Channels'] = Channels
+        self.InitConfig['GateChannel'] = GateChannel
 
-        self.InitInputs(Channels=Channels)
+        self.InitInputs(Channels=Channels,
+                        GateChannel=GateChannel)
 
         # Output Channels
-        self.VsOut = WriteAnalog((ChVs,))
-        self.VdsOut = WriteAnalog((ChVds,))
-        self.VgOut = WriteAnalog((ChVg,))
+#        self.VsOut = WriteAnalog((ChVs,))
+#        self.VdsOut = WriteAnalog((ChVds,))
+#        self.VgOut = WriteAnalog((ChVg,))
         self.VsigOut = WriteAnalog((ChVsig,))
 
     def SetBias(self, Vsig):
@@ -356,8 +359,8 @@ class ChannelsConfig():
         print 'Delete class'
         if self.VsigOut:
             self.VsigOut.ClearTask()
-        self.VdsOut.ClearTask()
-        self.VsOut.ClearTask()
+#        self.VdsOut.ClearTask()
+#        self.VsOut.ClearTask()
         self.Inputs.ClearTask()
 
 
@@ -466,13 +469,13 @@ class Charact(DataProcess):
 
         tstop = self.ContRecord.Signal(ChName=chk).t_stop
 
-        if (self.EventContAcDone is None) and (self.EventContGateDone is None):
-            if self.EventContinuousDone:
-                self.EventContinuousDone(tstop)
+        if self.EventContinuousDone:
+            self.EventContinuousDone(tstop)
 
     def StopCharac(self):
         print 'STOP'
         self.CharactRunning = False
+        self.SetBias(Vsig=0)
 #        self.Inputs.ClearTask()
         if self.ContRecord:
             self.Inputs.StopContData()

@@ -323,8 +323,8 @@ class CharactAPP(QtWidgets.QMainWindow):
         Config = self.GetConfig(self.GrConfig)
         self.TimePlotConfig(Config)
         self.Charac = PyCharact.Charact(Channels=Channels,
-                                         GateChannel=GateChannel,
-                                         Configuration=Config)
+                                        GateChannel=GateChannel,
+                                        Configuration=Config)
 #        self.Charac = Charact(Channels=Channels,
 #                              GateChannel=GateChannel,
 #                              Configuration=Config)
