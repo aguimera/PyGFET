@@ -419,7 +419,8 @@ class DataProcess(ChannelsConfig):
     def CalcDcContData(self, Data):
         print 'DataProcess CalcDCContData'
         print Data.shape
-        Vload = Data - (self.IVGainDC*self.Vin)
+        print np.mean(Data)
+        Vload = Data + (self.IVGainDC*self.Vin)
         if self.EventContDcDone:
             self.EventContDcDone(Vload)
 
