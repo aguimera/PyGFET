@@ -275,7 +275,7 @@ class ChannelsConfig():
         self.Inputs.EveryNEvent = self.EveryNEventCallBack
         self.Inputs.DoneEvent = self.DoneEventCallBack
 
-    def __init__(self, Channels, GateChannel=None, ChVg=None, ChVs=None,
+    def __init__(self, Channels, GateChannel=None, ChVg=None, ChVs='ao1',
                  ChVds=None, ChVsig='ao0'):
         self.InitConfig = {}
         self.InitConfig['Channels'] = Channels
@@ -285,7 +285,7 @@ class ChannelsConfig():
                         GateChannel=GateChannel)
 
         # Output Channels
-#        self.VsOut = WriteAnalog((ChVs,))
+        self.VsOut = WriteAnalog((ChVs,))
 #        self.VdsOut = WriteAnalog((ChVds,))
 #        self.VgOut = WriteAnalog((ChVg,))
         self.VsigOut = WriteAnalog((ChVsig,))
@@ -293,6 +293,7 @@ class ChannelsConfig():
     def SetBias(self, Vsig):
         print 'ChannelsConfig SetBias Vsig ->', Vsig
         self.VsigOut.SetVal(Vsig)
+        self.VsOut.SetVal(0)
         self.Vin = Vsig
 
     def SetSignal(self, Signal, nSamps):
@@ -420,7 +421,9 @@ class DataProcess(ChannelsConfig):
         print 'DataProcess CalcDCContData'
         print Data.shape
         print np.mean(Data)
-        Vload = Data + (self.IVGainDC*self.Vin)
+        print self.Vin
+        Vload = Data + self.IVGainDC*self.Vin
+#        Vload = Data + 0.2
         if self.EventContDcDone:
             self.EventContDcDone(Vload)
 
@@ -475,8 +478,8 @@ class Charact(DataProcess):
 
     def StopCharac(self):
         print 'STOP'
-        self.CharactRunning = False
         self.SetBias(Vsig=0)
+        self.CharactRunning = False
 #        self.Inputs.ClearTask()
         if self.ContRecord:
             self.Inputs.StopContData()

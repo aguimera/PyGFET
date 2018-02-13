@@ -32,7 +32,7 @@
        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -1153,7 +1153,7 @@
               <double>0.100000000000000</double>
              </property>
              <property name="value">
-              <double>-0.100000000000000</double>
+              <double>0.000000000000000</double>
              </property>
             </widget>
            </item>

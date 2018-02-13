@@ -204,7 +204,6 @@ class CharactAPP(QtWidgets.QMainWindow):
 
             if self.PlotCont:
                 del self.PlotCont
-                return
 
 #            self.SetTestSignalConfig()
             print 'InitContMeas'
