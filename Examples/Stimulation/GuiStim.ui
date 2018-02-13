@@ -32,7 +32,7 @@
        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -703,29 +703,57 @@
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="layoutWidget">
+       <widget class="QWidget" name="">
         <property name="geometry">
          <rect>
           <x>160</x>
           <y>45</y>
-          <width>56</width>
-          <height>41</height>
+          <width>61</width>
+          <height>113</height>
          </rect>
         </property>
-        <layout class="QVBoxLayout" name="verticalLayout">
-         <item>
-          <widget class="QLabel" name="label_45">
-           <property name="text">
-            <string>Gain DC</string>
-           </property>
-          </widget>
+        <layout class="QGridLayout" name="gridLayout">
+         <item row="0" column="0">
+          <layout class="QVBoxLayout" name="verticalLayout">
+           <item>
+            <widget class="QLabel" name="label_45">
+             <property name="text">
+              <string>Gain DC</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="QGainDC">
+             <property name="text">
+              <string>2</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </item>
-         <item>
-          <widget class="QLineEdit" name="QGainDC">
-           <property name="text">
-            <string>2</string>
-           </property>
-          </widget>
+         <item row="1" column="0">
+          <layout class="QVBoxLayout" name="verticalLayout_3">
+           <item>
+            <widget class="QCheckBox" name="ChckRds">
+             <property name="text">
+              <string>Rds</string>
+             </property>
+             <property name="checked">
+              <bool>false</bool>
+             </property>
+             <property name="autoExclusive">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="QRds">
+             <property name="text">
+              <string>1.2e3</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </item>
         </layout>
        </widget>

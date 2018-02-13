@@ -376,6 +376,8 @@ class DataProcess(ChannelsConfig):
     DCFs = 1000
     DCnSamps = 1000
     IVGainDC = 2
+    Rds = 1.2e3
+    Rharware = False
     DevCondition = 5e-8
     ContSig = None
 
@@ -419,11 +421,14 @@ class DataProcess(ChannelsConfig):
     ####
     def CalcDcContData(self, Data):
         print 'DataProcess CalcDCContData'
-        print Data.shape
         print np.mean(Data)
-        print self.Vin
-#        Vload = Data + self.IVGainDC*self.Vin
-        Vload = Data * (self.Rds/(self.Rds+1e3))
+
+        if self.Rharware:
+            print self.Rds
+            Vload = Data * (self.Rds/(self.Rds+1e3))
+        else:
+            print 'no RDS'
+            Vload = Data + self.IVGainDC*self.Vin
 
         if self.EventContDcDone:
             self.EventContDcDone(Vload)
@@ -441,9 +446,11 @@ class Charact(DataProcess):
     # Neo Record
     ContRecord = None
 
-    def InitContMeas(self, Vin, Fs, Refresh, RecDC=True, GenTestSig=False):
+    def InitContMeas(self, Vin, Fs, Refresh, RecDC=True, GenTestSig=False,
+                     Rds=False):
         print 'Charact InitContMeas'
         #  Init Neo record
+        self.Rharware = Rds
         out_seg = neo.Segment(name='NewSeg')
 
         if RecDC:
