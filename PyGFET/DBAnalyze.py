@@ -118,13 +118,18 @@ def PlotMeanStd(Data, Xvar, Yvar, Vgs=None, Vds=None, Ax=None, Ud0Norm=True,
 
     if 'xscale' in kwargs.keys():
         Ax.set_xscale(kwargs['xscale'])
+    else:
+        Ax.ticklabel_format(axis='x', style='sci', scilimits=scilimits)
+
     if 'yscale' in kwargs.keys():
         Ax.set_yscale(kwargs['yscale'])
+    else:
+        Ax.ticklabel_format(axis='y', style='sci', scilimits=scilimits)
+
     Ax.set_ylabel(Yvar, fontsize=fontsize)
     Ax.set_xlabel(Xvar, fontsize=fontsize)
     Ax.tick_params(axis='both', which='Both', labelsize=labelsize)
-    Ax.ticklabel_format(axis='y', style='sci', scilimits=scilimits)
-    Ax.ticklabel_format(axis='x', style='sci', scilimits=scilimits)
+
 
 
 def PlotXYVars(Data, Xvar, Yvar, Vgs, Vds, Ud0Norm=True, label=None,
@@ -152,10 +157,13 @@ def PlotXYVars(Data, Xvar, Yvar, Vgs, Vds, Ud0Norm=True, label=None,
 
     if 'xscale' in kwargs.keys():
         Ax.set_xscale(kwargs['xscale'])
+    else:
+        Ax.ticklabel_format(axis='x', style='sci', scilimits=scilimits)
+
     if 'yscale' in kwargs.keys():
         Ax.set_yscale(kwargs['yscale'])
-#    else:
-#        Ax.ticklabel_format(axis='x', style='sci', scilimits=scilimits)
+    else:
+        Ax.ticklabel_format(axis='y', style='sci', scilimits=scilimits)
 
     if 'ylim' in kwargs.keys():
         Ax.set_ylim(kwargs['ylim'])
@@ -163,7 +171,6 @@ def PlotXYVars(Data, Xvar, Yvar, Vgs, Vds, Ud0Norm=True, label=None,
     Ax.set_ylabel(Yvar, fontsize=fontsize)
     Ax.set_xlabel(Xvar, fontsize=fontsize)
     Ax.tick_params(axis='both', which='Both', labelsize=labelsize)
-#    Ax.ticklabel_format(axis='y', style='sci', scilimits=scilimits)
 
 
 def GetParam(Data, Param, Vgs=None, Vds=None, Ud0Norm=False, **kwargs):
@@ -262,9 +269,12 @@ def SearchAndPlot(Groups, Func=PlotMeanStd, **kwargs):
         if len(Data) > 0:
             try:
                 if 'XlsFile' in kwargs.keys():
-                    xlssheet = xlswbook.add_worksheet(Grn)
+                    xlssheet = xlswbook.add_worksheet(str(Grn))
                     kwargs['xlsSheet'] = xlssheet
+            except:
+                print 'Error in excel generation'
 
+            try:
                 Func(Data,
                      Color=col.next(),
                      label=Grn,
