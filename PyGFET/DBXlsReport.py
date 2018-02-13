@@ -872,11 +872,14 @@ class FittingReport(object):
                                      WriteKeys=True)
         row = Loc[0]+1
         for v in self.FittingValues.values():
-            val = self.Res.__getattribute__(v[0])
-            if v[2] is not None:
-                val = val[v[2]]
-            col = Loc[1]+v[1]
-            Sheet.write(row, col, val)
+            try:
+                val = self.Res.__getattribute__(v[0])
+                if v[2] is not None:
+                    val = val[v[2]]
+                col = Loc[1]+v[1]
+                Sheet.write(row, col, val)
+            except:
+                print 'Error in fitting write'
 
     def __init__(self, XVar, XVarLog, YVar, YVarLog, GroupBase, XlsRep):
         self.XVar = XVar
