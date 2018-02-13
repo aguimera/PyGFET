@@ -276,8 +276,6 @@ class CharactAPP(QtWidgets.QMainWindow):
         else:
             self.Charac.ContRecord.SaveRecord(name + '.h5')
 
-
-
 # Configuration & Figures Menu
 ###############################################################################
     def SaveConf(self):

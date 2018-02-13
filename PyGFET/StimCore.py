@@ -422,8 +422,9 @@ class DataProcess(ChannelsConfig):
         print Data.shape
         print np.mean(Data)
         print self.Vin
-        Vload = Data + self.IVGainDC*self.Vin
-#        Vload = Data + 0.2
+#        Vload = Data + self.IVGainDC*self.Vin
+        Vload = Data * (self.Rds/(self.Rds+1e3))
+
         if self.EventContDcDone:
             self.EventContDcDone(Vload)
 
