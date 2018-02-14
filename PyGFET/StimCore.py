@@ -275,7 +275,7 @@ class ChannelsConfig():
         self.Inputs.EveryNEvent = self.EveryNEventCallBack
         self.Inputs.DoneEvent = self.DoneEventCallBack
 
-    def __init__(self, Channels, GateChannel=None, ChVg=None, ChVs='ao1',
+    def __init__(self, Channels, GateChannel=None, ChVg=None, ChVs=None,
                  ChVds=None, ChVsig='ao0'):
         self.InitConfig = {}
         self.InitConfig['Channels'] = Channels
@@ -285,7 +285,7 @@ class ChannelsConfig():
                         GateChannel=GateChannel)
 
         # Output Channels
-        self.VsOut = WriteAnalog((ChVs,))
+#        self.VsOut = WriteAnalog((ChVs,))
 #        self.VdsOut = WriteAnalog((ChVds,))
 #        self.VgOut = WriteAnalog((ChVg,))
         self.VsigOut = WriteAnalog((ChVsig,))
@@ -293,7 +293,6 @@ class ChannelsConfig():
     def SetBias(self, Vsig):
         print 'ChannelsConfig SetBias Vsig ->', Vsig
         self.VsigOut.SetVal(Vsig)
-        self.VsOut.SetVal(0)
         self.Vin = Vsig
 
     def SetSignal(self, Signal, nSamps):
