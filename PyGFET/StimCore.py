@@ -425,9 +425,14 @@ class DataProcess(ChannelsConfig):
         if self.Rharware:
             print self.Rds
             Vload = Data * (self.Rds/(self.Rds+1e3))
+            Iload = Data * (1/(self.Rds+1e3))
+
         else:
             print 'no RDS'
             Vload = Data + self.IVGainDC*self.Vin
+            Iload = (self.IVGainDC*self.Vin)/1e3
+
+        print np.mean(Iload), 'Iload'
 
         if self.EventContDcDone:
             self.EventContDcDone(Vload)
