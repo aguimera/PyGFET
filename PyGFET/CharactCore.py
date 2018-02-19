@@ -412,7 +412,7 @@ class FFTTestSignal():
 
     FsH = 2e6
     FsL = 1000
-    FMinLow = 0.5  # Lowest freq to acquire in 1 time
+    FMinLow = 1  # Lowest freq to acquire in 1 time
     FThres = 10  # For two times adq split freq
 
     FFTconfs = [FFTConfig(), ]
