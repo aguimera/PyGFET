@@ -1081,7 +1081,7 @@ class Charact(DataProcess):
         sig = neo.AnalogSignal(signal=np.empty((0), float),
                                units=pq.V,
                                t_start=0*pq.s,
-                               sampling_rate=1*pq.Hz,
+                               sampling_rate=(1/Refresh)*pq.Hz,
                                name='Vgs')
         out_seg.analogsignals.append(sig)
 
@@ -1089,7 +1089,7 @@ class Charact(DataProcess):
         sig = neo.AnalogSignal(signal=np.empty((0), float),
                                units=pq.V,
                                t_start=0*pq.s,
-                               sampling_rate=1*pq.Hz,
+                               sampling_rate=(1/Refresh)*pq.Hz,
                                name='Vds')
         out_seg.analogsignals.append(sig)
 
