@@ -322,6 +322,8 @@ class ChannelsConfig():
         self.VdsOut.SetVal(Vds)
         self.VsOut.SetVal(-Vgs)
         self.BiasVd = Vds-Vgs
+        self.Vgs = Vgs
+        self.Vds = Vds
 
     def SetSignal(self, Signal, nSamps):
         if not self.VgOut:
@@ -1075,6 +1077,22 @@ class Charact(DataProcess):
                                        name=name)
                 out_seg.analogsignals.append(sig)
 
+        # Add Vgs
+        sig = neo.AnalogSignal(signal=np.empty((0), float),
+                               units=pq.V,
+                               t_start=0*pq.s,
+                               sampling_rate=1*pq.Hz,
+                               name='Vgs')
+        out_seg.analogsignals.append(sig)
+
+        # Add Vds
+        sig = neo.AnalogSignal(signal=np.empty((0), float),
+                               units=pq.V,
+                               t_start=0*pq.s,
+                               sampling_rate=1*pq.Hz,
+                               name='Vds')
+        out_seg.analogsignals.append(sig)
+
         self.ContRecord = NeoRecord(Seg=out_seg, UnitGain=1)
 
         #  Lauch adquisition
@@ -1164,6 +1182,10 @@ class Charact(DataProcess):
         tstop = self.ContRecord.Signal(ChName=chk + '_DC').t_stop
 
         if (self.EventContAcDone is None) and (self.EventContGateDone is None):
+
+            self.ContRecord.AppendSignal('Vgs', self.Vgs)
+            self.ContRecord.AppendSignal('Vds', self.Vds)
+
             if self.EventContinuousDone:
                 self.EventContinuousDone(tstop)
 
@@ -1176,6 +1198,10 @@ class Charact(DataProcess):
         tstop = self.ContRecord.Signal(ChName=chk + '_Gate').t_stop
 
         if self.EventContAcDone is None:
+
+            self.ContRecord.AppendSignal('Vgs', self.Vgs)
+            self.ContRecord.AppendSignal('Vds', self.Vds)
+
             if self.EventContinuousDone:
                 self.EventContinuousDone(tstop)
 
@@ -1186,6 +1212,10 @@ class Charact(DataProcess):
             self.ContRecord.AppendSignal(chk + '_AC', newvect[:, None])
 
         tstop = self.ContRecord.Signal(ChName=chk + '_AC').t_stop
+#        newvect2 = self.Vgs.transpose()
+        print newvect.shape, self.Vgs
+        self.ContRecord.AppendSignal('Vgs', self.Vgs)
+        self.ContRecord.AppendSignal('Vds', self.Vds)
 
         if self.EventContinuousDone:
             self.EventContinuousDone(tstop)

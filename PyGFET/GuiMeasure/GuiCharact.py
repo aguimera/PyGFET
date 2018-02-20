@@ -63,7 +63,10 @@ class ContinuousAcquisitionPlots():
                 sl.Position = 2
                 sl.DispName = sign
 
-            sl.SigName = sign
+            if not sign.startswith('V'):
+                sl.SigName = sign
+                sl.OutType = 'V'
+                slots.append(sl)
 
 #            sl.Position = ind
 
@@ -71,9 +74,6 @@ class ContinuousAcquisitionPlots():
 #                sl.FiltType = ('lp', )
 #                sl.FiltOrder = (2, )
 #                sl.FiltF1 = (1, )
-
-            sl.OutType = 'V'
-            slots.append(sl)
 
         #  Init Plot figures
         self.PltRecs = PlotRecord()
