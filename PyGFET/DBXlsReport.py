@@ -707,6 +707,7 @@ class GenXlsTrtsHistory(XlsReportBase):
                 dat = self.DictDC
             elif v[0] == 'AC':
                 dat = self.DictAC
+            
             Dban.PlotXYVars(Data=dat,
                             Xvar='DateTime',
                             Yvar=k,

@@ -157,7 +157,7 @@ def PlotXYVars(Data, Xvar, Yvar, Vgs, Vds, Ud0Norm=True, label=None,
 
     if 'xscale' in kwargs.keys():
         Ax.set_xscale(kwargs['xscale'])
-    else:
+    elif Xvar != 'DateTime':
         Ax.ticklabel_format(axis='x', style='sci', scilimits=scilimits)
 
     if 'yscale' in kwargs.keys():
