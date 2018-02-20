@@ -136,11 +136,7 @@ class DBViewApp(QtWidgets.QMainWindow):
 
         self.setWindowTitle('PyFETdb Viewer')
 
-        self.DB = PyFETdb.PyFETdb(host='opter6.cnm.es',
-                                  user='pyfet',
-                                  passwd='p1-f3t17',
-                                  db='pyFET')
-#        self.DB = PyFETdb.PyFETdb()
+        self.DB = PyFETdb.PyFETdb()
 
         self.InitMenu()
         self.ConnectLst()

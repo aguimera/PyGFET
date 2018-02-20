@@ -80,10 +80,7 @@ def FindCommonValues(Parameter, Conditions, Table='ACcharacts', **kwargs):
     if Parameter.startswith('CharTable'):
         Parameter = Parameter.replace('CharTable', Table)
 
-    MyDb = PyFETdb.PyFETdb(host='opter6.cnm.es',
-                           user='pyfet',
-                           passwd='p1-f3t17',
-                           db='pyFET')
+    MyDb = PyFETdb.PyFETdb()
 #    MyDb = PyFETdb.PyFETdb()
 
     Output = (Parameter,)
@@ -151,12 +148,7 @@ def GetFromDB(Conditions, Table='ACcharacts', Last=True, GetGate=True,
 
     Conditions = CheckConditionsCharTable(Conditions, Table)
 
-    MyDb = PyFETdb.PyFETdb(host='opter6.cnm.es',
-                           user='pyfet',
-                           passwd='p1-f3t17',
-                           db='pyFET')
-
-#    MyDb = PyFETdb.PyFETdb()
+    MyDb = PyFETdb.PyFETdb()
 
     DataD, Trts = MyDb.GetData2(Conditions=Conditions,
                                 Table=Table,
@@ -216,10 +208,7 @@ def UpdateCharTableField(Conditions, Value,
 
     Conditions = CheckConditionsCharTable(Conditions, Table)
 
-    MyDb = PyFETdb.PyFETdb(host='opter6.cnm.es',
-                           user='pyfet',
-                           passwd='p1-f3t17',
-                           db='pyFET')
+    MyDb = PyFETdb.PyFETdb()
 
     out = '{}.id{}'.format(Table, Table)
     re = MyDb.GetCharactInfo(Table=Table,

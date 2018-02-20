@@ -268,10 +268,7 @@ class XlsReportBase(object):
         self.DevGroups = {}
 
         # Init Db connection TODO hide credentials
-        self.Mydb = PyFETdb.PyFETdb(host='opter6.cnm.es',
-                                    user='pyfet',
-                                    passwd='p1-f3t17',
-                                    db='pyFET')
+        self.Mydb = PyFETdb.PyFETdb()
 
     def GetSortData(self, TrtName):
         Conditions = {'Trts.Name=': (TrtName, )}
@@ -589,8 +586,8 @@ class XlsReportBase(object):
         Cax = Ax.imshow(Map, cmap=cm.afmhot, norm=norm)
         Ax.set_xlabel('column')
         Ax.set_ylabel('row')
-        Ax.set_xticks(np.arange(CalcMapArgs['ProbeMap']['Shape'][0]))
-        Ax.set_yticks(np.arange(CalcMapArgs['ProbeMap']['Shape'][1]))
+        Ax.set_xticks(np.arange(CalcMapArgs['ProbeMap']['Shape'][1]))
+        Ax.set_yticks(np.arange(CalcMapArgs['ProbeMap']['Shape'][0]))
         Ax.set_title(CalcMapArgs['ParMap'])
 
         cbar = Fig.colorbar(Cax, format=sfmt)
