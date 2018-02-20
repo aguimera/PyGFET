@@ -22,7 +22,8 @@ def GenGroups(GroupBase, GroupBy):
         Cond = GroupBase['Conditions'].copy()
         Cond.update({'{}='.format(GroupBy): (Item,)})
         Cgr['Conditions'] = Cond
-        Groups[Item] = Cgr
+        GroupName = '{}-{}'.format(GroupBy.split('.')[-1], Item)
+        Groups[GroupName] = Cgr
 
     return Groups
 
