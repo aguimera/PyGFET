@@ -403,6 +403,9 @@ class CharactAPP(QtWidgets.QMainWindow):
                 print 'FFT checked'
                 self.Charac.EventFFTDone = self.CharFFTCallBack
 
+            if not self.ChckSaveData.isChecked():
+                self.ChckSaveData.setChecked(True)
+
             self.Charac.InitSweep(VgsVals=SwVgsVals,
                                   VdsVals=SwVdsVals,
                                   PSD=self.ChckPSD.isChecked(),
