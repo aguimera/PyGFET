@@ -163,7 +163,7 @@ class CharactAPP(QtWidgets.QMainWindow):
         self.Charac.EventContinuousDone = self.CharContDataCallback
 
         # Define Gains
-        self.Charac.IVGainDC = float(self.QGainDC.text())
+#        self.Charac.IVGainDC = float(self.QGainDC.text())
         self.Charac.Rds = float(self.QRds.text())
 
     def GetSelectedChannels(self, ChGroup):
@@ -212,8 +212,7 @@ class CharactAPP(QtWidgets.QMainWindow):
                                      Fs=self.SpnFsTime.value(),
                                      Refresh=self.SpnRefresh.value(),
                                      RecDC=True,
-                                     GenTestSig=self.chckTestSig.isChecked(),
-                                     Rds=self.ChckRds.isChecked())
+                                     GenTestSig=self.chckTestSig.isChecked())
             self.PlotCont = ContinuousAcquisitionPlots(self.Charac.ContRecord)
 
             if self.Charac.CharactRunning:
