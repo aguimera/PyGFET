@@ -1007,6 +1007,8 @@ class Charact(DataProcess):
                                                  nFgm=nFgm,
                                                  nFpsd=Fpsd,
                                                  ChNames=self.ChNamesList)
+        else:
+            self.DevACVals = None
 
     def ApplyNextBias(self):
         print 'Charact ApplyNextBias'

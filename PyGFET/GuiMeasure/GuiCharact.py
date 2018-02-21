@@ -613,6 +613,7 @@ class CharactAPP(QtWidgets.QMainWindow):
 
     def CharSweepDoneCallBack(self, Dcdict, Acdict):
         print 'Gui sweep done save data'
+        print Dcdict, Acdict
         if self.ChckSaveData.isChecked():
             Filename = self.FileName + "{}-Cy{}.h5".format('', self.Cycle)
             self.LblPath.setText(Filename)
