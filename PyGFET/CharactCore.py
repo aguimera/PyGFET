@@ -985,6 +985,8 @@ class Charact(DataProcess):
         else:
             Gate = True
 
+        self.DevACVals = None
+
         self.DevDCVals = PyData.InitDCRecord(nVds=self.SwVdsVals,
                                              nVgs=self.SwVgsVals,
                                              ChNames=self.ChNamesList,
@@ -1007,8 +1009,6 @@ class Charact(DataProcess):
                                                  nFgm=nFgm,
                                                  nFpsd=Fpsd,
                                                  ChNames=self.ChNamesList)
-        else:
-            self.DevACVals = None
 
     def ApplyNextBias(self):
         print 'Charact ApplyNextBias'
