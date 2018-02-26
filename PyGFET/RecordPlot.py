@@ -102,9 +102,9 @@ class Filter():
 
 #            print nf, self.Order[nf], Freqs, FType
             b, a = signal.butter(self.Order[nf], Freqs, FType)
-            st = signal.filtfilt(b, a, st, axis=0)
+            stf = signal.filtfilt(b, a, st, axis=0)
 
-        return neo.AnalogSignal(st,
+        return neo.AnalogSignal(stf,
                                 units=sig.units,
                                 t_start=sig.t_start,
                                 sampling_rate=sig.sampling_rate)
