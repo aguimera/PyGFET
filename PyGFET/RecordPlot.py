@@ -14,6 +14,8 @@ from scipy import signal
 from scipy import interpolate
 import pickle
 from fractions import Fraction
+from matplotlib import cm
+import matplotlib.colors as colors
 
 
 def threshold_detection(signal, threshold=0.0 * pq.mV, sign='above',
@@ -102,12 +104,13 @@ class Filter():
 
 #            print nf, self.Order[nf], Freqs, FType
             b, a = signal.butter(self.Order[nf], Freqs, FType)
-            stf = signal.filtfilt(b, a, st, axis=0)
+            st = signal.filtfilt(b, a, st, axis=0)
 
-        return neo.AnalogSignal(stf,
+        return neo.AnalogSignal(st,
                                 units=sig.units,
                                 t_start=sig.t_start,
-                                sampling_rate=sig.sampling_rate)
+                                sampling_rate=sig.sampling_rate,
+                                name=sig.name)
 
 
 class PltSlot():
@@ -149,6 +152,8 @@ class PltSlot():
 
         self.Ymax = 0
         self.Ymin = 0
+        
+        self.Fig = None
 
     def SetTstart(self):
         if self.TStart is not None:
@@ -174,7 +179,8 @@ class PltSlot():
             sig = neo.AnalogSignal(rs,
                                    units=sig.units,
                                    t_start=sig.t_start,
-                                   sampling_rate=sig.sampling_rate*f)
+                                   sampling_rate=sig.sampling_rate*f*pq.Hz,
+                                   name= sig.name)
 
         if self.LSB:
             rs = np.round(sig/self.LSB)
@@ -182,7 +188,8 @@ class PltSlot():
             sig = neo.AnalogSignal(rs,
                                    units=sig.units,
                                    t_start=sig.t_start,
-                                   sampling_rate=sig.sampling_rate)
+                                   sampling_rate=sig.sampling_rate,
+                                   name=sig.name)
 
         return sig
 
@@ -262,11 +269,13 @@ class PltSlot():
                 finds = np.where(f < self.SpecFmax)[0][1:]
                 r, g, c = Sxx.shape
                 S = Sxx.reshape((r, c))[finds][:]
-                self.Ax.pcolormesh(t*pq.s+sig.t_start, f[finds], np.log10(S),
-                                   vmin=np.log10(np.max(S))+self.SpecMinPSD,
-                                   vmax=np.log10(np.max(S)),
-                                   cmap=self.SpecCmap)
-
+                cax = self.Ax.pcolor(t*pq.s+sig.t_start, f[finds], S,
+                                     cmap=self.SpecCmap,
+                                     norm=colors.LogNorm(self.SpecMinPSD,
+                                                         self.SpecMaxPSD))
+                self.Fig.colorbar(cax, orientation='horizontal')
+                self.Ax.set_yscale('log')
+                
             elif self.PlotType == 'Wave':
                 sig = self.GetSignal(Time, Resamp)
                 self.Ax.plot(sig.times,
@@ -355,7 +364,7 @@ class PlotRecord():
 
 #            if sl.PlotType == 'Spectrogram':
 #                sl.Ax.set_yscale('log')
-
+            sl.Fig = self.Fig
             if not sl.FiltType[0] == '':
                 print sl.FiltType, sl.FiltF1, sl.FiltF2, sl.FiltOrder
                 sl.Filter = Filter(Type=sl.FiltType,
@@ -378,6 +387,7 @@ class PlotRecord():
         if not self.FigFFT or not plt.fignum_exists(self.FigFFT.number):
             self.FigFFT, self.AxFFT = plt.subplots()
 
+        PSD = {}
         for sl in self.Slots:
             sig = sl.GetSignal(Time, Resamp=Resamp)
             if FMin:
@@ -386,12 +396,16 @@ class PlotRecord():
             ff, psd = signal.welch(x=sig, fs=sig.sampling_rate,
                                    window='hanning',
                                    nperseg=nFFT, scaling='density', axis=0)
-
+            slN = sl.SigName
+            PSD[slN] = {}
+            PSD[slN]['psd'] = psd
+            PSD[slN]['ff'] = ff
             self.AxFFT.loglog(ff, psd, label=sl.DispName)
 
         self.AxFFT.set_xlabel('Frequency [Hz]')
         self.AxFFT.set_ylabel('PSD [V^2/Hz]')
         self.AxFFT.legend()
+        return PSD
 
     def PlotEventAvg(self, (EventRec, EventName), Time, TimeWindow,
                      OverLap=True, Std=False, Spect=False, Resamp=False):
@@ -566,7 +580,8 @@ class PlotRecord():
 
             sl.PlotSignal(Time, Resamp=Resamp)
 
-        sl.Ax.set_xlim(Time[0], Time[1])
+        if Time is not None:
+            sl.Ax.set_xlim(Time[0], Time[1])
 
         if self.ShowLegend:
             for (Ax, AutoScale) in self.Axs:
