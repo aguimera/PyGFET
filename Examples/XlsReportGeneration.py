@@ -8,7 +8,7 @@ Created on Mon Jan 15 10:32:57 2018
 
 import PyGFET.DBXlsReport as XlsRep
 
-Name = 'B10631W3'
+Name = 'B10631W8'
 Conditions = {'Wafers.name=': (Name, )}
 
 XlsRept = XlsRep.GenXlsReport(Name+'.xlsx',

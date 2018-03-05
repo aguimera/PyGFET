@@ -335,6 +335,7 @@ class RecordExplorer(QtWidgets.QMainWindow):
                 self.SpnPSDTimeStart,
                 self.SpnPSDTimeStop)
 
+        print stops, starts
         self.SpnTShow.setMaximum(max(stops)-min(starts))
 
         self.UpdateTstart(Ctrs, min(starts))

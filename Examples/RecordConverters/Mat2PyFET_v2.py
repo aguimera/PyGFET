@@ -17,23 +17,6 @@ import os
 import deepdish as dd
 import glob
     
-def GetDataMat(FileInput):
-    TransNames = {'Ch01': 'Ch01',
-                  'Ch02': 'Ch02',
-                  'Ch03': 'Ch03',
-                  'Ch04': 'Ch04',
-                  'Ch05': 'Ch05',
-                  'Ch06': 'Ch06',
-                  'Ch07': 'Ch07',
-                  'Ch08': 'Ch08',
-                  'Ch09': 'Ch09',
-                  'Ch10': 'Ch10',
-                  'Ch11': 'Ch11',
-                  'Ch12': 'Ch12',
-                  'Ch13': 'Ch13',
-                  'Ch14': 'Ch14',
-                  'Ch15': 'Ch15',
-                  'Ch16': 'Ch16'}
 
     MatCon = sio.loadmat(FileInput)
     Vdc = MatCon['Vdc']
@@ -80,78 +63,5 @@ if __name__ == "__main__":
         DevDCVals = GetDataMat(fin)
         dd.io.save(fin.replace('.mat', '.h5'), (DevDCVals, ), ('zlib', 1))
 
-##########################################################################
-# Gen Vgs neo file
-###########################################################################
-
-#VgsNeoOut = '../170608/Rec7Vgs.h5'
-#
-#TransNames = {'Ch1': 'T01',
-#              'Ch2': 'T02',
-#              'Ch3': 'T03',
-#              'Ch4': 'T04',
-#              'Ch5': 'T05',
-#              'Ch6': 'T06',
-#              'Ch7': 'T07',
-#              'Ch8': 'T08',
-#              'Ch9': 'T09',
-#              'Ch10': 'T10',
-#              'Ch11': 'T11',
-#              'Ch12': 'T12',
-#              'Ch13': 'T13',
-#              'Ch14': 'T14',
-#              'Ch15': 'T15',
-#              'Ch16': 'T16'}
 
 
-
-#os.remove(VgsNeoOut)
-#out_f = neo.io.NixIO(filename=VgsNeoOut)
-#out_seg = neo.Segment(name='NewSeg')
-#
-#neoVgs = np.array([])
-#for v in Vgs:
-#    neoVgs = np.hstack((neoVgs, np.ones(152)*v))
-#
-#sig = neo.AnalogSignal(neoVgs,
-#                       units=pq.V,
-#                       t_start=0*pq.s,
-#                       sampling_rate=1*pq.Hz,
-#                       name='Vgs',
-#                       file_origin=FileInput)
-#out_seg.analogsignals.append(sig)
-#
-#for chn, dat in DevDCVals.iteritems():
-#    neoGM = np.array([])
-#    for v in Vgs:
-#        gm = np.polyval(dat['GMPoly'][:, 0], v)
-#        neoGM = np.hstack((neoGM, np.ones(152)*gm))
-#
-#    sig = neo.AnalogSignal(neoGM,
-#                           units=pq.A/pq.V,
-#                           t_start=0*pq.s,
-#                           sampling_rate=1*pq.Hz,
-#                           name='GM'+chn,
-#                           file_origin=FileInput)
-#    out_seg.analogsignals.append(sig)
-#
-#out_bl = neo.Block(name='NewBlock')
-#out_bl.segments.append(out_seg)
-#out_f.write_block(out_bl)
-#out_f.close()
-
-#sig1 = neo.AnalogSignal(neoGM,
-#                   units = pq.A/pq.V,
-#                   t_start = 0*pq.s,
-#                   sampling_rate = 2*pq.Hz,
-#                   name='GM'+chn,
-#                   file_origin=FileInput)
-#
-#sig2 = neo.AnalogSignal(neoGM,
-#                   units = pq.A/pq.V,
-#                   t_start = 0*pq.s,
-#                   sampling_rate = 1*pq.Hz,
-#                   name='GM'+chn,
-#                   file_origin=FileInput)
-#
-#s = sig1*sig2

@@ -63,7 +63,10 @@ class ContinuousAcquisitionPlots():
                 sl.Position = 2
                 sl.DispName = sign
 
-            sl.SigName = sign
+            if not sign.startswith('V'):
+                sl.SigName = sign
+                sl.OutType = 'V'
+                slots.append(sl)
 
 #            sl.Position = ind
 
@@ -71,9 +74,6 @@ class ContinuousAcquisitionPlots():
 #                sl.FiltType = ('lp', )
 #                sl.FiltOrder = (2, )
 #                sl.FiltF1 = (1, )
-
-            sl.OutType = 'V'
-            slots.append(sl)
 
         #  Init Plot figures
         self.PltRecs = PlotRecord()
@@ -323,8 +323,8 @@ class CharactAPP(QtWidgets.QMainWindow):
         Config = self.GetConfig(self.GrConfig)
         self.TimePlotConfig(Config)
         self.Charac = PyCharact.Charact(Channels=Channels,
-                                         GateChannel=GateChannel,
-                                         Configuration=Config)
+                                        GateChannel=GateChannel,
+                                        Configuration=Config)
 #        self.Charac = Charact(Channels=Channels,
 #                              GateChannel=GateChannel,
 #                              Configuration=Config)
@@ -402,6 +402,9 @@ class CharactAPP(QtWidgets.QMainWindow):
             if self.ChckFFT.isChecked():
                 print 'FFT checked'
                 self.Charac.EventFFTDone = self.CharFFTCallBack
+
+            if not self.ChckSaveData.isChecked():
+                self.ChckSaveData.setChecked(True)
 
             self.Charac.InitSweep(VgsVals=SwVgsVals,
                                   VdsVals=SwVdsVals,
@@ -501,6 +504,7 @@ class CharactAPP(QtWidgets.QMainWindow):
             if self.Charac.CharactRunning:
                 self.Cycle = 0
                 self.LblCycle.setText(str(self.Cycle))
+                self.Charac.SetBias(Vds=0, Vgs=0)
                 self.StopSweep()
                 self.Charac.StopCharac()
 
@@ -609,6 +613,7 @@ class CharactAPP(QtWidgets.QMainWindow):
 
     def CharSweepDoneCallBack(self, Dcdict, Acdict):
         print 'Gui sweep done save data'
+        print Dcdict, Acdict
         if self.ChckSaveData.isChecked():
             Filename = self.FileName + "{}-Cy{}.h5".format('', self.Cycle)
             self.LblPath.setText(Filename)
@@ -658,6 +663,7 @@ class CharactAPP(QtWidgets.QMainWindow):
     def StopSweep(self):
         print 'Stop'
         self.SetEnableObjects(val=True, Objects=self.SweepEnableObjects)
+        self.Charac.SetBias(Vds=0, Vgs=0)
         self.ButSweep.setText('Start')
         self.ChckSaveData.setChecked(False)
 

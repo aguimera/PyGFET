@@ -8,18 +8,24 @@ Created on Tue Nov 15 23:15:19 2016
 import datetime
 import pymysql
 import pickle
+from PyGFET.DB import *
 
 
 class PyFETdb():
     PrintQuery = False
 
-    def __init__(self, host='localhost', user='root', passwd='', db='PyFET',
-                 Update=True):
+    def __init__(self, host=None, user=None, passwd=None, db=None, Update=True):
 
-        self.db = pymysql.connect(host=host,
-                                  user=user,
-                                  passwd=passwd,
-                                  db=db)
+        if host is None:
+            self.db = pymysql.connect(host=DBhost,
+                                      user=DBuser,
+                                      passwd=DBpasswd,
+                                      db=DBdb)
+        else:
+            self.db = pymysql.connect(host=host,
+                                      user=user,
+                                      passwd=passwd,
+                                      db=db)
 
     def __del__(self):
         self.db.close()
@@ -317,7 +323,8 @@ class PyFETdb():
                   '{}.Solution'.format(Table),
                   '{}.IonStrength'.format(Table),
                   '{}.FuncStep'.format(Table),
-                  '{}.AnalyteCon'.format(Table)]
+                  '{}.AnalyteCon'.format(Table),
+                  '{}.Comments'.format(Table)]
 
         GidF = None
         if GetGate:

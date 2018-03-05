@@ -230,6 +230,10 @@ class DataCharDC(object):
             return GM[:, None]
         return GM.transpose()
 
+    def GetGMV(self, **kwargs):
+        kwargs.update({'Normlize': True})
+        return np.abs(self.GetGM(**kwargs))
+
     def GetGMMax(self, Vds=None, Normlize=False, Ud0Norm=False):
         iVds = self.GetVdsIndexes(Vds)
         if len(iVds) == 0:
@@ -307,15 +311,15 @@ class DataCharDC(object):
     def CheckVgsRange(self, Vgs, iVds, Ud0Norm):
         if Vgs is not None:
             for ivd in iVds:
-                if Ud0Norm is not None:
-                    vg = Vgs + self.Ud0[ivd]
+                if Ud0Norm is None or Ud0Norm == False:
+                    vg = Vgs
                     VgsM = self.Vgs
                 else:
-                    vg = Vgs
+                    vg = Vgs + self.Ud0[ivd]
                     VgsM = self.Vgs
 
                 if (np.min(vg) < np.min(VgsM)) or (np.max(vg) > np.max(VgsM)):
-                    print 'Vgs range not valid', vg, VgsM, self.Ud0
+                    print self.Name, 'Vgs range not valid', vg, VgsM, self.Ud0
                     return None
             return Vgs
         else:
@@ -355,9 +359,14 @@ class DataCharDC(object):
         if not hasattr(PAR, '__iter__'):
             return PAR[None, None]
         s = PAR.shape
+        if len(s) == 0:
+            return PAR[None, None]
         if len(s) == 1:
             return PAR[:, None]
         return PAR.transpose()
+
+    def GetName(self, **kwargs):
+        return self.Name
 
     def GetWL(self, **kwargs):
         return self.TrtTypes['Width']/self.TrtTypes['Length']
@@ -385,6 +394,9 @@ class DataCharDC(object):
 
     def GetFuncStep(self, **kwargs):
         return self.Info['FuncStep']
+
+    def GetComments(self, **kwargs):
+        return self.Info['Comments']
 
     def GetAnalyteCon(self, **kwargs):
         return np.array(self.Info['AnalyteCon'])[None, None]

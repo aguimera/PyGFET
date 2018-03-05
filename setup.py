@@ -26,7 +26,7 @@ Created on Thu Dec 21 18:30:42 2017
 
 from setuptools import setup, find_packages
 
-_version = '0.1.1a4rc'
+_version = '0.1.1b2'
 
 long_description = """
                    Library for GFET analysis tools                   
@@ -43,8 +43,8 @@ install_requires = ['pymysql',
 
 console_scripts = ['GFETDbView = PyGFET.GuiDBView.GuiDBView:main',
                    'GFETRecExp = PyGFET.GuiRecordView.GuiRecordExplorer:main',
-                   'GFETCharactGui = PyGFET.GuiMeasure.GuiCharact:main']
-#                   'PyCharactGui = PyGFETMeasureTools.PyFETCharactGui:main']
+                   'GFETCharactGui = PyGFET.GuiMeasure.GuiCharact:main',
+                   'GFETStimGui = PyGFET.GuiStimulation.GuiStim:main']
 
 entry_points = {'console_scripts': console_scripts, }
 

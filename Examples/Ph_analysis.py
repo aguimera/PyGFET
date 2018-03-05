@@ -19,18 +19,18 @@ import statsmodels.api as sm
 import datetime
 from matplotlib.backends.backend_pdf import PdfPages
 
-#%% Find conditions in DB
+#%% Find r in DB
 
 plt.close('all')
 plt.ion()
 
 CharTable = 'DCcharacts'
-DeviceNames = ('B10179W15-T1',)
+DeviceNames = ('B10803W16-Xip2E',)
 
 Conditions = {'Devices.Name=': DeviceNames,
               'CharTable.IsOK>': (0, ),
-              'CharTable.FuncStep=': ('pyrene-NH2',),
-              'CharTable.Ph<>': (7.0,),
+              'CharTable.FuncStep=': ('SScovCOOH',),
+              'CharTable.Ph<>': (10.0,),
               'CharTable.Ph>': (1,)}
 
 TrtsList = Dban.FindCommonParametersValues(Table=CharTable,
@@ -42,9 +42,9 @@ PhList = Dban.FindCommonParametersValues(Table=CharTable,
                                            Parameter='CharTable.Ph',
                                            Conditions=Conditions)
 
-IonStrenList = Dban.FindCommonParametersValues(Table=CharTable,
-                                           Parameter='CharTable.IonStrength',
-                                           Conditions=Conditions)
+#IonStrenList = Dban.FindCommonParametersValues(Table=CharTable,
+#                                           Parameter='CharTable.IonStrength',
+#                                           Conditions=Conditions)
 
 Groups = {}
 # Fixed Conditions
@@ -78,16 +78,17 @@ for TrtN in sorted(TrtsList):
     
     Dats = dat[TrtN]
     
-    x = np.ones([len(Dats)])
+#    x = np.ones([len(Dats)])
     y = np.ones([len(Dats)])
     z = np.ones([len(Dats)])
     for i, d in enumerate(Dats):
         y[i] = d.GetPh()
-        x[i] = d.GetIonSt()
+#        x[i] = d.GetIonSt()
         z[i] = d.GetUd0()
     
     plt.figure()
-    plt.tricontourf(x,y,z,100,cmap='seismic')
+#    plt.tricontourf(x,y,z,100,cmap='seismic')
+#    plt.tricontourf(x,y,z,100,cmap='seismic')
     plt.plot(x,y,'ko')
     plt.colorbar()
 #

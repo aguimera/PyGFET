@@ -76,12 +76,15 @@ def PlotXYLine(Data, Xvar, Yvar, Vgs, Vds, Ud0Norm=True, label=None,
                 except:  # catch *all* exceptions
                     print Dat.Name, sys.exc_info()[0]
 
-        try:    
+        try:
             if ValX.size == 0:
                 continue
             SortIndex = np.argsort(ValX, axis=0)
     #        Ax.plot(ValY[SortIndex][:,:,0], color=Color, label=label)
-            Ax.plot(ValX[SortIndex][:,:,0], ValY[SortIndex][:,:,0], color=Color, label=label)       
+            Ax.plot(ValX[SortIndex][:, :, 0],
+                    ValY[SortIndex][:, :, 0],
+                    color=Color,
+                    label=label)
         except:
             print Trtn, sys.exc_info()[0]
 
@@ -123,56 +126,149 @@ def CalcParMap(Data, ParMap, ParArgs, ProbeMap):
         return None
 
 
-class GenXlsDeviceHistory():
-    DtMax = np.timedelta64(1, 's')
-    FigsDpi = 150  # Resolution for figures
+class XlsReportBase(object):
+    """
+    Generic class to define the most common fields and methods to generate XLS
+    reports, the key methods and dictionaries are:
+        - DBflieds dictionary structures:
+            {'VTrts.DCMeas': ('DCMeas', 0, 0)}
+            DBtable.Field: (HeaderName, XlsPosition, Not difined)
+            - InfoTrtFields, InfoDevFields
+    """
+    InfoTrtFields = {'Trts.Name': ('Trt Name', 0, 0),
+                     'VTrts.DCMeas': ('DCMeas', 1, 0),
+                     'VTrts.ACMeas': ('ACMeas', 2, 0),
+                     'VTrts.GMeas': ('GMeas', 3, 0),
+                     'TrtTypes.Name': ('Trt Type', 4, 0),
+                     'TrtTypes.Length': ('Lenght', 5, 0),
+                     'TrtTypes.Width': ('Width', 6, 0),
+                     'TrtTypes.Pass': ('Pass', 7, 0),
+                     'TrtTypes.Area': ('Area', 8, 0),
+                     'TrtTypes.Contact': ('Contact', 9, 0),
+                     'Trts.Comments': ('T-Comments', 10, 0)}
 
-    MeasDCFields = {'Time': ('Meas Date', 0, {}),
-                    'Vds': ('Vds', 1, {'Vgs': -0.1,
-                                       'Vds': None,
-                                       'Ud0Norm': True}),
-                    'Ud0': ('Ud0', 2, {'Vgs': -0.1,
-                                       'Vds': None,
-                                       'Ud0Norm': True}),
-                    'Rds': ('Rds', 3, {'Vgs': -0.1,
-                                       'Vds': None,
-                                       'Ud0Norm': True}),
-                    'GM': ('GM', 4, {'Vgs': -0.1,
-                                     'Vds': None,
-                                     'Ud0Norm': True})}
-    MeasACFields = {'Time': ('Meas Date', 0, {}),
-                    'Vrms': ('Vrms', 1, {'Vgs': -0.1,
-                                         'Vds': None,
-                                         'Ud0Norm': True})}
-
-    DCTimePlotPars = ('Ids', 'Rds', 'GM', 'Ig')
-    ACTimePlotPars = ('Ids', 'GM', 'Vrms', 'Irms')
-
-    TimePars = ('Ud0', 'Rds', 'Ids', 'GM', 'Vrms')
-    TimeParsArgs = ({'Vgs': None, 'Vds': None},
-                    {'Vgs': -0.1, 'Vds': None, 'Ud0Norm': True, 'ylim': (500, 10e3)},
-                    {'Vgs': -0.1, 'Vds': None, 'Ud0Norm': True},
-                    {'Vgs': -0.1, 'Vds': None, 'Ud0Norm': True, 'ylim': (-5e-4, 0)},
-                    {'Vgs': -0.1, 'Vds': None, 'Ud0Norm': True, 'yscale':'log', 'ylim': (1e-5, 2e-4)})
-
-    TrtInfoFields = {'VTrts.DCMeas': ('DCMeas', 0, 0),
-                     'VTrts.ACMeas': ('ACMeas', 1, 0),
-                     'VTrts.GMeas': ('GMeas', 2, 0),
-                     'TrtTypes.Name': ('Trt Type', 3, 0),
-                     'TrtTypes.Length': ('Lenght', 4, 0),
-                     'TrtTypes.Width': ('Width', 5, 0),
-                     'TrtTypes.Pass': ('Pass', 6, 0),
-                     'TrtTypes.Area': ('Area', 7, 0),
-                     'TrtTypes.Contact': ('Contact', 8, 0),
-                     'Trts.Comments': ('T-Comments', 9, 0)}
-
-    DevInfoFields = {'Devices.Name': ('Device', 0, 0),
+    InfoDevFields = {'Devices.Name': ('Device', 0, 0),
                      'Devices.Comments': ('D-Comments', 1, 0),
                      'Devices.State': ('D-State', 2, 0),
                      'Devices.ExpOK': ('D-ExpOK', 3, 0),
                      'Wafers.Masks': ('W-Masks', 4, 0),
                      'Wafers.Graphene': ('W-Graphene', 5, 0),
                      'Wafers.Comments': ('W-Comments', 6, 0)}
+
+    InfoDCMeasValues = {'Time': ('Meas Date', 0, {}),
+                        'Vds': ('Vds', 1, {}),
+                        'Ud0': ('Ud0', 2, {'Vgs': -0.1,
+                                           'Vds': None,
+                                           'Ud0Norm': True}),
+                        'Rds': ('Rds', 3, {'Vgs': -0.1,
+                                           'Vds': None,
+                                           'Ud0Norm': True}),
+                        'GM': ('GM', 4, {'Vgs': -0.1,
+                                         'Vds': None,
+                                         'Ud0Norm': True})}
+
+    InfoACMeasValues = {'Time': ('Meas Date', 0, {}),
+                        'Vrms': ('Vrms', 1, {'Vgs': -0.1,
+                                             'Vds': None,
+                                             'Ud0Norm': True})}
+
+    InfoMeasValues = {'Name': ('Trt Name', 0, {}),
+                      'Time': ('Meas Date', 1, {}),
+                      'Vds': ('Vds', 2, {'Vgs': -0.1,
+                                         'Vds': None,
+                                         'Ud0Norm': True}),
+                      'Ud0': ('Ud0', 3, {'Vgs': -0.1,
+                                         'Vds': None,
+                                         'Ud0Norm': True}),
+                      'Rds': ('Rds', 4, {'Vgs': -0.1,
+                                         'Vds': None,
+                                         'Ud0Norm': True}),
+                      'GMV': ('GMV', 5, {'Vgs': -0.1,
+                                         'Vds': None,
+                                         'Ud0Norm': True}),
+                      'Vrms': ('Vrms', 6, {'Vgs': -0.1,
+                                           'Vds': None,
+                                           'Ud0Norm': True})}
+
+    # ('IdTrt',0,0) (Header, position, CountOkDevices() Parameters)
+    YeildOK = {'IsOK': ('Working', 0, {'Param' : None,
+                                       'RefVal': None,
+                                       'Lower': None,
+                                       'ParArgs': None}),
+               'GMV': ('GMV', 1, {'Param' : 'GMV',
+                                  'RefVal': 5e-4,
+                                  'Lower': False,
+                                  'ParArgs': {'Vgs': -0.1,
+                                              'Vds': None,
+                                              'Ud0Norm': True}}),
+               'Rds': ('Rds', 2, {'Param' : 'Rds',
+                                  'RefVal': 10e3,
+                                  'Lower': True,
+                                  'ParArgs': {'Vgs': -0.1,
+                                              'Vds': None,
+                                              'Ud0Norm': True}}),
+               'Vrms': ('Vrms', 3, {'Param' : 'Vrms',
+                                    'RefVal': 100e-6,
+                                    'Lower': True,
+                                    'ParArgs': {'Vgs': -0.1,
+                                                'Vds': None,
+                                                'Ud0Norm': True}})}
+
+    ProbeMap = Cortical16Map
+    YeildMaps = {'Rds': ({'ParMap': 'Rds',
+                          'ParArgs': {'Vgs': -0.1,
+                                      'Vds': None,
+                                      'Ud0Norm': True},
+                          'ProbeMap': ProbeMap
+                          },
+                          colors.Normalize(200, 1e4),
+                          '[Ohms]'),
+                 'Vrms': ({'ParMap': 'Vrms',
+                           'ParArgs': {'Vgs': -0.1,
+                                       'Vds': None,
+                                       'Ud0Norm': True},
+                           'ProbeMap': ProbeMap
+                           },
+                           colors.LogNorm(1e-5, 1e-4),
+                           '[Vrms]'),
+                 'GMV': ({'ParMap': 'GMV',
+                           'ParArgs': {'Vgs': -0.1,
+                                       'Vds': None,
+                                       'Ud0Norm': True},
+                           'ProbeMap': ProbeMap
+                           },
+                           colors.Normalize(vmin=5e-3, vmax=0.5e-3),
+                           '[Vrms]')}
+
+    FigsDpi = 150  # Resolution for figures
+    DtMax = np.timedelta64(1, 's')
+
+    DictDC = None
+    DictAC = None
+    DataDC = None
+    DataAC = None
+    SortList = None
+
+    DevGroups = {}
+
+    def __init__(self, FileName):
+        # Init WorkBook, formats
+        self.WorkBook = xlsxwriter.Workbook(FileName)
+        self.FYeild = self.WorkBook.add_format({'num_format': '0.00%',
+                                                'font_color': 'blue',
+                                                'bold': True})
+        self.Fbold = self.WorkBook.add_format({'bold': True})
+        self.FOK = self.WorkBook.add_format({'num_format': '###.00E+2',
+                                             'font_color': 'black'})
+        self.FNOK = self.WorkBook.add_format({'num_format': '###.00E+2',
+                                              'font_color': 'red'})
+        # Init temp folder
+        self.TmpPath = tempfile.mkdtemp(suffix='PyFET')
+
+        self.DevGroups = {}
+
+        # Init Db connection TODO hide credentials
+        self.Mydb = PyFETdb.PyFETdb()
 
     def GetSortData(self, TrtName):
         Conditions = {'Trts.Name=': (TrtName, )}
@@ -213,399 +309,39 @@ class GenXlsDeviceHistory():
         self.DataDC = DataDC
         self.DataAC = DataAC
         self.SortList = SortList
-        self.TimeParsDatdict = (self.DictDC,  # TODO fix this dictionary
-                                self.DictDC,
-                                self.DictDC,
-                                self.DictDC,
-                                self.DictAC)
 
-    def __init__(self, FileName, Conditions):
-        self.dbConditions = Conditions
-        GroupBy = 'Trts.Name'
-        self.TrtsList = Dban.FindCommonValues(Table='DCcharacts',
-                                                        Parameter=GroupBy,
-                                                        Conditions=Conditions)
-        GroupBy = 'Devices.Name'
-        self.DeviceName = Dban.FindCommonValues(Table='DCcharacts',
-                                                          Parameter=GroupBy,
-                                                          Conditions=Conditions)
+    def GetDeviceData(self, DeviceName):
+        DeviceNames = (DeviceName, )
 
-        self.WorkBook = xlsxwriter.Workbook(FileName)
+        CondBase = {}
+        CondBase['Table'] = 'ACcharacts'
+        CondBase['Last'] = True
+        CondBase['GetGate'] = True
+        CondBase['Conditions'] = {'Devices.Name=': DeviceNames,
+                                  'CharTable.FuncStep=': ('Report', )}
+        Data, _ = Dban.GetFromDB(**CondBase)
+        if len(Data) > 0:
+            print DeviceName, 'Getting data from Report Flag'
+            self.DevGroups[DeviceName] = CondBase
+            return Data, CondBase
 
-        self.Fbold = self.WorkBook.add_format({'bold': True})
-        self.FOK = self.WorkBook.add_format({'num_format': '###.00E+2',
-                                             'font_color': 'black'})
-        self.FNOK = self.WorkBook.add_format({'num_format': '###.00E+2',
-                                              'font_color': 'red'})
-        self.TmpPath = tempfile.mkdtemp(suffix='PyGFET')
+        CondBase['Conditions'] = {'Devices.Name=': DeviceNames}
+        Data, _ = Dban.GetFromDB(**CondBase)
+        if len(Data) > 0:
+            print DeviceName, 'Getting data from last ACcharacts'
+            self.DevGroups[DeviceName] = CondBase
+            return Data, CondBase
 
-# Init Db connection
-        self.Mydb = PyFETdb.PyFETdb(host='opter6.cnm.es',
-                                    user='pyfet',
-                                    passwd='p1-f3t17',
-                                    db='pyFET')
+        CondBase['Table'] = 'DCcharacts'
+        Data, _ = Dban.GetFromDB(**CondBase)
+        if len(Data) > 0:
+            print DeviceName, 'Getting data from last DCcharacts'
+            self.DevGroups[DeviceName] = CondBase
+            return Data, CondBase
 
-        self.WorkBook.add_worksheet('Summary') 
-        for TrtName in sorted(self.TrtsList):
-            self.WorkBook.add_worksheet(TrtName)
-
-    def GenFullReport(self):
-        for TrtName in self.TrtsList:
-            self.GenTrtReport(TrtName)
-            plt.close('all')
-
-        Sheet = self.WorkBook.sheetnames['Summary']
-        for v in self.DevInfoFields.values():
-            Sheet.write(v[1], 0, v[0], self.Fbold)
-        Tinf = self.Mydb.GetDevicesInfo(Conditions={'Devices.Name=': self.DeviceName},
-                                        Output=self.DevInfoFields.keys())
-        for k, val in Tinf[0].iteritems():
-            row = self.DevInfoFields[k][1]
-            col = 1
-            Sheet.write(row, col, val)
-
-        Fig, Ax = plt.subplots(len(self.TimePars), 1, sharex=True, figsize=(12, 12))
-        ColCy = GetCycleColors(len(self.TrtsList))
-        for TrtName in self.TrtsList:
-            self.GetSortData(TrtName)
-            TrtColor = ColCy.next()
-            for iPar, Par in enumerate(self.TimePars):
-                PlotXYLine(Data=self.TimeParsDatdict[iPar],
-                           Xvar='Time',
-                           Yvar=Par,
-                           Ax=Ax[iPar],
-                           Color=TrtColor,
-                           **self.TimeParsArgs[iPar])
-        plt.tight_layout()
-        plt.subplots_adjust(hspace=0)
-        fname = tempfile.mktemp(suffix='.png', dir=self.TmpPath)
-        Fig.savefig(fname, dpi=self.FigsDpi)
-        Sheet.insert_image(len(self.DevInfoFields)+2, 0, fname)
-
-    def GenTrtReport(self, TrtName):
-        Sheet = self.WorkBook.sheetnames[TrtName]
-
-        for v in self.TrtInfoFields.values():
-            Sheet.write(v[1], 0, v[0], self.Fbold)
-        Tinf = self.Mydb.GetTrtsInfo(Conditions={'Trts.Name=': (TrtName, )},
-                                     Output=self.TrtInfoFields.keys())
-        for k, val in Tinf[0].iteritems():
-            row = self.TrtInfoFields[k][1]
-            col = 1
-            Sheet.write(row, col, val)
-
-        self.GetSortData(TrtName)
-        self.FillHistoryTable(Sheet, Loc=(len(self.TrtInfoFields)+2, 0))
-# Insert DC time evolution plots
-        col = len(self.MeasDCFields) + len(self.MeasACFields) + 1
-        Plot = PyFETplt()
-        Plot.AddAxes(self.DCTimePlotPars)
-        Plot.PlotDataSet(DataDict=self.DictDC,
-                         Trts=self.DictDC.keys(),
-                         ColorOn='Date',
-                         MarkOn=None)
-        fname = tempfile.mktemp(suffix='.png', dir=self.TmpPath)
-        Plot.Fig.savefig(fname, dpi=self.FigsDpi)
-        Sheet.insert_image(0, 10, fname)
-# Insert AC time evolution plots
-        Plot = PyFETplt()
-        Plot.AddAxes(self.ACTimePlotPars)
-        Plot.PlotDataSet(DataDict=self.DictAC,
-                         Trts=self.DictAC.keys(),
-                         ColorOn='Date',
-                         MarkOn=None)
-        fname = tempfile.mktemp(suffix='.png', dir=self.TmpPath)
-        Plot.Fig.savefig(fname, dpi=self.FigsDpi)
-        Sheet.insert_image(30, 10, fname)
-# Insert time evolution parameters
-        Fig, Ax = plt.subplots(len(self.TimePars), 1, sharex=True)
-        for iPar, Par in enumerate(self.TimePars):
-            Dban.PlotXYVars(Data=self.TimeParsDatdict[iPar],
-                            Xvar='DateTime',
-                            Yvar=Par,
-                            Ax=Ax[iPar],
-                            **self.TimeParsArgs[iPar])
-        plt.tight_layout()
-        plt.subplots_adjust(hspace=0)
-        fname = tempfile.mktemp(suffix='.png', dir=self.TmpPath)
-        Fig.savefig(fname, dpi=self.FigsDpi)
-        Sheet.insert_image(60, 10, fname)
-
-    def FillHistoryTable(self, Sheet, Loc):
-        RowOff = Loc[0]
-        ColOff = Loc[1]
-
-        for k, v in self.MeasDCFields.iteritems():
-            Sheet.write(RowOff, ColOff+v[1], v[0], self.Fbold)
-        coloff = ColOff + len(self.MeasDCFields)
-        for k, v in self.MeasACFields.iteritems():
-            Sheet.write(RowOff, coloff+v[1], v[0], self.Fbold)
-
-        for iMea, SortInd in enumerate(self.SortList):
-            Row = iMea + RowOff + 1
-            DCi = SortInd[1]
-            ACi = SortInd[2]
-
-            if self.DataDC[DCi].IsOK:
-                Format = self.FOK
-            else:
-                Format = self.FNOK
-
-            for par, v in self.MeasDCFields.iteritems():
-                Col = ColOff + v[1]
-                func = self.DataDC[DCi].__getattribute__('Get' + par)
-                val = func(**v[2])
-                if val is None:
-                    continue
-                if hasattr(val, '__iter__'):
-                    if val.size == 0:
-                        continue
-                if par == 'Time':
-                    val = val[0, 0].astype(datetime.datetime).strftime('%x %X')
-                    Sheet.set_column(Col, Col, width=20)
-                Sheet.write(Row, Col, val, Format)
-
-            if ACi is None:
-                continue
-
-            coloff = ColOff + len(self.MeasDCFields)
-            for par, v in self.MeasACFields.iteritems():
-                Col = coloff + v[1]
-                func = self.DataAC[ACi].__getattribute__('Get' + par)
-                val = func(**v[2])
-                if val is None:
-                    continue
-                if hasattr(val, '__iter__'):
-                    if val.size == 0:
-                        continue
-                if par == 'Time':
-                    val = val[0, 0].astype(datetime.datetime).strftime('%x %X')
-                    Sheet.set_column(Col, Col, width=20)
-                Sheet.write(Row, Col, val, Format)
-
-    def close(self):
-        self.WorkBook.close()
-        shutil.rmtree(self.TmpPath)
-
-
-class GenXlsReport():
-     # ('IdTrt',0,0) (Header, position, string Conv)
-    DevInfoFields = {'Devices.Name': ('Device', 0, 0),
-                     'Devices.Comments': ('D-Comments', 1, 0),
-                     'Devices.State': ('D-State', 2, 0),
-                     'Devices.ExpOK': ('D-ExpOK', 3, 0),
-                     'Wafers.Masks': ('W-Masks', 4, 0),
-                     'Wafers.Graphene': ('W-Graphene', 5, 0),
-                     'Wafers.Comments': ('W-Comments', 6, 0)}
-
-    # ('IdTrt',0,0) (Header, position, CountOkDevices() Parameters)
-    DevOKFields = {'IsOK': ('Working', 0, {'RefVal': None,
-                                           'Lower': None,
-                                           'ParArgs': None}),
-                   'Rds': ('Rds', 1, {'RefVal': 5e3,
-                                      'Lower': True,
-                                      'ParArgs': {'Vgs': -0.1,
-                                                  'Vds': None,
-                                                  'Ud0Norm': True}}),
-                   'Vrms': ('Vrms', 2, {'RefVal': 100e-6,
-                                        'Lower': True,
-                                        'ParArgs': {'Vgs': -0.1,
-                                                    'Vds': None,
-                                                    'Ud0Norm': True}})}
-
-    MeasInfoTableLoc = (15, 0)
-    # ('IdTrt',0,0) (Header, position, string Conv)
-    TrtInfoFields = {'VTrts.DCMeas': ('DCMeas', 0, 0),
-                     'VTrts.ACMeas': ('ACMeas', 1, 0),
-                     'VTrts.GMeas': ('GMeas', 2, 0),
-                     'TrtTypes.Name': ('Trt Type', 3, 0),
-                     'TrtTypes.Length': ('Lenght', 4, 0),
-                     'TrtTypes.Width': ('Width', 5, 0),
-                     'TrtTypes.Pass': ('Pass', 6, 0),
-                     'TrtTypes.Area': ('Area', 7, 0),
-                     'TrtTypes.Contact': ('Contact', 8, 0),
-                     'Trts.Comments': ('T-Comments', 9, 0)}
-
-    # ('IdTrt',0,0) (Header, position, CalcParameters)
-    MeasFields = {'Time': ('Meas Date', 0, {}),
-                  'Vds': ('Vds', 1, {'Vgs': -0.1,
-                                     'Vds': None,
-                                     'Ud0Norm': True}),
-                  'Ud0': ('Ud0', 2, {'Vgs': -0.1,
-                                     'Vds': None,
-                                     'Ud0Norm': True}),
-                  'Rds': ('Rds', 3, {'Vgs': -0.1,
-                                     'Vds': None,
-                                     'Ud0Norm': True}),
-                  'GM': ('GM', 4, {'Vgs': -0.1,
-                                   'Vds': None,
-                                   'Ud0Norm': True}),
-                  'Vrms': ('Vrms', 5, {'Vgs': -0.1,
-                                       'Vds': None,
-                                       'Ud0Norm': True})}
-
-    FigsDpi = 150  # Resolution for figures
-
-    ProbeMap = Cortical16Map
-    MapLoc = (0, 4)
-    MapsFigSize = (3, 3)
-    MapSpacing = 6
-    MapPars = ('Rds', 'Vrms')
-    MapParArgs = ({'Vgs': -0.1, 'Vds': None, 'Ud0Norm': True},
-                  {'Vgs': -0.1, 'Vds': None, 'Ud0Norm': True})
-    MapNorm = (colors.Normalize(200, 1e4),
-               colors.LogNorm(1e-5, 1e-4))
-    MapUnits = ('Ohms', 'Vrms')
-
-    CharFigLoc = (None, 0)  # If none after Electchar
-    CharPars = ('Ids', 'GM', 'Vrms', 'Rds')
-    CharParLeg = 'Rds'
-
-    SummaryPlotSpacing = 25
-    SummaryLinePlots =({'Xvar': 'Vgs', 'Yvar': 'Ids', 'Vds':None, 'PlotOverlap': False, 'Ud0Norm':False},
-                       {'Xvar': 'Vgs', 'Yvar': 'GM', 'Vds':None, 'PlotOverlap': False, 'Ud0Norm':False},
-                       {'Xvar': 'Vgs', 'Yvar': 'Vrms', 'Vds':None, 'PlotOverlap': False, 'Ud0Norm':True, 'yscale':'log'})
-
-    SummaryBoxPlots =({'Plot': True, 'Boxplot': False, 'Param': 'Vrms', 'Vgs': -0.1, 'Ud0Norm': True, 'Vds':None, 'yscale':'log'},
-                      {'Plot': True, 'Boxplot': True, 'Param': 'Ud0', 'Vgs': -0.1, 'Ud0Norm': True, 'Vds':None})
-
-    def __init__(self, FileName, Conditions, PathHistory=None):
-# Init WorkBook, formats and temp folder
-        self.WorkBook = xlsxwriter.Workbook(FileName)
-        self.FYeild = self.WorkBook.add_format({'num_format': '0.00%',
-                                                'font_color': 'blue',
-                                                'bold': True})
-        self.Fbold = self.WorkBook.add_format({'bold': True})
-        self.FOK = self.WorkBook.add_format({'num_format': '###.00E+2',
-                                             'font_color': 'black'})
-        self.FNOK = self.WorkBook.add_format({'num_format': '###.00E+2',
-                                              'font_color': 'red'})
-        self.TmpPath = tempfile.mkdtemp(suffix='PyFET')
-# Find devicelist that will be reported
-        GroupBy = 'Devices.Name'
-        self.DevicesList = Dban.FindCommonValues(Table='DCcharacts',
-                                                 Parameter=GroupBy,
-                                                 Conditions=Conditions)
-# Init Db connection
-        self.Mydb = PyFETdb.PyFETdb(host='opter6.cnm.es',
-                                    user='pyfet',
-                                    passwd='p1-f3t17',
-                                    db='pyFET')
-#  Add Worksheets
-        self.WorkBook.add_worksheet('Summary')
-        for DevName in sorted(self.DevicesList):
-            self.WorkBook.add_worksheet(DevName)
-            if PathHistory is not None:
-                Cond = {'Devices.Name=': (DevName, )}
-                XlsHist = GenXlsDeviceHistory(PathHistory + DevName +'.xlsx', Cond)
-                XlsHist.GenFullReport()
-                XlsHist.close()
-
-    def GenFullReport(self):
-        for DevName in self.DevicesList:
-            self.GenDeviceReport(DevName)
-        self.GenSummaryReport()
-
-    def GenDeviceReport(self, DeviceName):
-        Sheet = self.WorkBook.sheetnames[DeviceName]
-# Get Data
-        Data, _ = self.GetDeviceData(DeviceName)
-        self.FillDeviceInfoHeaders(Sheet)
-        self.FillDeviceInfo(Sheet, DeviceName, Data)
-# Insert data tables and Charts
-        self.FillTrtValues(Sheet, Data, Loc=self.MeasInfoTableLoc)
-        self.InsertCharFig(Sheet, Data)
-        self.InsertCharMaps(Sheet, Data)
-        plt.close('all')
-
-    def GenSummaryReport(self):
-        Sheet = self.WorkBook.sheetnames['Summary']
-        self.FillDeviceInfoHeaders(Sheet, Vertical=False, Yeild=True)
-        Sheet.set_column(0, 15, width=12)
-        Yeild = len(self.ProbeMap)-1
-# Fill device info fields and count Ok devices
-        Grs = {}
-        Counts = {}
-        for k in self.DevOKFields.keys():
-            Counts[k] = 0
-        for idev, DevName in enumerate(sorted(self.DevicesList)):
-            Data, Grs[DevName] = self.GetDeviceData(DevName)
-            counts = self.FillDeviceInfo(Sheet, DevName, Data,
-                                         LocOff=(idev, 0),
-                                         Vertical=False,
-                                         Yeild=Yeild)
-            for k in self.DevOKFields.keys():
-                Counts[k] += counts[k]
-# Fill yeild
-        if len(self.DevicesList) == 0:
-            return
-        row = idev + 2
-        for k, val in self.DevOKFields.iteritems():
-            col = val[1] + len(self.DevInfoFields)
-            yeild = Counts[k]/float(Yeild*(idev+1))
-            Sheet.write(row, col, yeild, self.FYeild)
-        try:
-# Insert Line plots
-            for ipl, LiPlots in enumerate(self.SummaryLinePlots):
-                Fig, _ = Dban.SearchAndPlot(Groups=Grs, **LiPlots)
-                fname = tempfile.mktemp(suffix='.png', dir=self.TmpPath)
-                Fig.savefig(fname, dpi=self.FigsDpi)
-                Sheet.insert_image(idev+4+ipl*self.SummaryPlotSpacing, 7, fname)
-# Insert Boxplots
-            for ipl, BoxPlots in enumerate(self.SummaryBoxPlots):
-                Dban.SearchAndGetParam(Groups=Grs, **BoxPlots)
-                fname = tempfile.mktemp(suffix='.png', dir=self.TmpPath)
-                plt.gcf().savefig(fname, dpi=self.FigsDpi)
-                Sheet.insert_image(idev+4+ipl*self.SummaryPlotSpacing, 0, fname)
-        except:
-            print 'Error plotting'
-
-    def InsertCharFig(self, Sheet, Data):
-        Plot = PyFETplt(Size=(12, 10))
-        Plot.AddAxes(self.CharPars)
-        Plot.PlotDataSet(DataDict=Data,
-                         Trts=Data.keys())
-        Plot.AddLegend(Axn=self.CharParLeg, fontsize='x-small')
-        fname = tempfile.mktemp(suffix='.png', dir=self.TmpPath)
-        Plot.Fig.savefig(fname, dpi=self.FigsDpi)
-
-        if self.CharFigLoc[0] is None:
-            Row = len(Data) + self.MeasInfoTableLoc[0] + 2
-        else:
-            Row = self.CharFigLoc[0]
-        Sheet.insert_image(Row, self.CharFigLoc[1], fname)
-
-    def InsertCharMaps(self, Sheet, Data):
-        sfmt = ticker.ScalarFormatter(useMathText=True)
-        sfmt.set_powerlimits((2, 2))
-        for ip, Par in enumerate(self.MapPars):
-            Map = CalcParMap(Data=Data,
-                             ParMap=Par,
-                             ParArgs=self.MapParArgs[ip],
-                             ProbeMap=Cortical16Map)
-
-            if Map is None:
-                continue
-            Fig, Ax = plt.subplots(figsize=self.MapsFigSize)
-            Cax = Ax.imshow(Map, cmap=cm.afmhot, norm=self.MapNorm[ip])
-            Ax.set_xlabel('column')
-            Ax.set_ylabel('row')
-            Ax.set_xticks(np.arange(self.ProbeMap['Shape'][0]))
-            Ax.set_yticks(np.arange(self.ProbeMap['Shape'][1]))
-            Ax.set_title(Par)
-
-            cbar = Fig.colorbar(Cax, format=sfmt)
-            cbar.set_label(self.MapUnits[ip], rotation=270, labelpad=10)
-
-            fname = tempfile.mktemp(suffix='.png', dir=self.TmpPath)
-            plt.tight_layout()
-            Fig.savefig(fname, dpi=self.FigsDpi)
-            col = self.MapLoc[1] + ip * self.MapSpacing
-            Sheet.insert_image(self.MapLoc[0], col, fname)
-
-    def CountOkDevices(self, DeviceName=None, Data=None,
-                       Param=None, ParArgs=None,
-                       RefVal=None, Lower=True):
+    def GetOKTrts(self, DeviceName=None, Data=None,
+                  Param=None, ParArgs=None,
+                  RefVal=None, Lower=True):
         Count = 0
         if Data is None:
             Data, _ = self.GetDeviceData(DeviceName)
@@ -634,263 +370,570 @@ class GenXlsReport():
 
         return Count
 
-    def GetDeviceData(self, DeviceName):
-        DeviceNames = (DeviceName, )
-
-        CondBase = {}
-        CondBase['Table'] = 'ACcharacts'
-        CondBase['Last'] = True
-        CondBase['GetGate'] = True
-        CondBase['Conditions'] = {'Devices.Name=': DeviceNames,
-                                  'CharTable.FuncStep=': ('Report', )}
-        Data, _ = Dban.GetFromDB(**CondBase)
-        if len(Data) > 0:
-            print DeviceName, 'Getting data from Report Flag'
-            return Data, CondBase
-
-        CondBase['Conditions'] = {'Devices.Name=': DeviceNames}
-        Data, _ = Dban.GetFromDB(**CondBase)
-        if len(Data) > 0:
-            print DeviceName, 'Getting data from last ACcharacts'
-            return Data, CondBase
-
-        CondBase['Table'] = 'DCcharacts'
-        Data, _ = Dban.GetFromDB(**CondBase)
-        if len(Data) > 0:
-            print DeviceName, 'Getting data from last DCcharacts'
-            return Data, CondBase
-
-    def FillDeviceInfoHeaders(self, Sheet, LocOff=(0, 0),
-                              Vertical=True, Yeild=None):
-        ColOff = LocOff[1]
+    def WriteHeaders(self, Sheet, DictList, LocOff=(0, 0),
+                     Vertical=True, WriteKeys=False):
         RowOff = LocOff[0]
-# Write headers of device info in rows
-        for val in self.DevInfoFields.values():
-            if Vertical:
-                row = RowOff + val[1]
-                col = ColOff
-            else:
-                row = RowOff
-                col = ColOff + val[1]
-            Sheet.write(row, col, val[0], self.Fbold)
-# Write Headers for OK counts
-        for val in self.DevOKFields.values():
-            if Vertical:
-                row = RowOff + val[1] + len(self.DevInfoFields)
-                col = ColOff
-            else:
-                row = RowOff
-                col = ColOff + val[1] + len(self.DevInfoFields)
-            Sheet.write(row, col, val[0], self.Fbold)
-# Write Headers for OK counts Yield
-        if Yeild is not None:
-            for val in self.DevOKFields.values():
+        ColOff = LocOff[1]
+        DictOff = 0
+        for Dict in DictList:
+            for k, val in Dict.iteritems():
                 if Vertical:
-                    row = RowOff + val[1] + len(self.DevInfoFields) + len(self.DevOKFields)
+                    row = RowOff + val[1] + DictOff
                     col = ColOff
                 else:
                     row = RowOff
-                    col = ColOff + val[1] + len(self.DevInfoFields) + len(self.DevOKFields)
-                Sheet.write(row, col, 'Yeild ' + val[0], self.Fbold)
-
-    def FillDeviceInfo(self, Sheet, DeviceName, Data,
-                       LocOff=(0, 0), Vertical=True, Yeild=None):
-        ColOff = LocOff[1]
-        RowOff = LocOff[0]
-# Fill Device info fields
-        Tinf = self.Mydb.GetDevicesInfo(Conditions={'Devices.Name=': (DeviceName, )},
-                                        Output=self.DevInfoFields.keys())
-        for k, val in Tinf[0].iteritems():
-            if Vertical:
-                row = RowOff + self.DevInfoFields[k][1]
-                col = ColOff + 1
-            else:
-                row = RowOff + 1
-                col = ColOff + self.DevInfoFields[k][1]
-            Sheet.write(row, col, val)
-# Fill OK counts
-        Counts = {}
-        for k, v in self.DevOKFields.iteritems():
-            if Vertical:
-                row = RowOff + v[1] + len(self.DevInfoFields)
-                col = ColOff + 1
-            else:
-                row = RowOff + 1
-                col = ColOff + v[1] + len(self.DevInfoFields)
-            count = self.CountOkDevices(Data=Data, Param=k, **v[2])
-            Sheet.write(row, col, count)
-            Counts[k] = count
-# Fill OK counts Yield
-        if Yeild is not None:
-            for k, v in self.DevOKFields.iteritems():
-                if Vertical:
-                    row = RowOff + v[1] + len(self.DevInfoFields) + len(self.DevOKFields)
-                    col = ColOff + 1
+                    col = ColOff + val[1] + DictOff
+                if WriteKeys:
+                    header = k
                 else:
-                    row = RowOff + 1
-                    col = ColOff + v[1] + len(self.DevInfoFields) + len(self.DevOKFields)
-                yeild = Counts[k]/float(Yeild)
-                Sheet.write(row, col, yeild, self.FYeild)
+                    header = val[0]
+                Sheet.write(row, col, header, self.Fbold)
+            DictOff += len(Dict)
 
-        return Counts
+    def WriteDBValues(self, Sheet, DictList, DBSearch, LocOff=(0, 0),
+                      Vertical=True, WriteHeader=True, Format=None):
 
-    def FillTrtValues(self, Sheet, Data, Loc):
-        RowOff = Loc[0]
-        ColOff = Loc[1]
-# Write Header
-        Sheet.write(RowOff, ColOff, 'Trt Name', self.Fbold)
-        Sheet.set_column(ColOff, ColOff, width=20)
-        for Par, Parv in self.MeasFields.iteritems():
-            Col = 1+ColOff+Parv[1]
-            Sheet.write(RowOff, Col, Parv[0], self.Fbold)
-            if Par == 'Time':
-                Sheet.set_column(Col, Col, width=20)
-        for val in self.TrtInfoFields.values():
-            Col = 2 + ColOff + val[1] + len(self.MeasFields)
-            Sheet.write(RowOff, Col, val[0], self.Fbold)
-# Iter for each Trt in Data
-        for iTrt, (Trtn, Dat) in enumerate(sorted(Data.iteritems())):
-            Row = 1 + RowOff + iTrt
-            Sheet.write(Row, 0, Trtn, self.Fbold)
-            if Dat[0].IsOK:
-                Format = self.FOK
+        if WriteHeader:
+            self.WriteHeaders(Sheet=Sheet,
+                              DictList=DictList,
+                              LocOff=LocOff,
+                              Vertical=Vertical)
+            if Vertical:
+                RowOff = LocOff[0]
+                ColOff = LocOff[1] + 1
             else:
-                Format = self.FNOK
-# Fill Meas fields
-            for Par, Parv in self.MeasFields.iteritems():
-                Col = 1 + ColOff + Parv[1]
-                func = Dat[0].__getattribute__('Get' + Par)
-                val = func(**Parv[2])
+                RowOff = LocOff[0] + 1
+                ColOff = LocOff[1]
+        else:
+            if Vertical:
+                RowOff = LocOff[0]
+                ColOff = LocOff[1] + 1
+            else:
+                RowOff = LocOff[0] + 1
+                ColOff = LocOff[1]
+
+        DictOff = 0
+        for Dict in DictList:
+            DBRes = self.Mydb.GetCharactInfo(Table='DCcharacts',
+                                             Conditions=DBSearch,
+                                             Output=Dict.keys())
+            for ir, Res in enumerate(DBRes):
+                for k, val in Res.iteritems():
+                    if Vertical:
+                        row = RowOff + Dict[k][1] + DictOff
+                        col = ColOff + ir
+                    else:
+                        row = RowOff + ir
+                        col = ColOff + Dict[k][1] + DictOff
+                    Sheet.write(row, col, val, Format)
+            DictOff += len(Dict)
+
+    def WriteMeasValues(self, Sheet, DictList, DataList,
+                        LocOff=(0, 0), Vertical=True, Format=None):
+
+        RowOff = LocOff[0]
+        ColOff = LocOff[1]
+        DictOff = 0
+
+        for idi, Dict in enumerate(DictList):
+            if DataList[idi] is None:
+                continue
+            for par, v in Dict.iteritems():
+                if Vertical:
+                    row = RowOff + v[1] + DictOff
+                    col = ColOff
+                else:
+                    row = RowOff
+                    col = ColOff + v[1] + DictOff
+
+                func = DataList[idi].__getattribute__('Get' + par)
+                val = func(**v[2])
                 if val is None:
                     continue
                 if hasattr(val, '__iter__'):
                     if val.size == 0:
                         continue
-                if Par == 'Time':
+                if par == 'Time':
                     val = val[0, 0].astype(datetime.datetime).strftime('%x %X')
-                    Sheet.write(Row, Col, val)
-                    continue
-                Sheet.write(Row, Col, val, Format)
-# Fill Trt Info fields
-            Tinf = self.Mydb.GetTrtsInfo(Conditions={'Trts.Name=': (Trtn, )},
-                                         Output=self.TrtInfoFields.keys())
-            for k, val in Tinf[0].iteritems():
-                Col = 2 + ColOff + self.TrtInfoFields[k][1] + len(self.MeasFields)
-                Sheet.write(Row, Col, val, Format)
+                    Sheet.set_column(col, col, width=20)
+
+                try:
+                    Sheet.write(row, col, val, Format)
+                except:
+                    print 'Error writing', par, val
+            DictOff += len(Dict)
+
+    def WriteTrtMeasHist(self, TrtName, Sheet, Loc, Vertical=False):
+        RowOff = Loc[0]
+        ColOff = Loc[1]
+        DictList = (self.InfoDCMeasValues,
+                    self.InfoACMeasValues)
+
+        self.WriteHeaders(Sheet,
+                          DictList=DictList,
+                          LocOff=Loc,
+                          Vertical=Vertical)
+
+        self.GetSortData(TrtName)
+
+        for iMea, SortInd in enumerate(self.SortList):
+            DCi = SortInd[1]
+            ACi = SortInd[2]
+
+            if self.DataDC[DCi].IsOK:
+                Format = self.FOK
+            else:
+                Format = self.FNOK
+
+            if ACi is None:
+                DataList = (self.DataDC[DCi], None)
+            else:
+                DataList = (self.DataDC[DCi], self.DataAC[ACi])
+
+            self.WriteMeasValues(Sheet=Sheet,
+                                 DictList=DictList,
+                                 DataList=DataList,
+                                 LocOff=(RowOff + iMea + 1, ColOff),
+                                 Vertical=Vertical,
+                                 Format=Format)
+
+    def WriteDevTrtsMeas(self, Sheet, Data, Loc, Vertical=False):
+        #  TODO Check the vertical behivior
+        RowOff = Loc[0]
+        ColOff = Loc[1]
+
+# Write Header
+        self.WriteHeaders(Sheet=Sheet,
+                          DictList=(self.InfoMeasValues,
+                                    self.InfoTrtFields),
+                          LocOff=Loc,
+                          Vertical=Vertical)
+
+# Iter for each Trt in Data
+        for iTrt, (Trtn, Dat) in enumerate(sorted(Data.iteritems())):
+            if Dat[0].IsOK:
+                Format = self.FOK
+            else:
+                Format = self.FNOK
+# Fill Meas fields
+            row = RowOff + iTrt + 1
+            col = ColOff
+            self.WriteMeasValues(Sheet=Sheet,
+                                 DictList=(self.InfoMeasValues, ),
+                                 DataList=(Dat[0], ),
+                                 LocOff=(row, col),
+                                 Vertical=Vertical,
+                                 Format=Format)
+            row = RowOff + iTrt
+            col = ColOff + len(self.InfoMeasValues)
+            self.WriteDBValues(Sheet=Sheet,
+                               DictList=(self.InfoTrtFields, ),
+                               DBSearch={'Trts.Name=': (Trtn, )},
+                               LocOff=(row, col),
+                               Vertical=Vertical,
+                               WriteHeader=False,
+                               Format=Format)
+
+    def WriteOKcount(self, Sheet, Loc, Data, Vertical=True, WriteHeader=True):
+        RowOff = Loc[0]
+        ColOff = Loc[1]
+        TotalCount = float(len(self.ProbeMap)-1)
+
+        if WriteHeader:
+            self.WriteHeaders(Sheet=Sheet,
+                              DictList=(self.YeildOK,),
+                              LocOff=Loc,
+                              Vertical=Vertical)
+
+        for v in self.YeildOK.values():
+            count = self.GetOKTrts(Data=Data, **v[2])
+            if Vertical:
+                row = RowOff + v[1]
+                col = ColOff + 1
+            else:
+                row = RowOff + 1
+                col = ColOff + v[1]
+            Sheet.write(row, col, count)
+            if Vertical:
+                row = RowOff + v[1]
+                col = ColOff + 2
+            else:
+                row = RowOff + 1
+                col = ColOff + v[1] + len(self.YeildOK)
+            Sheet.write(row, col, count/TotalCount, self.FYeild)
+
+    def InsertPyGFETplot(self, Sheet, PlotPars, DataDict,
+                         ColorOn, Loc=(0, 0), Legend=False):
+        Plot = PyFETplt()
+        Plot.AddAxes(PlotPars)
+        Plot.PlotDataSet(DataDict=DataDict,
+                         ColorOn=ColorOn,
+                         MarkOn=None)
+        if Legend:
+            Plot.AddLegend()
+        self.InsertFigure(Sheet=Sheet, Loc=Loc)
+
+    def InsertCharMap(self, Sheet, Data, Loc, CalcMapArgs, norm,
+                      Units, figsize=(3, 3)):
+        sfmt = ticker.ScalarFormatter(useMathText=True)
+        sfmt.set_powerlimits((2, 2))
+
+        Map = CalcParMap(Data=Data, **CalcMapArgs)
+        if Map is None:
+            return
+
+        Fig, Ax = plt.subplots(figsize=figsize)
+        Cax = Ax.imshow(Map, cmap=cm.afmhot, norm=norm)
+        Ax.set_xlabel('column')
+        Ax.set_ylabel('row')
+        Ax.set_xticks(np.arange(CalcMapArgs['ProbeMap']['Shape'][1]))
+        Ax.set_yticks(np.arange(CalcMapArgs['ProbeMap']['Shape'][0]))
+        Ax.set_title(CalcMapArgs['ParMap'])
+
+        cbar = Fig.colorbar(Cax, format=sfmt)
+        cbar.set_label(Units, rotation=270, labelpad=10)
+
+        self.InsertFigure(Sheet=Sheet, Loc=Loc, Fig=Fig)
+
+    def InsertFigure(self, Sheet, Loc, Fig=None, Close=True):
+        fname = tempfile.mktemp(suffix='.png', dir=self.TmpPath)
+        if Fig is None:
+            Fig = plt.gcf()
+        Fig.savefig(fname, dpi=self.FigsDpi)
+        Sheet.insert_image(Loc[0], Loc[1], fname)
+
+        if Close:
+            plt.close('all')
 
     def close(self):
+        #  Close and save the XLS file and clear temp folder
         self.WorkBook.close()
         shutil.rmtree(self.TmpPath)
 
 
-class GenXlsFittingReport():
-    FigsDpi = 150  # Resolution for figures!
+class GenXlsTrtsHistory(XlsReportBase):
+    TimePlotParsDC = ('Ids', 'Rds', 'GM', 'Ig')
+    TimePlotParsAC = ('Ids', 'GM', 'Vrms', 'Irms')
 
-    XVar = 'IonStrength'
-    XVarLog = True
-    YVar = 'Ud0'
-    YVarLog = False
-    TrtInfoFields = {'Trts.Name': ('Trt Name', 0, 0),
-                     'VTrts.DCMeas': ('DCMeas', 1, 0),
-                     'VTrts.ACMeas': ('ACMeas', 2, 0),
-                     'VTrts.GMeas': ('GMeas', 3, 0),
-                     'TrtTypes.Name': ('Trt Type', 4, 0),
-                     'TrtTypes.Length': ('Lenght', 5, 0),
-                     'TrtTypes.Width': ('Width', 6, 0),
-                     'TrtTypes.Pass': ('Pass', 7, 0),
-                     'TrtTypes.Area': ('Area', 8, 0),
-                     'TrtTypes.Contact': ('Contact', 9, 0),
-                     'Trts.Comments': ('T-Comments', 10, 0)}
+    TimeEvolPars = {'Ud0': ('DC', {'Vgs': None,
+                                   'Vds': None}),
+                    'Rds': ('DC', {'Vgs': -0.1,
+                                   'Vds': None,
+                                   'Ud0Norm': True,
+                                   'ylim': (500, 10e3)}),
+                    'Ids': ('DC', {'Vgs': -0.1,
+                                   'Vds': None,
+                                   'Ud0Norm': True}),
+                    'GM': ('DC', {'Vgs': -0.1,
+                                  'Vds': None,
+                                  'Ud0Norm': True,
+                                  'ylim': (-5e-4, 0)}),
+                    'Vrms': ('AC', {'Vgs': -0.1,
+                                    'Vds': None,
+                                    'Ud0Norm': True,
+                                    'yscale': 'log',
+                                    'ylim': (1e-5, 2e-4)})}
 
-    def __init__(self, FileName, GroupBase):
+    def __init__(self, FileName, Conditions):
+        super(GenXlsTrtsHistory, self).__init__(FileName=FileName)
+
+        self.dbConditions = Conditions
         GroupBy = 'Trts.Name'
-        self.GroupBase = GroupBase
-        self.TrtsList = Dban.FindCommonValues(Parameter=GroupBy,
-                                              **GroupBase)
-
-        self.WorkBook = xlsxwriter.Workbook(FileName)
-
-        self.Fbold = self.WorkBook.add_format({'bold': True})
-        self.FOK = self.WorkBook.add_format({'num_format': '###.00E+2',
-                                             'font_color': 'black'})
-        self.FNOK = self.WorkBook.add_format({'num_format': '###.00E+2',
-                                              'font_color': 'red'})
-        self.TmpPath = tempfile.mkdtemp(suffix='PyGFET')
-
-# Init Db connection
-        self.Mydb = PyFETdb.PyFETdb(host='opter6.cnm.es',
-                                    user='pyfet',
-                                    passwd='p1-f3t17',
-                                    db='pyFET')
+        self.TrtsList = Dban.FindCommonValues(Table='DCcharacts',
+                                              Parameter=GroupBy,
+                                              Conditions=Conditions)
+        GroupBy = 'Devices.Name'
+        self.DeviceName = Dban.FindCommonValues(Table='DCcharacts',
+                                                Parameter=GroupBy,
+                                                Conditions=Conditions)
 
         self.WorkBook.add_worksheet('Summary')
         for TrtName in sorted(self.TrtsList):
             self.WorkBook.add_worksheet(TrtName)
 
     def GenFullReport(self):
+        #  Init Summary plot
+        self.SummaryFigCol = GetCycleColors(len(self.TrtsList))
+        self.SummaryFig, self.SummaryAx = plt.subplots(len(self.TimeEvolPars),
+                                                       1,
+                                                       sharex=True,
+                                                       figsize=(12, 12))
+
+        for TrtName in self.TrtsList:
+            self.GenTrtReport(TrtName)
+
+#  Genertate Summary sheet
         Sheet = self.WorkBook.sheetnames['Summary']
-        Sheet.write(0, 0, 'Trt Name', self.Fbold)
-        Sheet.write(0, 1, 'Offset', self.Fbold)
-        Sheet.write(0, 2, 'Slope', self.Fbold)
-        Sheet.write(0, 3, 'R2', self.Fbold)
-
-        for it, TrtName in enumerate(sorted(self.TrtsList)):
-            Res = self.GenTrtReport(TrtName)
-
-            Sheet.write(it+1, 0, TrtName, self.Fbold)
-            Sheet.write(it+1, 1, Res.params[0])
-            Sheet.write(it+1, 2, Res.params[1])
-            Sheet.write(it+1, 3, Res.rsquared)
-            plt.close('all')
+        self.WriteDBValues(Sheet,
+                           LocOff=(0, 0),
+                           DictList=(self.InfoTrtFields, ),
+                           DBSearch=self.dbConditions,
+                           Vertical=False)
+#  Insert summary plot generated updated at GenTrtReport
+        self.SummaryFig.tight_layout()
+        self.SummaryFig.subplots_adjust(hspace=0)
+        self.InsertFigure(Sheet=Sheet, Fig=self.SummaryFig, Loc=(0, 15))
 
     def GenTrtReport(self, TrtName):
         Sheet = self.WorkBook.sheetnames[TrtName]
-        Sheet.write(0, 0, 'Trt Name', self.Fbold)
-        Sheet.write(0, 1, TrtName)
+        self.WriteDBValues(Sheet,
+                           LocOff=(0, 0),
+                           DictList=(self.InfoTrtFields, ),
+                           DBSearch={'Trts.Name=': (TrtName, )})
 
-# Insert Trt info fields
-        for v in self.TrtInfoFields.values():
-            Sheet.write(v[1], 0, v[0], self.Fbold)
-        Tinf = self.Mydb.GetTrtsInfo(Conditions={'Trts.Name=': (TrtName, )},
-                                     Output=self.TrtInfoFields.keys())
-        for k, val in Tinf[0].iteritems():
-            row = self.TrtInfoFields[k][1]
-            col = 1
-            Sheet.write(row, col, val)
+        self.WriteTrtMeasHist(TrtName=TrtName,
+                              Sheet=Sheet,
+                              Loc=(len(self.InfoTrtFields)+2, 0))
 
-# Insert debug Ids Plot
-        self.GroupBase['Conditions'].update({'Trts.Name=': (TrtName,)})
+        Loc = (0, len(self.InfoDCMeasValues) + len(self.InfoACMeasValues) + 1)
+        self.InsertPyGFETplot(Sheet=Sheet,
+                              Loc=Loc,
+                              PlotPars=self.TimePlotParsDC,
+                              DataDict=self.DictDC,
+                              ColorOn='Date')
+
+        Loc = (30, len(self.InfoDCMeasValues) + len(self.InfoACMeasValues) + 1)
+        self.InsertPyGFETplot(Sheet=Sheet,
+                              Loc=Loc,
+                              PlotPars=self.TimePlotParsAC,
+                              DataDict=self.DictAC,
+                              ColorOn='Date')
+
+#TODO fix this part in a generic fucntion
+# Generate time evolution plots
+        Fig, Ax = plt.subplots(len(self.TimeEvolPars), 1, sharex=True)
+        for i, (k, v) in enumerate(self.TimeEvolPars.iteritems()):
+            if v[0] == 'DC':
+                dat = self.DictDC
+            elif v[0] == 'AC':
+                dat = self.DictAC
+            
+            Dban.PlotXYVars(Data=dat,
+                            Xvar='DateTime',
+                            Yvar=k,
+                            Ax=Ax[i],
+                            **v[1])
+# Update summary plot
+            PlotXYLine(Data=dat,
+                       Xvar='Time',
+                       Yvar=k,
+                       Ax=self.SummaryAx[i],
+                       Color=self.SummaryFigCol.next(),
+                       **v[1])
+
+        Fig.tight_layout()
+        Fig.subplots_adjust(hspace=0)
+# insert time evolution plots
+        self.InsertFigure(Sheet=Sheet, Fig=Fig, Loc=(60, 10))
+
+
+class GenXlsReport(XlsReportBase):
+    
+    CharPars = ('Ids', 'GM', 'Vrms', 'Rds')
+
+    SummaryPlotSpacing = 25
+    SummaryLinePlots = ({'Xvar': 'Vgs', 'Yvar': 'Ids',
+                         'Vds': None, 'PlotOverlap': False, 'Ud0Norm': False},
+                        {'Xvar': 'Vgs', 'Yvar': 'GM',
+                        'Vds': None, 'PlotOverlap': False, 'Ud0Norm': False},
+                        {'Xvar': 'Vgs', 'Yvar': 'Vrms',
+                         'Vds': None, 'PlotOverlap': False, 'Ud0Norm': True,
+                         'yscale': 'log'})
+
+    SummaryBoxPlots = ({'Plot': True, 'Boxplot': False,
+                        'Param': 'Vrms', 'Vgs': -0.1,
+                        'Ud0Norm': True, 'Vds': None, 'yscale': 'log'},
+                       {'Plot': True, 'Boxplot': True,
+                        'Param': 'Ud0', 'Vgs': -0.1,
+                        'Ud0Norm': True, 'Vds': None})
+
+    def __init__(self, FileName, Conditions, PathHistory=None):
+        super(GenXlsReport, self).__init__(FileName=FileName)
+        
+# Find devicelist that will be reported
+        self.dbConditions = Conditions
+        GroupBy = 'Devices.Name'        
+        self.DevicesList = Dban.FindCommonValues(Table='DCcharacts',
+                                                 Parameter=GroupBy,
+                                                 Conditions=Conditions)
+#  Add Worksheets
+        self.WorkBook.add_worksheet('Summary')
+        for DevName in sorted(self.DevicesList):
+            self.WorkBook.add_worksheet(DevName)
+#            if PathHistory is not None:
+#                Cond = {'Devices.Name=': (DevName, )}
+#                XlsHist = GenXlsDeviceHistory(PathHistory + DevName +'.xlsx', Cond)
+#                XlsHist.GenFullReport()
+#                XlsHist.close()
+
+    def GenFullReport(self):
+        Sheet = self.WorkBook.sheetnames['Summary']
+        self.WriteHeaders(Sheet=Sheet,
+                          LocOff=(0, 0),
+                          DictList=(self.InfoDevFields,
+                                    self.YeildOK,
+                                    self.YeildOK),
+                          Vertical=False)
+
+        for idev, DevName in enumerate(sorted(self.DevicesList)):
+            Data = self.GenDeviceReport(DevName)
+            self.WriteOKcount(Sheet=Sheet,
+                              Data=Data,
+                              Loc=(idev, len(self.InfoDevFields)),
+                              Vertical=False,
+                              WriteHeader=False)
+            self.WriteDBValues(Sheet,
+                               LocOff=(idev, 0),
+                               DictList=(self.InfoDevFields, ),
+                               DBSearch={'Devices.Name=': (DevName, )},
+                               WriteHeader=False,
+                               Vertical=False)
+
+        Sheet.set_column(0, len(self.InfoDevFields), width=12)
+
+        for ipl, LiPlots in enumerate(self.SummaryLinePlots):
+            Fig, _ = Dban.SearchAndPlot(Groups=self.DevGroups, **LiPlots)
+            self.InsertFigure(Sheet=Sheet,
+                              Loc=(idev + 2 + ipl*self.SummaryPlotSpacing, 7),
+                              Fig=Fig)
+        for ipl, BoxPlots in enumerate(self.SummaryBoxPlots):
+            Dban.SearchAndGetParam(Groups=self.DevGroups, **BoxPlots)
+            self.InsertFigure(Sheet=Sheet,
+                              Loc=(idev + 2 + ipl*self.SummaryPlotSpacing, 0))
+
+    def GenDeviceReport(self, DeviceName):
+        Sheet = self.WorkBook.sheetnames[DeviceName]
+        Sheet.set_column(0, 0, width=20)
+        self.WriteDBValues(Sheet,
+                           LocOff=(0, 0),
+                           DictList=(self.InfoDevFields, ),
+                           DBSearch={'Devices.Name=': (DeviceName, )})
+
+        Data, _ = self.GetDeviceData(DeviceName)
+        self.WriteOKcount(Sheet=Sheet,
+                          Loc=(len(self.InfoDevFields), 0),
+                          Data=Data)
+        Loc = (15, 0)
+        self.WriteDevTrtsMeas(Sheet, Data, Loc)
+
+        Loc = (Loc[0] + len(Data) + 2,
+               0)
+        self.InsertPyGFETplot(Sheet=Sheet,
+                              Loc=Loc,
+                              PlotPars=self.CharPars,
+                              DataDict=Data,
+                              ColorOn='Trt',
+                              Legend=True)
+
+        for i, v in enumerate(self.YeildMaps.values()):
+            self.InsertCharMap(Sheet=Sheet,
+                               Data=Data,
+                               Loc=(0, 5+i*5),
+                               CalcMapArgs=v[0],
+                               norm=v[1],
+                               Units=v[2])
+        return Data
+
+
+class FittingReport(object):
+    XVar = 'IonStrength'
+    XVarLog = True
+    YVar = 'Ud0'
+    YVarLog = False
+    GroupBase = None
+
+    figsize=(4, 4)
+
+    InfoMeasValues = {'Name': ('Trt Name', 0, {}),
+                      'Time': ('Meas Date', 1, {}),
+                      'Vds': ('Vds', 2, {'Vgs': -0.1,
+                                         'Vds': None,
+                                         'Ud0Norm': True}),
+                      'Ud0': ('Ud0', 3, {'Vgs': -0.1,
+                                         'Vds': None,
+                                         'Ud0Norm': True}),
+                      'IonStrength': ('IonStrength', 4, {}),
+                      'Ph': ('Ph', 5, {}),
+                      'FuncStep': ('FuncStep', 6, {}),
+                      'Comments': ('Comments', 7, {})}
+
+    FittingValues = {'R2': ('rsquared', 0, None),
+                     'Slope': ('params', 1, 1),
+                     'OffSet': ('params', 2, 0)}
+
+    def WriteFittingResults(self, Sheet, Loc, WriteHeaders=True):
+        if WriteHeaders:
+            self.XlsRep.WriteHeaders(Sheet,
+                                     DictList=(self.FittingValues, ),
+                                     LocOff=Loc,
+                                     Vertical=False,
+                                     WriteKeys=True)
+        row = Loc[0]+1
+        for v in self.FittingValues.values():
+            try:
+                val = self.Res.__getattribute__(v[0])
+                if v[2] is not None:
+                    val = val[v[2]]
+                col = Loc[1]+v[1]
+                Sheet.write(row, col, val)
+            except:
+                print 'Error in fitting write'
+
+    def __init__(self, XVar, XVarLog, YVar, YVarLog, GroupBase, XlsRep):
+        self.XVar = XVar
+        self.XVarLog = XVarLog
+        self.YVar = YVar
+        self.YVarLog = YVarLog
+        self.GroupBase = GroupBase
+        self.XlsRep = XlsRep
+
+    def GenDebugPlot(self, Sheet, Loc):
+        fig, Ax = plt.subplots(figsize=self.figsize)
         fig, _ = Dban.PlotGroupBy(GroupBase=self.GroupBase,
                                   GroupBy='CharTable.{}'.format(self.XVar),
                                   Xvar='Vgs',
                                   Yvar='Ids',
                                   PlotOverlap=True,
-                                  Ud0Norm=False)
-        fname = tempfile.mktemp(suffix='.png', dir=self.TmpPath)
-        fig.savefig(fname, dpi=self.FigsDpi)
-        Sheet.insert_image(0, 14, fname)
+                                  Ud0Norm=False,
+                                  Ax=Ax)
+        self.XlsRep.InsertFigure(Sheet, Loc)
 
-# Calc and insert linear fitting
-        RowOff = 26
-        Sheet.set_column(0, 0, width=20)
-        Sheet.write(RowOff-1, 0, 'Time', self.Fbold)
-        Sheet.write(RowOff-1, 1, self.XVar, self.Fbold)
-        Sheet.write(RowOff-1, 2, self.YVar, self.Fbold)
-        Dat, _ = DbSearch.GetFromDB(**self.GroupBase)
+    def CalcLinearFitting(self, Sheet, Loc):
+        self.XlsRep.WriteHeaders(Sheet,
+                                 DictList=(self.InfoMeasValues, ),
+                                 LocOff=Loc,
+                                 Vertical=False)
+        RowOff = Loc[0]
+        ColOff = Loc[1]
+        col = ColOff + len(self.InfoMeasValues)
+        Sheet.write(RowOff, col, self.XVar, self.XlsRep.Fbold)
+        Sheet.write(RowOff, col+1, self.YVar, self.XlsRep.Fbold)
+
+        Grs = DbSearch.GenGroups(GroupBase=self.GroupBase,
+                                 GroupBy='CharTable.{}'.format(self.XVar))
+        DatFit = []
+        for gr in Grs.values():
+            Dat, Trts = DbSearch.GetFromDB(**gr)
+            for dat in Dat[Trts[0]]:
+                DatFit.append(dat)
+
         ValY = np.array([])
         ValX = np.array([])
-        for ip, dat in enumerate(Dat[TrtName]):
+        for ip, dat in enumerate(DatFit):
+            row = RowOff + ip + 1
+            self.XlsRep.WriteMeasValues(Sheet,
+                                        DictList=(self.InfoMeasValues, ),
+                                        DataList=(dat, ),
+                                        LocOff=(row, ColOff),
+                                        Vertical=False)
             funcx = dat.__getattribute__('Get' + self.XVar)
             funcy = dat.__getattribute__('Get' + self.YVar)
             valx = funcx()
             valy = funcy()
             ValY = np.vstack((ValY, valy)) if ValY.size else valy
             ValX = np.vstack((ValX, valx)) if ValX.size else valx
-            valT = dat.GetTime()
-            val = valT[0, 0].astype(datetime.datetime).strftime('%x %X')
-            Sheet.write(ip + RowOff, 0, val)
-            Sheet.write(ip + RowOff, 1, valx)
-            Sheet.write(ip + RowOff, 2, valy)
+            Sheet.write(row, col, valx, self.XlsRep.Fbold)
+            Sheet.write(row, col+1, valy, self.XlsRep.Fbold)
 
         si = np.argsort(ValX[:, 0])
         ValX = ValX[si, 0]
@@ -898,40 +941,243 @@ class GenXlsFittingReport():
 
         if self.XVarLog:
             ValX = np.log10(ValX)
+
         if self.YVarLog:
             ValY = np.log10(ValY)
 
-        plt.figure()
+        plt.figure(figsize=self.figsize)
         plt.plot(ValX, ValY, '*')
 
         X = sm.add_constant(ValX)
         Res = sm.OLS(ValY, X).fit()
+        self.Res = Res
         prstd, iv_l, iv_u = wls_prediction_std(Res)
-
         plt.plot(ValX, Res.fittedvalues, 'k--')
         plt.fill_between(ValX, iv_u, iv_l,
                          color='b',
                          linewidth=0.0,
                          alpha=0.3)
-
-        fname = tempfile.mktemp(suffix='.png', dir=self.TmpPath)
-        plt.gcf().savefig(fname, dpi=self.FigsDpi)
-        Sheet.insert_image(0, 4, fname)
-
-        Sheet.write(RowOff, 6, 'OffSet')
-        Sheet.write(RowOff, 7, 'Slope')
-        Sheet.write(RowOff, 8, 'R2')
-        Sheet.write(RowOff+1, 6, Res.params[0])
-        Sheet.write(RowOff+1, 7, Res.params[1])
-        Sheet.write(RowOff+1, 8, Res.rsquared)
-        
-        return Res        
-        
-    def close(self):
-        self.WorkBook.close()
-        shutil.rmtree(self.TmpPath)
+        self.XlsRep.InsertFigure(Sheet, Loc=(RowOff+2, col+3))
+        self.WriteFittingResults(Sheet, Loc=(RowOff, col+3))
 
 
+class GenXlsFittingReport(XlsReportBase):
+
+    CalTypes = {'pHCal': {'XVar': 'Ph',
+                          'XVarLog': False,
+                          'YVar': 'Ud0',
+                          'YVarLog': False},
+                'IonCal': {'XVar': 'IonStrength',
+                           'XVarLog': True,
+                           'YVar': 'Ud0',
+                           'YVarLog': False},
+                'Tromb': {'XVar': 'AnalyteCon',
+                          'XVarLog': True,
+                          'YVar': 'Ud0',
+                          'YVarLog': False}}
+
+    DBCalField = 'CharTable.Comments'
+    DBCalFlags = ('%Cal%', )
+
+    CalMaps = None
+    CalMapVars = None
+    figsize = (4, 4)
+
+    def __init__(self, FileName, GroupBase,
+                 DBCalField='CharTable.Comments', DBCalFlags=('%Cal%', )):
+
+        super(GenXlsFittingReport, self).__init__(FileName=FileName)
+
+        self.DBCalField = DBCalField
+        self.DBCalFlags = DBCalFlags
+        self.GroupBase = GroupBase
+
+        GroupBy = 'Trts.Name'
+        self.TrtsList = Dban.FindCommonValues(Parameter=GroupBy,
+                                              **GroupBase)
+
+        self.WorkBook.add_worksheet('Summary')
+        for TrtName in sorted(self.TrtsList):
+            self.WorkBook.add_worksheet(TrtName)
+
+    def GenFullReport(self):
+        SheetSummary = self.WorkBook.sheetnames['Summary']
+        self.WriteHeaders(SheetSummary,
+                          DictList=(self.InfoTrtFields, ),
+                          Vertical=False)
+        for it, TrtName in enumerate(sorted(self.TrtsList)):
+            self.WriteDBValues(SheetSummary,
+                               LocOff=(it, 0),
+                               DictList=(self.InfoTrtFields, ),
+                               Vertical=False,
+                               DBSearch={'Trts.Name=': (TrtName, )},
+                               WriteHeader=False)
+            self.GenTrtReport(TrtName, it)
+
+    def GenTrtReport(self, TrtName, itrt):
+        Sheet = self.WorkBook.sheetnames[TrtName]
+        SheetSummary = self.WorkBook.sheetnames['Summary']
+
+        self.WriteDBValues(Sheet,
+                           DictList=(self.InfoTrtFields,),
+                           DBSearch={'Trts.Name=': (TrtName, )})
+
+        GrBase = self.GroupBase.copy()
+        GrBase['Conditions'].update({'Trts.Name=': (TrtName, )})
+        CalFlag = {'{} like'.format(self.DBCalField): self.DBCalFlags}
+        GrBase['Conditions'].update(CalFlag)
+        CalList = DbSearch.FindCommonValues(Parameter=self.DBCalField,
+                                            **GrBase)
+
+        ic = 0
+        row = len(self.InfoTrtFields) + 10
+        for cal in CalList:
+            caltype = cal.split(' ')[0]
+            if caltype in self.CalTypes:
+                GrBase = self.GroupBase.copy()
+                GrBase['Conditions'].update({'Trts.Name=': (TrtName,)})
+                CalFlag = {'{} like'.format(self.DBCalField): (cal, )}
+                GrBase['Conditions'].update(CalFlag)
+                FitRep = FittingReport(XlsRep=self,
+                                       GroupBase=GrBase,
+                                       **self.CalTypes[caltype])
+                Loc = (row+2+25*ic, len(FitRep.InfoMeasValues)+10)
+                FitRep.GenDebugPlot(Sheet, Loc=Loc)
+                FitRep.CalcLinearFitting(Sheet, Loc=(row+25*ic, 0))
+                srow = itrt + 1
+                scol = ic*(len(FitRep.FittingValues)+1) + len(self.InfoTrtFields)
+                SheetSummary.write(srow, scol, cal, self.Fbold)
+                FitRep.WriteFittingResults(SheetSummary,
+                                           (srow-1, scol+1),
+                                           WriteHeaders=False)
+                ic += 1
+            else:
+                print cal, caltype, 'Not found'
+
+        if self.CalMaps is not None:
+            for ic, calmap in enumerate(self.CalMaps):
+                self.InsertCalMap(Sheet,
+                                  (0, ic*6 + 6),
+                                  TrtName,
+                                  calmap)
+
+    def InsertCalMap(self, Sheet, Loc, TrtName, CalMap):
+
+        Gr = self.GroupBase.copy()
+        Gr['Conditions'].update({'Trts.Name=': (TrtName,)})
+        CalFlag = {'{} like'.format(self.DBCalField): CalMap}
+        Gr['Conditions'].update(CalFlag)
+
+        dat, _ = Dban.GetFromDB(**Gr)
+        Dats = dat[TrtName]
+
+        x = np.ones([len(Dats)])
+        y = np.ones([len(Dats)])
+        z = np.ones([len(Dats)])
+        for i, d in enumerate(Dats):
+            funcx = d.__getattribute__('Get' + self.CalMapVars['XVar'])
+            funcy = d.__getattribute__('Get' + self.CalMapVars['YVar'])
+            funcz = d.__getattribute__('Get' + self.CalMapVars['ZVar'])
+            x[i] = funcx()
+            y[i] = funcy()
+            z[i] = funcz()
+
+        if self.CalMapVars['YVarLog']:
+            y = np.log10(y)
+        if self.CalMapVars['XVarLog']:
+            x = np.log10(x)
+
+        plt.figure(figsize=self.figsize)
+        plt.tricontourf(x, y, z, 100, cmap='seismic')
+        plt.plot(x, y, 'ko')
+        plt.colorbar()
+        plt.title(CalMap[0]+CalMap[1])
+
+        self.InsertFigure(Sheet, Loc)
 
 
+#if __name__ == "__main__":
+#    plt.ioff()
+#
+#    plt.close('all')   
+#    
+#    CharTable = 'DCcharacts'
+#    DeviceNames = ('B10803W17-Xip7N','B10803W17-Xip7S')
+#    Conditions = {'Devices.Name=': DeviceNames,
+#                  'CharTable.IsOK>': (0, ),
+#                  'CharTable.AnalyteCon<': (1e-7, )}
+#    
+#    GroupBase = {}
+#    GroupBase['Table'] = CharTable
+#    GroupBase['Last'] = False
+#    GroupBase['Conditions'] = Conditions
+#    
+#    GenFit = GenXlsFittingReport('../testfb.xls', GroupBase)
+#    GenFit.DBCalField = 'CharTable.FuncStep'
+#    GenFit.DBCalFlags = ('Tromb', )
+#    GenFit.GenFullReport()
+#    GenFit.close()
+
+#    plt.close('all')   
+#    
+#    CharTable = 'DCcharacts'
+#    DeviceNames = ('B10179W15-T1',)
+#    Conditions = {'Devices.Name=': DeviceNames,
+#                  'CharTable.IsOK>': (0, ),
+#                  'CharTable.Comments like':('%Cal%', )}
+#    
+#    GroupBase = {}
+#    GroupBase['Table'] = CharTable
+#    GroupBase['Last'] = False
+#    GroupBase['Conditions'] = Conditions
+#    
+#    GenFit = GenXlsFittingReport('../testf.xls', GroupBase)
+#    GenFit.CalMaps = (('PhCal 1', 'IonCal 1'), ('PhCal 2', 'IonCal 2'))
+#    GenFit.CalMapVars = {'XVar': 'Ph',
+#                  'XVarLog': False,
+#                  'YVar': 'IonStrength',
+#                  'YVarLog': True,
+#                  'ZVar': 'Ud0'}
+#    GenFit.GenFullReport()
+#    GenFit.close()
+
+#Caltypes={'pHCal':('Ph', False),
+#          'IonCal':('IonStrength', True)}
+
+#CalList = DbSearch.FindCommonValues(Conditions=Conditions,
+#                                    Parameter='CharTable.Comments',
+#                                    Table=CharTable)
+#
+#for cal in CalList:
+#    caltype = cal.split(' ')[0]
+#    print 'Cal type', caltype
+#    print 'Gen excel', cal
+#
+## Fixed Conditions
+#    GroupBase = {}
+#    GroupBase['Table'] = CharTable
+#    GroupBase['Last'] = False
+#    Conditions['DCcharacts.Comments like']=(cal,)
+#    GroupBase['Conditions'] = Conditions.copy()
+#    
+#    XlsRep=GenXlsFittingReport(cal+'.xls', GroupBase)
+#    XlsRep.XVar = Caltypes[caltype][0]
+#    XlsRep.XVarLog = Caltypes[caltype][1]
+#    XlsRep.GenFullReport()
+#    XlsRep.close()
+
+
+
+#    Name = 'B10179W15'
+#    Conditions = {'Wafers.name=':(Name, )}
+#    XlsHist = GenXlsReport('../' +Name+'.xlsx', Conditions)
+#    XlsHist.GenFullReport()
+#    XlsHist.close()
+
+    
+#    Name = 'B10179W15-B4'
+#    Conditions = {'Devices.name=':(Name, )}
+#    XlsHist = GenXlsTrtsHistory('../' +Name+'.xlsx', Conditions)
+#    XlsHist.GenFullReport()
+#    XlsHist.close()
 

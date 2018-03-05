@@ -32,7 +32,7 @@ class NeoRecord():
 
         ftype = RecordFile.split('.')[-1]
         if ftype == 'h5':
-            self.RecFile = neo.io.NixIO(filename=RecordFile)
+            self.RecFile = neo.io.NixIO(filename=RecordFile, mode='ro')
             Block = self.RecFile.read_block()
         elif ftype == 'smr':
             self.RecFile = neo.io.Spike2IO(filename=RecordFile)
