@@ -144,12 +144,12 @@ class PltSlot():
         self.Gm = -1e-4
         self.GmSignal = ''
         self.rec = None
-        self.LineAlpha = 1
-    
+
         self.LSB = None
 
         self.Color = 'k'
         self.Line = '-'
+        self.Alpha=1
 
         self.Ymax = 0
         self.Ymin = 0
@@ -283,14 +283,16 @@ class PltSlot():
                              sig,
                              self.Line,
                              color=self.Color,
-                             label=self.DispName,
-                             alpha=self.LineAlpha)
+                             label=self.DispName,alpha=self.Alpha)
+
                 if not(self.Ymin == 0 and self.Ymax == 0):
                     ylim = (self.Ymin, self.Ymax)
                     self.Ax.set_ylim(ylim)
 
-    def PlotEvent(self, Time, color='r--'):
-        self.Ax.plot((Time, Time), (1, -1), color, alpha=0.5)
+    def PlotEvent(self, Time, color=None, alpha=0.5):
+        if color is None:
+            color = 'r--'
+        self.Ax.plot((Time, Time), (1, -1), color, alpha=alpha)
 
 
 class PlotRecord():
@@ -332,7 +334,7 @@ class PlotRecord():
         self.Fig.tight_layout()
         self.Fig.subplots_adjust(hspace=0)
 
-    def CreateFig(self, Slots, ShowLegend=False):
+    def CreateFig(self, Slots, ShowLegend=False, figsize=None):
         self.ShowLegend = ShowLegend
         self.Slots = Slots
 
@@ -340,7 +342,7 @@ class PlotRecord():
         for sl in self.Slots:
             Pos.append(sl.Position)
 
-        self.Fig, A = plt.subplots(max(Pos) + 1, 1, sharex=True)
+        self.Fig, A = plt.subplots(max(Pos) + 1, 1, sharex=True, figsize=figsize)
         if type(A).__module__ == np.__name__:
             self.Axs = []
             for a in A:
@@ -590,9 +592,9 @@ class PlotRecord():
                 if AutoScale:
                     Ax.autoscale(enable=True, axis='y', tight=True)
 
-    def PlotEvents(self, Time, (EventRec, EventName)):
+    def PlotEvents(self, Time, (EventRec, EventName), color=None, alpha=0.5):
 
         Te = EventRec.GetEventTimes(EventName, Time)
         for te in Te:
             for sl in self.Slots:
-                sl.PlotEvent(te)
+                sl.PlotEvent(te, color=color, alpha=alpha)
