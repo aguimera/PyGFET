@@ -163,9 +163,9 @@ class XlsReportBase(object):
                         'Rds': ('Rds', 3, {'Vgs': -0.1,
                                            'Vds': None,
                                            'Ud0Norm': True}),
-                        'GM': ('GM', 4, {'Vgs': -0.1,
-                                         'Vds': None,
-                                         'Ud0Norm': True})}
+                        'GMV': ('GMV', 4, {'Vgs': -0.1,
+                                           'Vds': None,
+                                           'Ud0Norm': True})}
 
     InfoACMeasValues = {'Time': ('Meas Date', 0, {}),
                         'Vrms': ('Vrms', 1, {'Vgs': -0.1,
@@ -962,6 +962,9 @@ class FittingReport(object):
 
 
 class GenXlsFittingReport(XlsReportBase):
+    TimePlotParsDC = ('Ids', 'Rds', 'GM', 'Ig')
+    TimeEvolPars = {'Ud0': ('DC', {'Vgs': None,
+                                   'Vds': None})}
 
     CalTypes = {'pHCal': {'XVar': 'Ph',
                           'XVarLog': False,
@@ -987,6 +990,12 @@ class GenXlsFittingReport(XlsReportBase):
                  DBCalField='CharTable.Comments', DBCalFlags=('%Cal%', )):
 
         super(GenXlsFittingReport, self).__init__(FileName=FileName)
+
+        self.InfoDCMeasValues.update({'IonStrength': ('IonStrength', 5, {})})
+        self.InfoDCMeasValues.update({'Ph': ('pH', 6, {})})
+        self.InfoDCMeasValues.update({'FuncStep': ('FuncStep', 7, {})})
+        self.InfoDCMeasValues.update({'AnalyteCon': ('AnalyteCon', 8, {})})
+        self.InfoDCMeasValues.update({'Comments': ('Comments', 9, {})})
 
         self.DBCalField = DBCalField
         self.DBCalFlags = DBCalFlags
@@ -1054,6 +1063,44 @@ class GenXlsFittingReport(XlsReportBase):
             else:
                 print cal, caltype, 'Not found'
 
+
+        row = len(self.InfoTrtFields) + 12 + len(CalList)*25
+        self.WriteTrtMeasHist(TrtName=TrtName,
+                              Sheet=Sheet,
+                              Loc=(row, 0))
+        
+        Loc = (row + 25,
+               len(self.InfoDCMeasValues) + len(self.InfoACMeasValues) + 1)
+        self.InsertPyGFETplot(Sheet=Sheet,
+                              Loc=Loc,
+                              PlotPars=self.TimePlotParsDC,
+                              DataDict=self.DictDC,
+                              ColorOn='Date')
+
+#TODO fix this part in a generic fucntion
+# Generate time evolution plots
+        Loc = (row,
+               len(self.InfoDCMeasValues) + len(self.InfoACMeasValues) + 1)
+        Fig, Ax = plt.subplots(len(self.TimeEvolPars), 1, sharex=True)
+        if len(self.TimeEvolPars) == 1:
+            Ax = [Ax,]
+        for i, (k, v) in enumerate(self.TimeEvolPars.iteritems()):
+            if v[0] == 'DC':
+                dat = self.DictDC
+            elif v[0] == 'AC':
+                dat = self.DictAC
+            
+            Dban.PlotXYVars(Data=dat,
+                            Xvar='FuncStep',
+                            Yvar=k,
+                            Ax=Ax[i],
+                            **v[1])
+        Fig.tight_layout()
+        Fig.subplots_adjust(hspace=0)
+# insert time evolution plots
+        self.InsertFigure(Sheet=Sheet, Fig=Fig, Loc=Loc)
+
+        
         if self.CalMaps is not None:
             for ic, calmap in enumerate(self.CalMaps):
                 self.InsertCalMap(Sheet,
@@ -1095,6 +1142,152 @@ class GenXlsFittingReport(XlsReportBase):
 
         self.InsertFigure(Sheet, Loc)
 
+
+class GenXlsFittingReport1(XlsReportBase):
+
+    CalTypes = {'pHCal': {'XVar': 'Ph',
+                          'XVarLog': False,
+                          'YVar': 'Ud0',
+                          'YVarLog': False},
+                'IonCal': {'XVar': 'IonStrength',
+                           'XVarLog': True,
+                           'YVar': 'Ud0',
+                           'YVarLog': False},
+                'Tromb': {'XVar': 'AnalyteCon',
+                          'XVarLog': True,
+                          'YVar': 'Ud0',
+                          'YVarLog': False}}
+
+    DBCalField = 'CharTable.Comments'
+    DBCalFlags = ('%Cal%', )
+
+    CalMaps = None
+    CalMapVars = None
+    figsize = (4, 4)
+
+    def __init__(self, FileName, GroupBase,
+                 DBCalField='CharTable.Comments', DBCalFlags=('%Cal%', )):
+
+        super(GenXlsFittingReport, self).__init__(FileName=FileName)
+
+        self.InfoDCMeasValues.update({'IonStrength': ('IonStrength', 5, {})})
+        self.InfoDCMeasValues.update({'Ph': ('pH', 6, {})})
+        self.InfoDCMeasValues.update({'FuncStep': ('FuncStep', 7, {})})
+        self.InfoDCMeasValues.update({'AnalyteCon': ('AnalyteCon', 8, {})})
+        self.InfoDCMeasValues.update({'Comments': ('Comments', 9, {})})
+
+        self.DBCalField = DBCalField
+        self.DBCalFlags = DBCalFlags
+        self.GroupBase = GroupBase
+
+        GroupBy = 'Trts.Name'
+        self.TrtsList = Dban.FindCommonValues(Parameter=GroupBy,
+                                              **GroupBase)
+
+        self.WorkBook.add_worksheet('Summary')
+        for TrtName in sorted(self.TrtsList):
+            self.WorkBook.add_worksheet(TrtName)
+
+    def GenFullReport(self):
+        SheetSummary = self.WorkBook.sheetnames['Summary']
+        self.WriteHeaders(SheetSummary,
+                          DictList=(self.InfoTrtFields, ),
+                          Vertical=False)
+        for it, TrtName in enumerate(sorted(self.TrtsList)):
+            self.WriteDBValues(SheetSummary,
+                               LocOff=(it, 0),
+                               DictList=(self.InfoTrtFields, ),
+                               Vertical=False,
+                               DBSearch={'Trts.Name=': (TrtName, )},
+                               WriteHeader=False)
+            self.GenTrtReport(TrtName, it)
+
+    def GenTrtReport(self, TrtName, itrt):
+        Sheet = self.WorkBook.sheetnames[TrtName]
+        SheetSummary = self.WorkBook.sheetnames['Summary']
+
+        self.WriteDBValues(Sheet,
+                           DictList=(self.InfoTrtFields,),
+                           DBSearch={'Trts.Name=': (TrtName, )})
+
+        GrBase = self.GroupBase.copy()
+        GrBase['Conditions'].update({'Trts.Name=': (TrtName, )})
+        CalFlag = {'{} like'.format(self.DBCalField): self.DBCalFlags}
+        GrBase['Conditions'].update(CalFlag)
+        CalList = DbSearch.FindCommonValues(Parameter=self.DBCalField,
+                                            **GrBase)
+
+        ic = 0
+        row = len(self.InfoTrtFields) + 10
+        for cal in CalList:
+            caltype = cal.split(' ')[0]
+            if caltype in self.CalTypes:
+                GrBase = self.GroupBase.copy()
+                GrBase['Conditions'].update({'Trts.Name=': (TrtName,)})
+                CalFlag = {'{} like'.format(self.DBCalField): (cal, )}
+                GrBase['Conditions'].update(CalFlag)
+                FitRep = FittingReport(XlsRep=self,
+                                       GroupBase=GrBase,
+                                       **self.CalTypes[caltype])
+                Loc = (row+2+25*ic, len(FitRep.InfoMeasValues)+10)
+                FitRep.GenDebugPlot(Sheet, Loc=Loc)
+                FitRep.CalcLinearFitting(Sheet, Loc=(row+25*ic, 0))
+                srow = itrt + 1
+                scol = ic*(len(FitRep.FittingValues)+1) + len(self.InfoTrtFields)
+                SheetSummary.write(srow, scol, cal, self.Fbold)
+                FitRep.WriteFittingResults(SheetSummary,
+                                           (srow-1, scol+1),
+                                           WriteHeaders=False)
+                ic += 1
+            else:
+                print cal, caltype, 'Not found'
+
+
+        row = len(self.InfoTrtFields) + 12 + len(CalList)*25
+        self.WriteTrtMeasHist(TrtName=TrtName,
+                              Sheet=Sheet,
+                              Loc=(row, 0))
+
+        if self.CalMaps is not None:
+            for ic, calmap in enumerate(self.CalMaps):
+                self.InsertCalMap(Sheet,
+                                  (0, ic*6 + 6),
+                                  TrtName,
+                                  calmap)
+
+    def InsertCalMap(self, Sheet, Loc, TrtName, CalMap):
+
+        Gr = self.GroupBase.copy()
+        Gr['Conditions'].update({'Trts.Name=': (TrtName,)})
+        CalFlag = {'{} like'.format(self.DBCalField): CalMap}
+        Gr['Conditions'].update(CalFlag)
+
+        dat, _ = Dban.GetFromDB(**Gr)
+        Dats = dat[TrtName]
+
+        x = np.ones([len(Dats)])
+        y = np.ones([len(Dats)])
+        z = np.ones([len(Dats)])
+        for i, d in enumerate(Dats):
+            funcx = d.__getattribute__('Get' + self.CalMapVars['XVar'])
+            funcy = d.__getattribute__('Get' + self.CalMapVars['YVar'])
+            funcz = d.__getattribute__('Get' + self.CalMapVars['ZVar'])
+            x[i] = funcx()
+            y[i] = funcy()
+            z[i] = funcz()
+
+        if self.CalMapVars['YVarLog']:
+            y = np.log10(y)
+        if self.CalMapVars['XVarLog']:
+            x = np.log10(x)
+
+        plt.figure(figsize=self.figsize)
+        plt.tricontourf(x, y, z, 100, cmap='seismic')
+        plt.plot(x, y, 'ko')
+        plt.colorbar()
+        plt.title(CalMap[0]+CalMap[1])
+
+        self.InsertFigure(Sheet, Loc)
 
 #if __name__ == "__main__":
 #    plt.ioff()
