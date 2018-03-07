@@ -470,6 +470,7 @@ class PyFETPlotDataClass(PlotDataClass.PyFETPlotBase):
                'NoB': (0, 0, 'Vgs'),
                'GM': (0, 0, 'Vgs'),
                'Ids': (0, 0, 'Vgs'),
+               'Ig': (0, 0, 'Vgs'),
                'Rds': (0, 0, 'Vgs'),
                'FEMn': (0, 0, 'Vgs'),
                'FEMmu': (1, 0, 'Vgs'),

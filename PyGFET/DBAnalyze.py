@@ -158,7 +158,10 @@ def PlotXYVars(Data, Xvar, Yvar, Vgs, Vds, Ud0Norm=True, label=None,
     if 'xscale' in kwargs.keys():
         Ax.set_xscale(kwargs['xscale'])
     elif Xvar != 'DateTime':
-        Ax.ticklabel_format(axis='x', style='sci', scilimits=scilimits)
+        try:
+            Ax.ticklabel_format(axis='x', style='sci', scilimits=scilimits)
+        except:
+            print 'Formating error'
 
     if 'yscale' in kwargs.keys():
         Ax.set_yscale(kwargs['yscale'])

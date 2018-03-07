@@ -144,7 +144,8 @@ class PltSlot():
         self.Gm = -1e-4
         self.GmSignal = ''
         self.rec = None
-
+        self.LineAlpha = 1
+    
         self.LSB = None
 
         self.Color = 'k'
@@ -282,8 +283,8 @@ class PltSlot():
                              sig,
                              self.Line,
                              color=self.Color,
-                             label=self.DispName)
-
+                             label=self.DispName,
+                             alpha=self.LineAlpha)
                 if not(self.Ymin == 0 and self.Ymax == 0):
                     ylim = (self.Ymin, self.Ymax)
                     self.Ax.set_ylim(ylim)
