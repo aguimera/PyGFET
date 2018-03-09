@@ -11,7 +11,7 @@ import PyGFET.DBCore as PyFETdb
 import numpy as np
 
 
-def GenGroups(GroupBase, GroupBy):
+def GenGroups(GroupBase, GroupBy, LongName=True):
     GroupList = FindCommonValues(Table=GroupBase['Table'],
                                  Conditions=GroupBase['Conditions'],
                                  Parameter=GroupBy)
@@ -20,9 +20,15 @@ def GenGroups(GroupBase, GroupBy):
     for Item in sorted(GroupList):
         Cgr = GroupBase.copy()
         Cond = GroupBase['Conditions'].copy()
-        Cond.update({'{}='.format(GroupBy): (Item,)})
+        if Item is None:
+            Cond.update({'{} is '.format(GroupBy): (Item,)})
+        else:
+            Cond.update({'{}='.format(GroupBy): (Item,)})
         Cgr['Conditions'] = Cond
-        GroupName = '{}-{}'.format(GroupBy.split('.')[-1], Item)
+        if LongName:
+            GroupName = '{}-{}'.format(GroupBy.split('.')[-1], Item)
+        else:
+            GroupName = Item
         Groups[GroupName] = Cgr
 
     return Groups
