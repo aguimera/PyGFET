@@ -122,7 +122,7 @@ class PltSlot():
         self.SpecTimeRes = 0.05
         self.SpecMinPSD = -3
         self.SpecCmap = 'jet'
-
+        
         self.Position = None
         self.DispName = None
         self.SigName = None
@@ -131,6 +131,7 @@ class PltSlot():
         self.ResampleFs = None
         self.PlotType = 'Wave'
         self.Ax = None
+        self.cbarAx=self.Ax
         self.RecN = 1
         self.TStart = None #  0*pq.s
         self.AutoScale = True
@@ -274,10 +275,7 @@ class PltSlot():
                                      cmap=self.SpecCmap,
                                      norm=colors.LogNorm(self.SpecMinPSD,
                                                          self.SpecMaxPSD))
-                fig = plt.figure()
-                fig.colorbar(cax)
-#                self.Fig.colorbar(cax, orientation='horizontal')
-
+                self.Fig.colorbar(cax, cax=self.cbarAx, orientation='vertical')
 #                self.Ax.set_yscale('log')
                 
             elif self.PlotType == 'Wave':
@@ -361,7 +359,7 @@ class PlotRecord():
             if not ShowLegend:  # Add labels to axis
                 lb = sl.Ax.get_ylabel()
                 sl.Ax.set_ylabel(lb + ' ' + sl.DispName + '\n',
-                                 rotation='horizontal',
+                                 rotation='vertical',
                                  ha='center')
                 sl.Ax.yaxis.set_label_coords(-0.1, 0.3) # TODO Check this label
 
