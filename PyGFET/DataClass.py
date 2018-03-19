@@ -230,9 +230,12 @@ class DataCharDC(object):
             return GM[:, None]
         return GM.transpose()
 
-    def GetGMV(self, **kwargs):
+    def GetGMV(self, AbsVal=True, **kwargs):
         kwargs.update({'Normlize': True})
-        return np.abs(self.GetGM(**kwargs))
+        if AbsVal:
+            return np.abs(self.GetGM(**kwargs))
+        else:
+            return self.GetGM(**kwargs)
 
     def GetGMMax(self, Vds=None, Normlize=False, Ud0Norm=False):
         iVds = self.GetVdsIndexes(Vds)

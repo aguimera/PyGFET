@@ -65,6 +65,7 @@ def PlotMeanStd(Data, Xvar, Yvar, Vgs=None, Vds=None, Ax=None, Ud0Norm=True,
     VxMax = np.min(VxMax)
     VxMin = np.max(VxMin)
     if Vgs is not None:
+        PointsInRange = len(Vgs)
         if np.min(Vgs) > VxMin:
             VxMin = np.min(Vgs)
         if np.max(Vgs) < VxMax:

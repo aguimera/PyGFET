@@ -274,8 +274,11 @@ class PltSlot():
                                      cmap=self.SpecCmap,
                                      norm=colors.LogNorm(self.SpecMinPSD,
                                                          self.SpecMaxPSD))
-                self.Fig.colorbar(cax, orientation='horizontal')
-                self.Ax.set_yscale('log')
+                fig = plt.figure()
+                fig.colorbar(cax)
+#                self.Fig.colorbar(cax, orientation='horizontal')
+
+#                self.Ax.set_yscale('log')
                 
             elif self.PlotType == 'Wave':
                 sig = self.GetSignal(Time, Resamp)
