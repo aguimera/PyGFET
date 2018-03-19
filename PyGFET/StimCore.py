@@ -436,9 +436,10 @@ class DataProcess(ChannelsConfig):
         print 'Iload (Rds) ->', np.mean(Iload)
         ILoad = -2*self.Vin/1e3
         print 'Iload (Vin) ->', np.mean(ILoad)
+        Iload2 = Data*(0.855)*1e-3
 
         if self.EventContDcDone:
-            self.EventContDcDone(Iload)
+            self.EventContDcDone(Iload2)
 
 
 ###############################################################################

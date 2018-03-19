@@ -54,7 +54,7 @@ class ContinuousAcquisitionPlots():
 
     def PlotUpdate(self, Time):
         self.PltRecs.ClearAxes()
-        self.PltRecs.PlotChannels(Time, Resamp=True)
+        self.PltRecs.PlotChannels(Time, Resamp=False)
         self.PltRecs
         self.PltRecs.Fig.canvas.draw()
 

@@ -1,0 +1,2972 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>994</width>
+    <height>697</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout_6">
+    <item>
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>8</pointsize>
+       </font>
+      </property>
+      <property name="toolTip">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="tab">
+       <attribute name="title">
+        <string>Configuration</string>
+       </attribute>
+       <widget class="QPushButton" name="ButInitChannels">
+        <property name="geometry">
+         <rect>
+          <x>30</x>
+          <y>280</y>
+          <width>121</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Init Channels</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="ButUnselAll">
+        <property name="geometry">
+         <rect>
+          <x>160</x>
+          <y>280</y>
+          <width>121</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Unselect All</string>
+        </property>
+       </widget>
+       <widget class="QWidget" name="layoutWidget">
+        <property name="geometry">
+         <rect>
+          <x>300</x>
+          <y>40</y>
+          <width>61</width>
+          <height>90</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_35">
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_32">
+           <item>
+            <widget class="QLabel" name="label_45">
+             <property name="text">
+              <string>Gain DC</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="QGainDC">
+             <property name="text">
+              <string>10e3</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_7">
+           <item>
+            <widget class="QLabel" name="label_47">
+             <property name="text">
+              <string>Gain AC</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="QGainAC">
+             <property name="text">
+              <string>1e6</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="layoutWidget_3">
+        <property name="geometry">
+         <rect>
+          <x>620</x>
+          <y>20</y>
+          <width>61</width>
+          <height>41</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_36">
+         <item>
+          <widget class="QLabel" name="label_46">
+           <property name="text">
+            <string>Gain Gate</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="QGainGate">
+           <property name="text">
+            <string>2.2e6</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QGroupBox" name="GrChannels">
+        <property name="geometry">
+         <rect>
+          <x>24</x>
+          <y>21</y>
+          <width>261</width>
+          <height>239</height>
+         </rect>
+        </property>
+        <property name="title">
+         <string>Channels</string>
+        </property>
+        <widget class="QCheckBox" name="checkBox_15">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>208</y>
+           <width>48</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Ch08</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+        <widget class="QCheckBox" name="checkBox_16">
+         <property name="geometry">
+          <rect>
+           <x>64</x>
+           <y>208</y>
+           <width>48</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Ch16</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+        <widget class="QCheckBox" name="checkBox_4">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>104</y>
+           <width>48</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Ch04</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+        <widget class="QCheckBox" name="checkBox_11">
+         <property name="geometry">
+          <rect>
+           <x>64</x>
+           <y>104</y>
+           <width>48</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Ch12</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+        <widget class="QCheckBox" name="checkBox_3">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>78</y>
+           <width>48</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Ch03</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+        <widget class="QCheckBox" name="checkBox_12">
+         <property name="geometry">
+          <rect>
+           <x>64</x>
+           <y>130</y>
+           <width>48</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Ch13</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+        <widget class="QCheckBox" name="checkBox_6">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>156</y>
+           <width>48</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Ch06</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+        <widget class="QCheckBox" name="checkBox_13">
+         <property name="geometry">
+          <rect>
+           <x>64</x>
+           <y>156</y>
+           <width>48</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Ch14</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+        <widget class="QCheckBox" name="checkBox_7">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>182</y>
+           <width>48</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Ch07</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+        <widget class="QCheckBox" name="checkBox_14">
+         <property name="geometry">
+          <rect>
+           <x>64</x>
+           <y>182</y>
+           <width>48</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Ch15</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+        <widget class="QCheckBox" name="checkBox">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>26</y>
+           <width>48</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Ch01</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+        <widget class="QCheckBox" name="checkBox_9">
+         <property name="geometry">
+          <rect>
+           <x>64</x>
+           <y>26</y>
+           <width>48</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Ch09</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+        <widget class="QCheckBox" name="checkBox_2">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>52</y>
+           <width>48</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Ch02</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+        <widget class="QCheckBox" name="checkBox_8">
+         <property name="geometry">
+          <rect>
+           <x>64</x>
+           <y>52</y>
+           <width>48</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Ch10</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+        <widget class="QCheckBox" name="checkBox_10">
+         <property name="geometry">
+          <rect>
+           <x>64</x>
+           <y>78</y>
+           <width>48</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Ch11</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+        <widget class="QCheckBox" name="checkBox_5">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>130</y>
+           <width>48</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Ch05</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+        <widget class="QCheckBox" name="checkBox_34">
+         <property name="geometry">
+          <rect>
+           <x>190</x>
+           <y>210</y>
+           <width>48</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Ch32</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+        <widget class="QCheckBox" name="checkBox_17">
+         <property name="geometry">
+          <rect>
+           <x>136</x>
+           <y>210</y>
+           <width>48</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Ch24</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+        <widget class="QCheckBox" name="checkBox_45">
+         <property name="geometry">
+          <rect>
+           <x>136</x>
+           <y>54</y>
+           <width>48</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Ch18</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+        <widget class="QCheckBox" name="checkBox_35">
+         <property name="geometry">
+          <rect>
+           <x>136</x>
+           <y>106</y>
+           <width>48</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Ch20</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+        <widget class="QCheckBox" name="checkBox_42">
+         <property name="geometry">
+          <rect>
+           <x>190</x>
+           <y>184</y>
+           <width>48</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Ch31</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+        <widget class="QCheckBox" name="checkBox_38">
+         <property name="geometry">
+          <rect>
+           <x>190</x>
+           <y>132</y>
+           <width>48</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Ch29</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+        <widget class="QCheckBox" name="checkBox_39">
+         <property name="geometry">
+          <rect>
+           <x>136</x>
+           <y>158</y>
+           <width>48</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Ch22</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+        <widget class="QCheckBox" name="checkBox_48">
+         <property name="geometry">
+          <rect>
+           <x>136</x>
+           <y>132</y>
+           <width>48</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Ch21</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+        <widget class="QCheckBox" name="checkBox_47">
+         <property name="geometry">
+          <rect>
+           <x>190</x>
+           <y>80</y>
+           <width>48</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Ch27</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+        <widget class="QCheckBox" name="checkBox_46">
+         <property name="geometry">
+          <rect>
+           <x>190</x>
+           <y>54</y>
+           <width>48</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Ch26</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+        <widget class="QCheckBox" name="checkBox_41">
+         <property name="geometry">
+          <rect>
+           <x>136</x>
+           <y>184</y>
+           <width>48</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Ch23</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+        <widget class="QCheckBox" name="checkBox_43">
+         <property name="geometry">
+          <rect>
+           <x>136</x>
+           <y>28</y>
+           <width>48</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Ch17</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+        <widget class="QCheckBox" name="checkBox_44">
+         <property name="geometry">
+          <rect>
+           <x>190</x>
+           <y>28</y>
+           <width>48</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Ch25</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+        <widget class="QCheckBox" name="checkBox_36">
+         <property name="geometry">
+          <rect>
+           <x>190</x>
+           <y>106</y>
+           <width>48</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Ch28</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+        <widget class="QCheckBox" name="checkBox_40">
+         <property name="geometry">
+          <rect>
+           <x>190</x>
+           <y>158</y>
+           <width>48</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Ch30</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+        <widget class="QCheckBox" name="checkBox_37">
+         <property name="geometry">
+          <rect>
+           <x>136</x>
+           <y>80</y>
+           <width>48</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Ch19</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+        <zorder>checkBox_15</zorder>
+        <zorder>checkBox_16</zorder>
+        <zorder>checkBox_4</zorder>
+        <zorder>checkBox_11</zorder>
+        <zorder>checkBox_3</zorder>
+        <zorder>checkBox_12</zorder>
+        <zorder>checkBox_6</zorder>
+        <zorder>checkBox_13</zorder>
+        <zorder>checkBox_7</zorder>
+        <zorder>checkBox_14</zorder>
+        <zorder>checkBox</zorder>
+        <zorder>checkBox_9</zorder>
+        <zorder>checkBox_2</zorder>
+        <zorder>checkBox_8</zorder>
+        <zorder>checkBox_10</zorder>
+        <zorder>checkBox_5</zorder>
+        <zorder>checkBox_43</zorder>
+        <zorder>checkBox_17</zorder>
+        <zorder>checkBox_45</zorder>
+        <zorder>checkBox_35</zorder>
+        <zorder>checkBox_39</zorder>
+        <zorder>checkBox_48</zorder>
+        <zorder>checkBox_41</zorder>
+        <zorder>checkBox_37</zorder>
+        <zorder>checkBox_34</zorder>
+        <zorder>checkBox_42</zorder>
+        <zorder>checkBox_38</zorder>
+        <zorder>checkBox_47</zorder>
+        <zorder>checkBox_46</zorder>
+        <zorder>checkBox_44</zorder>
+        <zorder>checkBox_36</zorder>
+        <zorder>checkBox_40</zorder>
+        <zorder>checkBox_34</zorder>
+        <zorder>checkBox_17</zorder>
+        <zorder>checkBox_45</zorder>
+        <zorder>checkBox_35</zorder>
+        <zorder>checkBox_42</zorder>
+        <zorder>checkBox_38</zorder>
+        <zorder>checkBox_39</zorder>
+        <zorder>checkBox_48</zorder>
+        <zorder>checkBox_47</zorder>
+        <zorder>checkBox_46</zorder>
+        <zorder>checkBox_41</zorder>
+        <zorder>checkBox_43</zorder>
+        <zorder>checkBox_44</zorder>
+        <zorder>checkBox_36</zorder>
+        <zorder>checkBox_40</zorder>
+        <zorder>checkBox_37</zorder>
+       </widget>
+       <widget class="QWidget" name="">
+        <property name="geometry">
+         <rect>
+          <x>370</x>
+          <y>20</y>
+          <width>241</width>
+          <height>241</height>
+         </rect>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_5">
+         <item>
+          <widget class="QGroupBox" name="GrChannelGate">
+           <property name="title">
+            <string>Channel Gate</string>
+           </property>
+           <property name="flat">
+            <bool>false</bool>
+           </property>
+           <property name="checkable">
+            <bool>false</bool>
+           </property>
+           <widget class="QCheckBox" name="checkBox_18">
+            <property name="geometry">
+             <rect>
+              <x>10</x>
+              <y>208</y>
+              <width>48</width>
+              <height>17</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Ch08</string>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+            <property name="autoExclusive">
+             <bool>false</bool>
+            </property>
+           </widget>
+           <widget class="QCheckBox" name="checkBox_19">
+            <property name="geometry">
+             <rect>
+              <x>64</x>
+              <y>208</y>
+              <width>48</width>
+              <height>17</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Ch16</string>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+            <property name="autoExclusive">
+             <bool>false</bool>
+            </property>
+           </widget>
+           <widget class="QCheckBox" name="checkBox_20">
+            <property name="geometry">
+             <rect>
+              <x>10</x>
+              <y>104</y>
+              <width>48</width>
+              <height>17</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Ch04</string>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+            <property name="autoExclusive">
+             <bool>false</bool>
+            </property>
+           </widget>
+           <widget class="QCheckBox" name="checkBox_21">
+            <property name="geometry">
+             <rect>
+              <x>64</x>
+              <y>104</y>
+              <width>48</width>
+              <height>17</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Ch12</string>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+            <property name="autoExclusive">
+             <bool>false</bool>
+            </property>
+           </widget>
+           <widget class="QCheckBox" name="checkBox_22">
+            <property name="geometry">
+             <rect>
+              <x>10</x>
+              <y>78</y>
+              <width>48</width>
+              <height>17</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Ch03</string>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+            <property name="autoExclusive">
+             <bool>false</bool>
+            </property>
+           </widget>
+           <widget class="QCheckBox" name="checkBox_23">
+            <property name="geometry">
+             <rect>
+              <x>64</x>
+              <y>130</y>
+              <width>48</width>
+              <height>17</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Ch13</string>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+            <property name="autoExclusive">
+             <bool>false</bool>
+            </property>
+           </widget>
+           <widget class="QCheckBox" name="checkBox_24">
+            <property name="geometry">
+             <rect>
+              <x>10</x>
+              <y>156</y>
+              <width>48</width>
+              <height>17</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Ch06</string>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+            <property name="autoExclusive">
+             <bool>false</bool>
+            </property>
+           </widget>
+           <widget class="QCheckBox" name="checkBox_25">
+            <property name="geometry">
+             <rect>
+              <x>64</x>
+              <y>156</y>
+              <width>48</width>
+              <height>17</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Ch14</string>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+            <property name="autoExclusive">
+             <bool>false</bool>
+            </property>
+           </widget>
+           <widget class="QCheckBox" name="checkBox_26">
+            <property name="geometry">
+             <rect>
+              <x>10</x>
+              <y>182</y>
+              <width>48</width>
+              <height>17</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Ch07</string>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+            <property name="autoExclusive">
+             <bool>false</bool>
+            </property>
+           </widget>
+           <widget class="QCheckBox" name="checkBox_27">
+            <property name="geometry">
+             <rect>
+              <x>64</x>
+              <y>182</y>
+              <width>48</width>
+              <height>17</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Ch15</string>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+            <property name="autoExclusive">
+             <bool>false</bool>
+            </property>
+           </widget>
+           <widget class="QCheckBox" name="checkBox_28">
+            <property name="geometry">
+             <rect>
+              <x>10</x>
+              <y>26</y>
+              <width>48</width>
+              <height>17</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Ch01</string>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+            <property name="autoRepeat">
+             <bool>false</bool>
+            </property>
+            <property name="autoExclusive">
+             <bool>false</bool>
+            </property>
+           </widget>
+           <widget class="QCheckBox" name="checkBox_29">
+            <property name="geometry">
+             <rect>
+              <x>64</x>
+              <y>26</y>
+              <width>48</width>
+              <height>17</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Ch09</string>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+            <property name="autoExclusive">
+             <bool>false</bool>
+            </property>
+           </widget>
+           <widget class="QCheckBox" name="checkBox_30">
+            <property name="geometry">
+             <rect>
+              <x>10</x>
+              <y>52</y>
+              <width>48</width>
+              <height>17</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Ch02</string>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+            <property name="autoExclusive">
+             <bool>false</bool>
+            </property>
+           </widget>
+           <widget class="QCheckBox" name="checkBox_31">
+            <property name="geometry">
+             <rect>
+              <x>64</x>
+              <y>52</y>
+              <width>48</width>
+              <height>17</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Ch10</string>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+            <property name="autoExclusive">
+             <bool>false</bool>
+            </property>
+           </widget>
+           <widget class="QCheckBox" name="checkBox_32">
+            <property name="geometry">
+             <rect>
+              <x>64</x>
+              <y>78</y>
+              <width>48</width>
+              <height>17</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Ch11</string>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+            <property name="autoExclusive">
+             <bool>false</bool>
+            </property>
+           </widget>
+           <widget class="QCheckBox" name="checkBox_33">
+            <property name="geometry">
+             <rect>
+              <x>10</x>
+              <y>130</y>
+              <width>48</width>
+              <height>17</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Ch05</string>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+            <property name="autoExclusive">
+             <bool>false</bool>
+            </property>
+           </widget>
+           <widget class="QCheckBox" name="checkBox_50">
+            <property name="geometry">
+             <rect>
+              <x>180</x>
+              <y>210</y>
+              <width>48</width>
+              <height>17</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Ch32</string>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+           </widget>
+           <widget class="QCheckBox" name="checkBox_63">
+            <property name="geometry">
+             <rect>
+              <x>180</x>
+              <y>80</y>
+              <width>48</width>
+              <height>17</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Ch27</string>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+           </widget>
+           <widget class="QCheckBox" name="checkBox_64">
+            <property name="geometry">
+             <rect>
+              <x>126</x>
+              <y>132</y>
+              <width>48</width>
+              <height>17</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Ch21</string>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+           </widget>
+           <widget class="QCheckBox" name="checkBox_56">
+            <property name="geometry">
+             <rect>
+              <x>180</x>
+              <y>158</y>
+              <width>48</width>
+              <height>17</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Ch30</string>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+           </widget>
+           <widget class="QCheckBox" name="checkBox_57">
+            <property name="geometry">
+             <rect>
+              <x>126</x>
+              <y>184</y>
+              <width>48</width>
+              <height>17</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Ch23</string>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+           </widget>
+           <widget class="QCheckBox" name="checkBox_54">
+            <property name="geometry">
+             <rect>
+              <x>180</x>
+              <y>132</y>
+              <width>48</width>
+              <height>17</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Ch29</string>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+           </widget>
+           <widget class="QCheckBox" name="checkBox_59">
+            <property name="geometry">
+             <rect>
+              <x>126</x>
+              <y>28</y>
+              <width>48</width>
+              <height>17</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Ch17</string>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+           </widget>
+           <widget class="QCheckBox" name="checkBox_61">
+            <property name="geometry">
+             <rect>
+              <x>126</x>
+              <y>54</y>
+              <width>48</width>
+              <height>17</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Ch18</string>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+           </widget>
+           <widget class="QCheckBox" name="checkBox_49">
+            <property name="geometry">
+             <rect>
+              <x>126</x>
+              <y>210</y>
+              <width>48</width>
+              <height>17</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Ch24</string>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+           </widget>
+           <widget class="QCheckBox" name="checkBox_55">
+            <property name="geometry">
+             <rect>
+              <x>126</x>
+              <y>158</y>
+              <width>48</width>
+              <height>17</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Ch22</string>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+           </widget>
+           <widget class="QCheckBox" name="checkBox_52">
+            <property name="geometry">
+             <rect>
+              <x>180</x>
+              <y>106</y>
+              <width>48</width>
+              <height>17</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Ch28</string>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+           </widget>
+           <widget class="QCheckBox" name="checkBox_62">
+            <property name="geometry">
+             <rect>
+              <x>180</x>
+              <y>54</y>
+              <width>48</width>
+              <height>17</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Ch26</string>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+           </widget>
+           <widget class="QCheckBox" name="checkBox_51">
+            <property name="geometry">
+             <rect>
+              <x>126</x>
+              <y>106</y>
+              <width>48</width>
+              <height>17</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Ch20</string>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+           </widget>
+           <widget class="QCheckBox" name="checkBox_58">
+            <property name="geometry">
+             <rect>
+              <x>180</x>
+              <y>184</y>
+              <width>48</width>
+              <height>17</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Ch31</string>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+           </widget>
+           <widget class="QCheckBox" name="checkBox_60">
+            <property name="geometry">
+             <rect>
+              <x>180</x>
+              <y>28</y>
+              <width>48</width>
+              <height>17</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Ch25</string>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+           </widget>
+           <widget class="QCheckBox" name="checkBox_53">
+            <property name="geometry">
+             <rect>
+              <x>126</x>
+              <y>80</y>
+              <width>48</width>
+              <height>17</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Ch19</string>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <zorder>layoutWidget</zorder>
+       <zorder>ButInitChannels</zorder>
+       <zorder>ButUnselAll</zorder>
+       <zorder>layoutWidget</zorder>
+       <zorder>GrChannelGate</zorder>
+       <zorder>layoutWidget_3</zorder>
+       <zorder>GrChannels</zorder>
+       <zorder>checkBox_34</zorder>
+       <zorder>checkBox_46</zorder>
+       <zorder>checkBox_37</zorder>
+       <zorder>checkBox_39</zorder>
+       <zorder>checkBox_38</zorder>
+       <zorder>checkBox_41</zorder>
+       <zorder>checkBox_4</zorder>
+       <zorder>checkBox_17</zorder>
+       <zorder>checkBox_5</zorder>
+       <zorder>checkBox_14</zorder>
+       <zorder>checkBox_7</zorder>
+       <zorder>checkBox_3</zorder>
+       <zorder>checkBox_43</zorder>
+       <zorder>checkBox_40</zorder>
+       <zorder>checkBox_15</zorder>
+       <zorder>checkBox_2</zorder>
+       <zorder>checkBox</zorder>
+       <zorder>checkBox_11</zorder>
+       <zorder>checkBox_6</zorder>
+       <zorder>checkBox_8</zorder>
+       <zorder>checkBox_10</zorder>
+       <zorder>checkBox_42</zorder>
+       <zorder>checkBox_9</zorder>
+       <zorder>checkBox_16</zorder>
+       <zorder>checkBox_44</zorder>
+       <zorder>checkBox_35</zorder>
+       <zorder>checkBox_47</zorder>
+       <zorder>checkBox_45</zorder>
+       <zorder>checkBox_36</zorder>
+       <zorder>checkBox_48</zorder>
+       <zorder>checkBox_13</zorder>
+       <zorder>checkBox_12</zorder>
+      </widget>
+      <widget class="QWidget" name="tab_2">
+       <attribute name="title">
+        <string>MeasureSweeps</string>
+       </attribute>
+       <widget class="QPushButton" name="ButSweep">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>10</y>
+          <width>75</width>
+          <height>23</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Start</string>
+        </property>
+       </widget>
+       <widget class="QGroupBox" name="GrSweepMeas_3">
+        <property name="geometry">
+         <rect>
+          <x>40</x>
+          <y>310</y>
+          <width>148</width>
+          <height>119</height>
+         </rect>
+        </property>
+        <property name="title">
+         <string>Single Point</string>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_12">
+         <item>
+          <widget class="QFrame" name="frame_9">
+           <property name="frameShape">
+            <enum>QFrame::StyledPanel</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Raised</enum>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_42">
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_25">
+              <item>
+               <layout class="QGridLayout" name="gridLayout_5">
+                <item row="0" column="0">
+                 <widget class="QLabel" name="label_7">
+                  <property name="text">
+                   <string>Vgs</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="0">
+                 <widget class="QDoubleSpinBox" name="SpnSVgs">
+                  <property name="minimum">
+                   <double>-0.500000000000000</double>
+                  </property>
+                  <property name="maximum">
+                   <double>0.700000000000000</double>
+                  </property>
+                  <property name="singleStep">
+                   <double>0.100000000000000</double>
+                  </property>
+                  <property name="value">
+                   <double>-0.100000000000000</double>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="1">
+                 <widget class="QLabel" name="label_8">
+                  <property name="text">
+                   <string>Vds</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="1">
+                 <widget class="QDoubleSpinBox" name="SpnSVds">
+                  <property name="decimals">
+                   <number>3</number>
+                  </property>
+                  <property name="minimum">
+                   <double>-0.200000000000000</double>
+                  </property>
+                  <property name="maximum">
+                   <double>0.200000000000000</double>
+                  </property>
+                  <property name="singleStep">
+                   <double>0.010000000000000</double>
+                  </property>
+                  <property name="value">
+                   <double>0.050000000000000</double>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="ChckSP">
+                <property name="text">
+                 <string>SinglePoint</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QGroupBox" name="GrSweepMeas_4">
+        <property name="geometry">
+         <rect>
+          <x>30</x>
+          <y>40</y>
+          <width>231</width>
+          <height>261</height>
+         </rect>
+        </property>
+        <property name="title">
+         <string>Sweep Points</string>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_13">
+         <item>
+          <widget class="QFrame" name="frame_5">
+           <property name="frameShape">
+            <enum>QFrame::StyledPanel</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Raised</enum>
+           </property>
+           <widget class="QWidget" name="layoutWidget">
+            <property name="geometry">
+             <rect>
+              <x>10</x>
+              <y>20</y>
+              <width>187</width>
+              <height>90</height>
+             </rect>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_4">
+             <item>
+              <widget class="QLabel" name="label_5">
+               <property name="font">
+                <font>
+                 <pointsize>10</pointsize>
+                 <weight>75</weight>
+                 <italic>true</italic>
+                 <bold>true</bold>
+                </font>
+               </property>
+               <property name="text">
+                <string>VGS CONTROL</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout">
+               <item>
+                <layout class="QVBoxLayout" name="verticalLayout">
+                 <item>
+                  <widget class="QLabel" name="label_2">
+                   <property name="text">
+                    <string>Vgs Min</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QDoubleSpinBox" name="SpnVgsMin">
+                   <property name="minimum">
+                    <double>-0.500000000000000</double>
+                   </property>
+                   <property name="maximum">
+                    <double>0.500000000000000</double>
+                   </property>
+                   <property name="singleStep">
+                    <double>0.100000000000000</double>
+                   </property>
+                   <property name="value">
+                    <double>-0.100000000000000</double>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QVBoxLayout" name="verticalLayout_2">
+                 <item>
+                  <widget class="QLabel" name="label_3">
+                   <property name="text">
+                    <string>Vgs Max</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QDoubleSpinBox" name="SpnVgsMax">
+                   <property name="minimum">
+                    <double>-0.200000000000000</double>
+                   </property>
+                   <property name="maximum">
+                    <double>0.700000000000000</double>
+                   </property>
+                   <property name="singleStep">
+                    <double>0.100000000000000</double>
+                   </property>
+                   <property name="value">
+                    <double>0.400000000000000</double>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QVBoxLayout" name="verticalLayout_3">
+                 <item>
+                  <widget class="QLabel" name="label_4">
+                   <property name="text">
+                    <string>Steps</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QSpinBox" name="SpnVgsStep">
+                   <property name="value">
+                    <number>10</number>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_2">
+               <item>
+                <widget class="QLabel" name="label_6">
+                 <property name="text">
+                  <string>Applied Vgs</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="LblVgs">
+                 <property name="text">
+                  <string>0.1</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="layoutWidget_2">
+            <property name="geometry">
+             <rect>
+              <x>10</x>
+              <y>123</y>
+              <width>201</width>
+              <height>90</height>
+             </rect>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_10">
+             <item>
+              <widget class="QLabel" name="label_13">
+               <property name="font">
+                <font>
+                 <pointsize>10</pointsize>
+                 <weight>75</weight>
+                 <italic>true</italic>
+                 <bold>true</bold>
+                </font>
+               </property>
+               <property name="text">
+                <string>VDS CONTROL</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_6">
+               <item>
+                <layout class="QVBoxLayout" name="verticalLayout_11">
+                 <item>
+                  <widget class="QLabel" name="label_14">
+                   <property name="text">
+                    <string>Vds Min</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QDoubleSpinBox" name="SpnVdsMin">
+                   <property name="decimals">
+                    <number>3</number>
+                   </property>
+                   <property name="minimum">
+                    <double>-0.200000000000000</double>
+                   </property>
+                   <property name="maximum">
+                    <double>0.200000000000000</double>
+                   </property>
+                   <property name="singleStep">
+                    <double>0.015000000000000</double>
+                   </property>
+                   <property name="value">
+                    <double>0.050000000000000</double>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QVBoxLayout" name="verticalLayout_12">
+                 <item>
+                  <widget class="QLabel" name="label_15">
+                   <property name="text">
+                    <string>Vds Max</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QDoubleSpinBox" name="SpnVdsMax">
+                   <property name="decimals">
+                    <number>3</number>
+                   </property>
+                   <property name="minimum">
+                    <double>-0.200000000000000</double>
+                   </property>
+                   <property name="maximum">
+                    <double>0.200000000000000</double>
+                   </property>
+                   <property name="singleStep">
+                    <double>0.015000000000000</double>
+                   </property>
+                   <property name="value">
+                    <double>0.050000000000000</double>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QVBoxLayout" name="verticalLayout_13">
+                 <item>
+                  <widget class="QLabel" name="label_16">
+                   <property name="text">
+                    <string>Steps</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QSpinBox" name="SpnVdsStep">
+                   <property name="value">
+                    <number>1</number>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_7">
+               <item>
+                <widget class="QLabel" name="label_17">
+                 <property name="text">
+                  <string>Applied Vds</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="LblVds">
+                 <property name="text">
+                  <string>0.1</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QLabel" name="label_30">
+            <property name="geometry">
+             <rect>
+              <x>10</x>
+              <y>0</y>
+              <width>64</width>
+              <height>16</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Sweep Points</string>
+            </property>
+           </widget>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="layoutWidget">
+        <property name="geometry">
+         <rect>
+          <x>200</x>
+          <y>320</y>
+          <width>81</width>
+          <height>51</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_18">
+         <item>
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string>Dev Condition</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="CmbDevCond">
+           <property name="currentIndex">
+            <number>5</number>
+           </property>
+           <item>
+            <property name="text">
+             <string>1</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>5e-6</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>1e-6</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>5e-7</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>1e-7</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>5e-8</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>1e-8</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>5e-9</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>1e-9</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QGroupBox" name="GrSweepMeas">
+        <property name="geometry">
+         <rect>
+          <x>340</x>
+          <y>40</y>
+          <width>293</width>
+          <height>441</height>
+         </rect>
+        </property>
+        <property name="title">
+         <string>AC Measures</string>
+        </property>
+        <widget class="QFrame" name="frame">
+         <property name="geometry">
+          <rect>
+           <x>20</x>
+           <y>30</y>
+           <width>160</width>
+           <height>311</height>
+          </rect>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
+         </property>
+         <widget class="QCheckBox" name="ChckBode">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>10</y>
+            <width>47</width>
+            <height>17</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Bode</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_22">
+          <property name="geometry">
+           <rect>
+            <x>11</x>
+            <y>34</y>
+            <width>40</width>
+            <height>16</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>10</pointsize>
+            <weight>75</weight>
+            <italic>true</italic>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>Signal</string>
+          </property>
+         </widget>
+         <widget class="QWidget" name="layoutWidget">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>211</y>
+            <width>74</width>
+            <height>53</height>
+           </rect>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_13">
+           <item row="0" column="0">
+            <widget class="QLabel" name="LblPSDDuration_2">
+             <property name="text">
+              <string>Bode Duration:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="LblBodeDurationL">
+             <property name="text">
+              <string>..</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="LblBodeDurationH">
+             <property name="text">
+              <string>..</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="layoutWidget">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>62</y>
+            <width>146</width>
+            <height>141</height>
+           </rect>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_12">
+           <item row="0" column="0">
+            <layout class="QGridLayout" name="gridLayout_3">
+             <item row="0" column="0">
+              <layout class="QVBoxLayout" name="verticalLayout_21">
+               <item>
+                <widget class="QLabel" name="label_25">
+                 <property name="text">
+                  <string>Freq Min</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QDoubleSpinBox" name="SpnFreqMin">
+                 <property name="decimals">
+                  <number>3</number>
+                 </property>
+                 <property name="singleStep">
+                  <double>0.010000000000000</double>
+                 </property>
+                 <property name="value">
+                  <double>0.350000000000000</double>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item row="0" column="1">
+              <layout class="QVBoxLayout" name="verticalLayout_20">
+               <item>
+                <widget class="QLabel" name="label_24">
+                 <property name="text">
+                  <string>Freq Max</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QSpinBox" name="SpnFreqMax">
+                 <property name="maximum">
+                  <number>10000000</number>
+                 </property>
+                 <property name="value">
+                  <number>12000</number>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </item>
+           <item row="1" column="0">
+            <layout class="QGridLayout" name="gridLayout_4">
+             <item row="0" column="0" colspan="2">
+              <layout class="QVBoxLayout" name="verticalLayout_16">
+               <item>
+                <widget class="QLabel" name="label_20">
+                 <property name="text">
+                  <string>Amplitude</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QDoubleSpinBox" name="SpnAmp">
+                 <property name="decimals">
+                  <number>4</number>
+                 </property>
+                 <property name="maximum">
+                  <double>75.000000000000000</double>
+                 </property>
+                 <property name="singleStep">
+                  <double>0.001000000000000</double>
+                 </property>
+                 <property name="value">
+                  <double>0.001000000000000</double>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item row="1" column="0">
+              <layout class="QVBoxLayout" name="verticalLayout_19">
+               <item>
+                <widget class="QLabel" name="label_27">
+                 <property name="text">
+                  <string>nAvg</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QSpinBox" name="SpnNAvg">
+                 <property name="value">
+                  <number>2</number>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item row="1" column="1">
+              <layout class="QVBoxLayout" name="verticalLayout_14">
+               <item>
+                <widget class="QLabel" name="label_18">
+                 <property name="text">
+                  <string>nFreqs</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QSpinBox" name="SpnNFreqs">
+                 <property name="value">
+                  <number>50</number>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="layoutWidget">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>270</y>
+            <width>141</width>
+            <height>34</height>
+           </rect>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_17">
+           <item row="0" column="0">
+            <widget class="QLabel" name="LblPSDDuration_3">
+             <property name="text">
+              <string>Vpp</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="LblVpp">
+             <property name="text">
+              <string>..</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+        <widget class="QFrame" name="frame_2">
+         <property name="geometry">
+          <rect>
+           <x>176</x>
+           <y>23</y>
+           <width>107</width>
+           <height>211</height>
+          </rect>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
+         </property>
+         <widget class="QCheckBox" name="ChckPSD">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>10</y>
+            <width>42</width>
+            <height>17</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>PSD</string>
+          </property>
+         </widget>
+         <widget class="QWidget" name="layoutWidget">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>34</y>
+            <width>89</width>
+            <height>177</height>
+           </rect>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_11">
+           <item row="0" column="0">
+            <layout class="QGridLayout" name="gridLayout_7">
+             <item row="0" column="0">
+              <layout class="QGridLayout" name="gridLayout_6">
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_26">
+                 <property name="text">
+                  <string>nFFT (2^x)</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QSpinBox" name="SpnPDSnFFT">
+                 <property name="maximum">
+                  <number>24</number>
+                 </property>
+                 <property name="value">
+                  <number>17</number>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item row="1" column="0">
+              <layout class="QGridLayout" name="gridLayout_2">
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_29">
+                 <property name="text">
+                  <string>nAvg</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QSpinBox" name="SpnAvg">
+                 <property name="maximum">
+                  <number>20</number>
+                 </property>
+                 <property name="value">
+                  <number>5</number>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item row="2" column="0">
+              <layout class="QVBoxLayout" name="verticalLayout_26">
+               <item>
+                <widget class="QLabel" name="label_28">
+                 <property name="text">
+                  <string>Fs</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QDoubleSpinBox" name="SpnFsPSD">
+                 <property name="maximum">
+                  <double>1000000.000000000000000</double>
+                 </property>
+                 <property name="singleStep">
+                  <double>100.000000000000000</double>
+                 </property>
+                 <property name="value">
+                  <double>30000.000000000000000</double>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="LblPSDDuration_1">
+             <property name="text">
+              <string>PSD Duration:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="LblPSDDuration">
+             <property name="text">
+              <string>..</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+        <widget class="QWidget" name="layoutWidget">
+         <property name="geometry">
+          <rect>
+           <x>20</x>
+           <y>360</y>
+           <width>81</width>
+           <height>45</height>
+          </rect>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_5">
+          <item>
+           <widget class="QCheckBox" name="ChckRhardware">
+            <property name="text">
+             <string>RHardware</string>
+            </property>
+            <property name="autoExclusive">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="QRhardware">
+            <property name="text">
+             <string>150e3</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="layoutWidget">
+         <property name="geometry">
+          <rect>
+           <x>110</x>
+           <y>360</y>
+           <width>83</width>
+           <height>67</height>
+          </rect>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_19">
+          <item row="0" column="0">
+           <layout class="QGridLayout" name="gridLayout_18">
+            <item row="0" column="0">
+             <widget class="QCheckBox" name="ChckOutBode">
+              <property name="text">
+               <string>Out Bode</string>
+              </property>
+              <property name="autoExclusive">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QCheckBox" name="ChckRemoveDC">
+              <property name="text">
+               <string>Remove DC</string>
+              </property>
+              <property name="autoExclusive">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="1" column="0">
+           <widget class="QCheckBox" name="ChckFFT">
+            <property name="text">
+             <string>FFT Plot</string>
+            </property>
+            <property name="autoExclusive">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </widget>
+       <widget class="QWidget" name="layoutWidget">
+        <property name="geometry">
+         <rect>
+          <x>60</x>
+          <y>430</y>
+          <width>114</width>
+          <height>90</height>
+         </rect>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_8">
+         <item row="0" column="0">
+          <layout class="QGridLayout" name="gridLayout">
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_23">
+             <property name="font">
+              <font>
+               <pointsize>10</pointsize>
+               <weight>75</weight>
+               <italic>true</italic>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>n Cycles</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <layout class="QHBoxLayout" name="horizontalLayout_3">
+             <item>
+              <layout class="QVBoxLayout" name="verticalLayout_27">
+               <item>
+                <widget class="QLabel" name="label_31">
+                 <property name="text">
+                  <string>Init Cycle</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QSpinBox" name="SpnInitCycle">
+                 <property name="minimum">
+                  <number>0</number>
+                 </property>
+                 <property name="maximum">
+                  <number>200</number>
+                 </property>
+                 <property name="value">
+                  <number>0</number>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QVBoxLayout" name="verticalLayout_38">
+               <item>
+                <widget class="QLabel" name="label_32">
+                 <property name="text">
+                  <string>Fiinal Cycle</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QSpinBox" name="SpnFinalCycle">
+                 <property name="minimum">
+                  <number>1</number>
+                 </property>
+                 <property name="maximum">
+                  <number>200</number>
+                 </property>
+                 <property name="value">
+                  <number>1</number>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </item>
+         <item row="1" column="0">
+          <layout class="QHBoxLayout" name="horizontalLayout_8">
+           <item>
+            <widget class="QLabel" name="label_33">
+             <property name="text">
+              <string>Cycle Index</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="LblCycle">
+             <property name="text">
+              <string>0</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QCheckBox" name="ChckSaveData">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>560</y>
+          <width>131</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>SaveData</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+       <widget class="QLabel" name="LblPath">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>590</y>
+          <width>491</width>
+          <height>15</height>
+         </rect>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>15</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>..</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="tab_3">
+       <attribute name="title">
+        <string>TimePlot</string>
+       </attribute>
+       <widget class="QWidget" name="layoutWidget_5">
+        <property name="geometry">
+         <rect>
+          <x>30</x>
+          <y>180</y>
+          <width>761</width>
+          <height>160</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_43">
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_40">
+           <item>
+            <widget class="QLabel" name="label_11">
+             <property name="text">
+              <string>T start</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QSlider" name="SLTstart">
+             <property name="value">
+              <number>1</number>
+             </property>
+             <property name="tracking">
+              <bool>false</bool>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="tickPosition">
+              <enum>QSlider::TicksBelow</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_9">
+             <item>
+              <widget class="QLabel" name="LblTstartMin">
+               <property name="text">
+                <string>0</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="horizontalSpacer_4">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <widget class="QLabel" name="LblTstartMax">
+               <property name="text">
+                <string>0</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_41">
+           <item>
+            <widget class="QLabel" name="label_12">
+             <property name="text">
+              <string>T stop</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QSlider" name="SLTstop">
+             <property name="value">
+              <number>1</number>
+             </property>
+             <property name="tracking">
+              <bool>false</bool>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="tickPosition">
+              <enum>QSlider::TicksBelow</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_10">
+             <item>
+              <widget class="QLabel" name="LblTstopMin">
+               <property name="text">
+                <string>0</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="horizontalSpacer_3">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <widget class="QLabel" name="LblStopMax">
+               <property name="text">
+                <string>0</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="layoutWidget_21">
+        <property name="geometry">
+         <rect>
+          <x>30</x>
+          <y>70</y>
+          <width>229</width>
+          <height>46</height>
+         </rect>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_27">
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_78">
+           <item>
+            <widget class="QLabel" name="label_76">
+             <property name="text">
+              <string>Fs</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QDoubleSpinBox" name="SpnFsTime">
+             <property name="decimals">
+              <number>0</number>
+             </property>
+             <property name="maximum">
+              <double>200000.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>100.000000000000000</double>
+             </property>
+             <property name="value">
+              <double>1000.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_79">
+           <item>
+            <widget class="QLabel" name="label_78">
+             <property name="text">
+              <string>Window</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QSpinBox" name="SpnWindow">
+             <property name="minimum">
+              <number>1</number>
+             </property>
+             <property name="maximum">
+              <number>100000</number>
+             </property>
+             <property name="value">
+              <number>10</number>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_80">
+           <item>
+            <widget class="QLabel" name="label_79">
+             <property name="text">
+              <string>Refresh</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QDoubleSpinBox" name="SpnRefresh">
+             <property name="decimals">
+              <number>1</number>
+             </property>
+             <property name="minimum">
+              <double>0.100000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>100.000000000000000</double>
+             </property>
+             <property name="value">
+              <double>1.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="layoutWidget_22">
+        <property name="geometry">
+         <rect>
+          <x>30</x>
+          <y>40</y>
+          <width>190</width>
+          <height>25</height>
+         </rect>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_28">
+         <item>
+          <widget class="QPushButton" name="ButCont">
+           <property name="text">
+            <string>TimeCont</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="ChckPauseCont">
+           <property name="text">
+            <string>Pause Display</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="layoutWidget_23">
+        <property name="geometry">
+         <rect>
+          <x>30</x>
+          <y>120</y>
+          <width>124</width>
+          <height>44</height>
+         </rect>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_21">
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_80">
+           <property name="text">
+            <string>Vgs</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QDoubleSpinBox" name="SpnSVgsTP">
+           <property name="correctionMode">
+            <enum>QAbstractSpinBox::CorrectToPreviousValue</enum>
+           </property>
+           <property name="minimum">
+            <double>-0.100000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>0.600000000000000</double>
+           </property>
+           <property name="singleStep">
+            <double>0.100000000000000</double>
+           </property>
+           <property name="value">
+            <double>-0.100000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLabel" name="label_81">
+           <property name="text">
+            <string>Vds</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QDoubleSpinBox" name="SpnSVdsTP">
+           <property name="maximum">
+            <double>0.100000000000000</double>
+           </property>
+           <property name="singleStep">
+            <double>0.010000000000000</double>
+           </property>
+           <property name="value">
+            <double>0.050000000000000</double>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="layoutWidget">
+        <property name="geometry">
+         <rect>
+          <x>880</x>
+          <y>10</y>
+          <width>74</width>
+          <height>66</height>
+         </rect>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_10">
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_34">
+           <property name="font">
+            <font>
+             <family>Times New Roman</family>
+             <pointsize>10</pointsize>
+             <weight>75</weight>
+             <italic>true</italic>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Acquisition</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <layout class="QGridLayout" name="gridLayout_9">
+           <item row="0" column="0">
+            <widget class="QCheckBox" name="chckTpDC">
+             <property name="text">
+              <string>DC</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QCheckBox" name="chckTpAC">
+             <property name="text">
+              <string>AC</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QPushButton" name="ButSaveCont">
+        <property name="geometry">
+         <rect>
+          <x>30</x>
+          <y>580</y>
+          <width>75</width>
+          <height>23</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Save</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_41">
+        <property name="geometry">
+         <rect>
+          <x>31</x>
+          <y>371</y>
+          <width>72</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+          <weight>75</weight>
+          <italic>true</italic>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Test Signal</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="chckTestSig">
+        <property name="geometry">
+         <rect>
+          <x>31</x>
+          <y>393</y>
+          <width>99</width>
+          <height>17</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Generate Signal</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+       <widget class="QWidget" name="layoutWidget">
+        <property name="geometry">
+         <rect>
+          <x>32</x>
+          <y>417</y>
+          <width>250</width>
+          <height>43</height>
+         </rect>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_14">
+         <item row="0" column="0">
+          <layout class="QVBoxLayout" name="verticalLayout_22">
+           <item>
+            <widget class="QLabel" name="label_35">
+             <property name="text">
+              <string>Freq Min</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QDoubleSpinBox" name="SpnTestFreqMin">
+             <property name="singleStep">
+              <double>0.010000000000000</double>
+             </property>
+             <property name="value">
+              <double>10.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item row="0" column="1">
+          <layout class="QVBoxLayout" name="verticalLayout_23">
+           <item>
+            <widget class="QLabel" name="label_36">
+             <property name="text">
+              <string>Freq Max</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QSpinBox" name="SpnTestFreqMax">
+             <property name="maximum">
+              <number>10000000</number>
+             </property>
+             <property name="value">
+              <number>100</number>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item row="0" column="2">
+          <layout class="QVBoxLayout" name="verticalLayout_29">
+           <item>
+            <widget class="QLabel" name="label_39">
+             <property name="text">
+              <string>nFreqs</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QSpinBox" name="SpnTestNFreqs">
+             <property name="value">
+              <number>2</number>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item row="0" column="3">
+          <layout class="QVBoxLayout" name="verticalLayout_30">
+           <item>
+            <widget class="QLabel" name="label_40">
+             <property name="text">
+              <string>Amplitude</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QDoubleSpinBox" name="SpnTestAmp">
+             <property name="decimals">
+              <number>3</number>
+             </property>
+             <property name="maximum">
+              <double>75.000000000000000</double>
+             </property>
+             <property name="value">
+              <double>0.100000000000000</double>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>994</width>
+     <height>21</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <tabstops>
+  <tabstop>checkBox_16</tabstop>
+  <tabstop>checkBox_4</tabstop>
+  <tabstop>checkBox_11</tabstop>
+  <tabstop>checkBox_3</tabstop>
+  <tabstop>checkBox_15</tabstop>
+  <tabstop>checkBox_12</tabstop>
+  <tabstop>checkBox_6</tabstop>
+  <tabstop>checkBox_13</tabstop>
+  <tabstop>checkBox_7</tabstop>
+  <tabstop>checkBox_14</tabstop>
+  <tabstop>checkBox</tabstop>
+  <tabstop>checkBox_9</tabstop>
+  <tabstop>checkBox_2</tabstop>
+  <tabstop>checkBox_8</tabstop>
+  <tabstop>checkBox_10</tabstop>
+  <tabstop>checkBox_5</tabstop>
+  <tabstop>ButInitChannels</tabstop>
+  <tabstop>ButUnselAll</tabstop>
+  <tabstop>ButSweep</tabstop>
+  <tabstop>SpnSVgs</tabstop>
+  <tabstop>SpnSVds</tabstop>
+  <tabstop>ChckSP</tabstop>
+  <tabstop>SpnVgsMin</tabstop>
+  <tabstop>SpnVgsMax</tabstop>
+  <tabstop>SpnVgsStep</tabstop>
+  <tabstop>SpnVdsMin</tabstop>
+  <tabstop>SpnVdsMax</tabstop>
+  <tabstop>SpnVdsStep</tabstop>
+  <tabstop>CmbDevCond</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>
