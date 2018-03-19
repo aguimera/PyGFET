@@ -32,7 +32,7 @@
        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -703,12 +703,12 @@
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="">
+       <widget class="QWidget" name="layoutWidget">
         <property name="geometry">
          <rect>
           <x>150</x>
           <y>20</y>
-          <width>51</width>
+          <width>56</width>
           <height>41</height>
          </rect>
         </property>
@@ -1042,7 +1042,7 @@
          <rect>
           <x>30</x>
           <y>70</y>
-          <width>256</width>
+          <width>272</width>
           <height>45</height>
          </rect>
         </property>
@@ -1088,10 +1088,10 @@
              <item>
               <widget class="QDoubleSpinBox" name="SpnWindow">
                <property name="decimals">
-                <number>1</number>
+                <number>4</number>
                </property>
                <property name="minimum">
-                <double>0.100000000000000</double>
+                <double>0.000100000000000</double>
                </property>
                <property name="maximum">
                 <double>100.000000000000000</double>
