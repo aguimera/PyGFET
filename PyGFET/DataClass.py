@@ -418,8 +418,48 @@ class DataCharDC(object):
 
 class DataCharAC(DataCharDC):
 
-    def GetFpsd(self):
+    def _GetFreqVgsInd(self, Vgs=None, Vds=None, Ud0Norm=False):
+        iVds = self.GetVdsIndexes(Vds)
+        if len(iVds) == 0:
+            return None, None
+
+        vgs = self.CheckVgsRange(Vgs, iVds, Ud0Norm)
+        if vgs is None:
+            return None, None
+
+        VGS = self.GetVgs(Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm)
+        vgsmeas = [min(VGS, key=lambda x:abs(x-vg)) for vg in vgs]
+        VgsInd = [np.where(VGS == vg)[0][0] for vg in vgsmeas]
+
+        SiVds = ['Vd{}'.format(i) for i in iVds]
+        return SiVds, VgsInd
+
+    def GetPSD(self, Vgs=None, Vds=None, Ud0Norm=False):
+        SiVds, VgsInd = self._GetFreqVgsInd(Vgs, Vds, Ud0Norm)
+        if VgsInd is None:
+            return None
+
+        return self.PSD[SiVds[0]][VgsInd, :].transpose()
+
+    def GetGmMag(self, Vgs=None, Vds=None, Ud0Norm=False):
+        SiVds, VgsInd = self._GetFreqVgsInd(Vgs, Vds, Ud0Norm)
+        if VgsInd is None:
+            return None
+
+        return np.abs(self.gm[SiVds[0]][VgsInd, :].transpose())
+
+    def GetGmPh(self, Vgs=None, Vds=None, Ud0Norm=False):
+        SiVds, VgsInd = self._GetFreqVgsInd(Vgs, Vds, Ud0Norm)
+        if VgsInd is None:
+            return None
+
+        return np.angle(self.gm[SiVds[0]][VgsInd, :].transpose(), deg=True)
+
+    def GetFpsd(self, **kwargs):
         return self.Fpsd
+    
+    def GetFgm(self, **kwargs):
+        return self.Fgm
 
     def GetIrms(self, Vgs=None, Vds=None, Ud0Norm=False):
         return self._GetParam('Irms', Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm)
@@ -562,11 +602,15 @@ class PyFETPlotDataClass(PlotDataClass.PyFETPlotBase):
             if not Data.IsOK and PltIsOK:
                 Mark = '+'
 
-            if Vgs is None:
-                Valx = Data.GetVgs(Ud0Norm=Ud0Norm)
+            if self.AxsProp[axn][2] == 'Vgs':
+                if Vgs is None:
+                    Valx = Data.GetVgs(Ud0Norm=Ud0Norm)
+                else:
+                    Valx = Vgs
             else:
-                Valx = Vgs
-                
+                func = Data.__getattribute__('Get' + self.AxsProp[axn][2])
+                Valx = func(Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm)
+
             func = Data.__getattribute__('Get' + axn)
             Valy = func(Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm)
 
