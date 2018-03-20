@@ -430,16 +430,13 @@ class DataProcess(ChannelsConfig):
 #            print 'no RDS'
 #            Vload = Data + 2*self.Vin
 
-        Vload = Data * (self.Rds/(self.Rds+1e3))
-        print 'Vload ->', np.mean(Vload)
-        Iload = Data * (1/(self.Rds+1e3))
-        print 'Iload (Rds) ->', np.mean(Iload)
-        ILoad = -2*self.Vin/1e3
-        print 'Iload (Vin) ->', np.mean(ILoad)
-        Iload2 = Data*(0.855)*1e-3
+#        Vload = Data * (self.Rds/(self.Rds+1e3))
+#        Iload = Data * (1/(self.Rds+1e3))
+#        ILoad = -2*self.Vin/1e3
+#        Iload2 = Data*(0.855)*1e-3
 
         if self.EventContDcDone:
-            self.EventContDcDone(Iload2)
+            self.EventContDcDone(Data)
 
 
 ###############################################################################

@@ -344,6 +344,7 @@ class ChannelsConfig():
         sData = np.zeros((samps, len(SortDict)))
         print samps, inch, data.shape, sData.shape
         for chn, inds in SortDict.iteritems():
+            print chn, inds
             sData[:, inds[1]] = data[:, inds[0]]
         return sData
 

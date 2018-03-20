@@ -320,9 +320,11 @@ class CharactAPP(QtWidgets.QMainWindow):
         if self.Charac is not None:
             self.Charac.__del__()
 
+        Config = self.GetConfig(self.GrConfig)
+        self.TimePlotConfig(Config)
         self.Charac = PyCharact.Charact(Channels=Channels,
-                                        GateChannel=GateChannel)
-
+                                        GateChannel=GateChannel,
+                                        Configuration=Config)
 #        self.Charac = Charact(Channels=Channels,
 #                              GateChannel=GateChannel,
 #                              Configuration=Config)
@@ -339,7 +341,10 @@ class CharactAPP(QtWidgets.QMainWindow):
         self.Charac.EventSetBodeLabel = self.LabelsBodeChanged
 
         # Define Gains
-        self.Charac.IVGainAC = float(self.QGainAC.text())
+        if Config in ('DC', 'AC'):
+            self.Charac.IVGainAC = float(self.QGainDC.text())
+        else:
+            self.Charac.IVGainAC = float(self.QGainAC.text())
         self.Charac.IVGainDC = float(self.QGainDC.text())
         self.Charac.IVGainGate = float(self.QGainGate.text())
         self.Charac.Rhardware = float(self.QRhardware.text())
