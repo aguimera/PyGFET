@@ -128,7 +128,6 @@ class ReadAnalog(Daq.Task):
         if not self.ContSamps:  # TODO check why stack here
             self.data = np.vstack((self.data, data))
 
-#        print data.size, self.data.shape
 
         if self.EveryNEvent:
             self.EveryNEvent(data)
@@ -357,9 +356,7 @@ class ChannelsConfig():
     def _SortChannels(self, data, SortDict):
         (samps, inch) = data.shape
         sData = np.zeros((samps, len(SortDict)))
-        print samps, inch, data.shape, sData.shape
         for chn, inds in SortDict.iteritems():
-            print chn, inds
             sData[:, inds[1]] = data[:, inds[0]]
         return sData
 
@@ -764,21 +761,16 @@ class DataProcess(ChannelsConfig, FFTBodeAnalysis):
     # Continuous acquisition
     ####
     def CalcDcContData(self, Data):
-        print 'DataProcess CalcDCContData'
-        print Data.shape
         Ids = (Data-self.BiasVd)/self.IVGainDC
         if self.EventContDcDone:
             self.EventContDcDone(Ids)
 
     def CalcAcContData(self, Data):
-        print 'DataProcess CalcACContData'
-        print Data.shape
         Ids = (Data-self.BiasVd)/self.IVGainAC
         if self.EventContAcDone:
             self.EventContAcDone(Ids)
 
     def CalcGateContData(self, Data):
-        print 'DataProcess CalcGateContData'
         Igs = (Data-5e-3)/self.IVGainGate
 #        data = Data[1:, :]
 #        r, c = data.shape
@@ -825,12 +817,10 @@ class DataProcess(ChannelsConfig, FFTBodeAnalysis):
 
             if self.SeqIndex <= len(self.InitConfig['Channels']) - 1:
                 Channel = [sorted(self.InitConfig['Channels'])[self.SeqIndex], ]
-                print 'Channel -->', Channel
                 SeqConf['Channels'] = Channel
                 self.SeqIndex += 1
 
             else:
-                print 'End Seq'
                 self.SeqIndex = 0
                 if len(self.BodeSignal.FFTconfs) > 1 and self.iConf == 0:
                     self.iConf += 1
@@ -857,7 +847,6 @@ class DataProcess(ChannelsConfig, FFTBodeAnalysis):
     def GetBode(self):
         self.OldConfig = self.InitConfig.copy()
         if self.InitConfig['Configuration'] == 'Both':
-            print 'Config Both'
             self.OldConfig = self.InitConfig.copy()
             conf = self.InitConfig.copy()
             conf['Configuration'] = 'AC'
@@ -898,7 +887,6 @@ class DataProcess(ChannelsConfig, FFTBodeAnalysis):
             return
 
         else:
-            print self.iConf
             GmL = self.CalcBode(Data=Data,
                                 Ind=self.iConf,
                                 IVGainAC=self.IVGainAC,
@@ -934,7 +922,6 @@ class DataProcess(ChannelsConfig, FFTBodeAnalysis):
         print 'DataProcess EventAcDataAcq'
         r, c = Data.shape
         x = np.arange(0, r)
-        print self.Inputs.Fs
         if self.EventAcDataAcq:
 
             self.EventAcDataAcq(Data/self.IVGainAC,
@@ -1164,7 +1151,6 @@ class Charact(DataProcess):
                     self.SwVgsInd] = Gm[:, inds[1]]
             self.DevACVals[chn]['Fgm'] = SigFreqs
 
-        print Gm.shape, SigFreqs.shape
         if self.EventCharACDone:
             self.EventCharACDone(self.DevACVals)
 
@@ -1181,7 +1167,6 @@ class Charact(DataProcess):
             self.DevACVals[chn]['PSD']['Vd{}'.format(self.SwVdsInd)][
                     self.SwVgsInd] = psd[:, inds[1]]
             self.DevACVals[chn]['Fpsd'] = ff
-        print psd.shape, ff.shape, 'Charact PsdDoneCallback'
         if self.EventCharACDone:
             self.EventCharACDone(self.DevACVals)
 
@@ -1231,7 +1216,6 @@ class Charact(DataProcess):
 
         tstop = self.ContRecord.Signal(ChName=chk + '_AC').t_stop
 #        newvect2 = self.Vgs.transpose()
-        print newvect.shape, self.Vgs
         self.ContRecord.AppendSignal('Vgs', self.Vgs)
         self.ContRecord.AppendSignal('Vds', self.Vds)
 
