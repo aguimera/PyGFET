@@ -674,56 +674,8 @@
           <bool>true</bool>
          </property>
         </widget>
-        <zorder>checkBox_15</zorder>
-        <zorder>checkBox_16</zorder>
-        <zorder>checkBox_4</zorder>
-        <zorder>checkBox_11</zorder>
-        <zorder>checkBox_3</zorder>
-        <zorder>checkBox_12</zorder>
-        <zorder>checkBox_6</zorder>
-        <zorder>checkBox_13</zorder>
-        <zorder>checkBox_7</zorder>
-        <zorder>checkBox_14</zorder>
-        <zorder>checkBox</zorder>
-        <zorder>checkBox_9</zorder>
-        <zorder>checkBox_2</zorder>
-        <zorder>checkBox_8</zorder>
-        <zorder>checkBox_10</zorder>
-        <zorder>checkBox_5</zorder>
-        <zorder>checkBox_43</zorder>
-        <zorder>checkBox_17</zorder>
-        <zorder>checkBox_45</zorder>
-        <zorder>checkBox_35</zorder>
-        <zorder>checkBox_39</zorder>
-        <zorder>checkBox_48</zorder>
-        <zorder>checkBox_41</zorder>
-        <zorder>checkBox_37</zorder>
-        <zorder>checkBox_34</zorder>
-        <zorder>checkBox_42</zorder>
-        <zorder>checkBox_38</zorder>
-        <zorder>checkBox_47</zorder>
-        <zorder>checkBox_46</zorder>
-        <zorder>checkBox_44</zorder>
-        <zorder>checkBox_36</zorder>
-        <zorder>checkBox_40</zorder>
-        <zorder>checkBox_34</zorder>
-        <zorder>checkBox_17</zorder>
-        <zorder>checkBox_45</zorder>
-        <zorder>checkBox_35</zorder>
-        <zorder>checkBox_42</zorder>
-        <zorder>checkBox_38</zorder>
-        <zorder>checkBox_39</zorder>
-        <zorder>checkBox_48</zorder>
-        <zorder>checkBox_47</zorder>
-        <zorder>checkBox_46</zorder>
-        <zorder>checkBox_41</zorder>
-        <zorder>checkBox_43</zorder>
-        <zorder>checkBox_44</zorder>
-        <zorder>checkBox_36</zorder>
-        <zorder>checkBox_40</zorder>
-        <zorder>checkBox_37</zorder>
        </widget>
-       <widget class="QWidget" name="">
+       <widget class="QWidget" name="layoutWidget">
         <property name="geometry">
          <rect>
           <x>370</x>
@@ -1311,45 +1263,61 @@
          </item>
         </layout>
        </widget>
+       <widget class="QGroupBox" name="GrConfig">
+        <property name="geometry">
+         <rect>
+          <x>730</x>
+          <y>20</y>
+          <width>181</width>
+          <height>41</height>
+         </rect>
+        </property>
+        <property name="title">
+         <string>DaqCard Configuration</string>
+        </property>
+        <widget class="QWidget" name="layoutWidget_4">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>20</y>
+           <width>133</width>
+           <height>19</height>
+          </rect>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_16">
+          <item row="0" column="0">
+           <widget class="QCheckBox" name="ChckDCSetup">
+            <property name="text">
+             <string>DC</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+            <property name="autoExclusive">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QCheckBox" name="ChckACSetup">
+            <property name="text">
+             <string>AC</string>
+            </property>
+            <property name="autoExclusive">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </widget>
        <zorder>layoutWidget</zorder>
        <zorder>ButInitChannels</zorder>
        <zorder>ButUnselAll</zorder>
        <zorder>layoutWidget</zorder>
-       <zorder>GrChannelGate</zorder>
        <zorder>layoutWidget_3</zorder>
        <zorder>GrChannels</zorder>
-       <zorder>checkBox_34</zorder>
-       <zorder>checkBox_46</zorder>
-       <zorder>checkBox_37</zorder>
-       <zorder>checkBox_39</zorder>
-       <zorder>checkBox_38</zorder>
-       <zorder>checkBox_41</zorder>
-       <zorder>checkBox_4</zorder>
-       <zorder>checkBox_17</zorder>
-       <zorder>checkBox_5</zorder>
-       <zorder>checkBox_14</zorder>
-       <zorder>checkBox_7</zorder>
-       <zorder>checkBox_3</zorder>
-       <zorder>checkBox_43</zorder>
-       <zorder>checkBox_40</zorder>
-       <zorder>checkBox_15</zorder>
-       <zorder>checkBox_2</zorder>
-       <zorder>checkBox</zorder>
-       <zorder>checkBox_11</zorder>
-       <zorder>checkBox_6</zorder>
-       <zorder>checkBox_8</zorder>
-       <zorder>checkBox_10</zorder>
-       <zorder>checkBox_42</zorder>
-       <zorder>checkBox_9</zorder>
-       <zorder>checkBox_16</zorder>
-       <zorder>checkBox_44</zorder>
-       <zorder>checkBox_35</zorder>
-       <zorder>checkBox_47</zorder>
-       <zorder>checkBox_45</zorder>
-       <zorder>checkBox_36</zorder>
-       <zorder>checkBox_48</zorder>
-       <zorder>checkBox_13</zorder>
-       <zorder>checkBox_12</zorder>
+       <zorder>GrConfig</zorder>
       </widget>
       <widget class="QWidget" name="tab_2">
        <attribute name="title">
