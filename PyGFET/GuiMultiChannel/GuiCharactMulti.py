@@ -160,7 +160,6 @@ class CharacLivePlot():
 
     def PlotFFT(self, FFT):
         print 'CharacLivePlot PlotFFT'
-        print FFT.shape
 #        self.FFTFig, self.FFTAxs = plt.subplots()
 #        self.FFTAxs.ticklabel_format(axis='y', style='sci',
 #                                     scilimits=(-2, 2))
@@ -613,7 +612,6 @@ class CharactAPP(QtWidgets.QMainWindow):
 
     def CharSweepDoneCallBack(self, Dcdict, Acdict):
         print 'Gui sweep done save data'
-        print Dcdict, Acdict
         if self.ChckSaveData.isChecked():
             Filename = self.FileName + "{}-Cy{}.h5".format('', self.Cycle)
             self.LblPath.setText(Filename)
@@ -630,7 +628,6 @@ class CharactAPP(QtWidgets.QMainWindow):
 
     def CharFFTCallBack(self, FFT):
         print 'Gui FFT done callback'
-        print FFT.shape
         if self.ChckFFT.isChecked():
             self.PlotSweep.PlotFFT(FFT[1:])
 
@@ -654,7 +651,7 @@ class CharactAPP(QtWidgets.QMainWindow):
         print 'Gui Continuous Data Done Callback'
         if not self.ChckPauseCont.isChecked():
             time = (tstop - self.SpnWindow.value()*pq.s, tstop)
-            print tstop, time
+            print tstop
             if self.PlotCont:
                 self.PlotCont.PlotUpdate(Time=time)
 

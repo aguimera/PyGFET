@@ -44,7 +44,6 @@ class ReadAnalog(Daq.Task):
 
     def __init__(self, InChans, Range=5.0):
 
-        print 'ReadAnalog Init'
         Daq.Task.__init__(self)
         self.Channels = InChans
 
@@ -58,7 +57,6 @@ class ReadAnalog(Daq.Task):
         self.AutoRegisterDoneEvent(0)
 
     def GetDevName(self,):
-        print 'ReadAnalog GetDevName'
         # Get Device Name of Daq Card
         n = 1024
         buff = ctypes.create_string_buffer(n)
@@ -72,10 +70,10 @@ class ReadAnalog(Daq.Task):
         return Dev
 
     def ReadData(self, Fs=1000, nSamps=10000, EverySamps=1000):
-        print 'ReadAnalog ReadData'
-        print 'Fs', Fs
-        print 'nSamps', nSamps
-        print 'EverySamps', EverySamps
+#        print 'ReadAnalog ReadData'
+#        print 'Fs', Fs
+#        print 'nSamps', nSamps
+#        print 'EverySamps', EverySamps
 
         self.Fs = Fs
         self.EverySamps = EverySamps
@@ -90,9 +88,9 @@ class ReadAnalog(Daq.Task):
         self.StartTask()
 
     def ReadContData(self, Fs=1000, EverySamps=1000):
-        print 'ReadAnalog ReadContData'
-        print 'Fs', Fs
-        print 'EverySamps', EverySamps
+#        print 'ReadAnalog ReadContData'
+#        print 'Fs', Fs
+#        print 'EverySamps', EverySamps
 
         self.Fs = Fs
         self.EverySamps = np.int32(EverySamps)
@@ -111,7 +109,6 @@ class ReadAnalog(Daq.Task):
         self.ContSamps = False
 
     def EveryNCallback(self):
-        print 'ReadAnalog every N'
         read = c_int32()
         data = np.zeros((self.EverySamps, len(self.Channels)))
         self.ReadAnalogF64(self.EverySamps, 10.0,
@@ -127,7 +124,6 @@ class ReadAnalog(Daq.Task):
             self.EveryNEvent(data)
 
     def DoneCallback(self, status):
-        print 'ReadAnalog Done'
         self.StopTask()
         self.UnregisterEveryNSamplesEvent()
 
@@ -240,11 +236,9 @@ class ChannelsConfig():
     GateDataEveryNEvent = None
 
     def DelInputs(self):
-        print 'DelInputs'
         self.Inputs.ClearTask()
 
     def InitInputs(self, Channels, GateChannel=None,):
-        print 'InitIputs'
         if self.Inputs is not None:
             self.DelInputs()
 
@@ -270,6 +264,9 @@ class ChannelsConfig():
         print 'Channels ', len(self.ChNamesList)
         print 'ai list ->', InChans
 
+        for ch in sorted(Channels):
+            print ch, self.aiChannels[ch][0], self.DCChannelIndex[ch]
+
         self.Inputs = ReadAnalog(InChans=InChans)
         # events linking
         self.Inputs.EveryNEvent = self.EveryNEventCallBack
@@ -291,7 +288,7 @@ class ChannelsConfig():
         self.VsigOut = WriteAnalog((ChVsig,))
 
     def SetBias(self, Vsig):
-        print 'ChannelsConfig SetBias Vsig ->', Vsig
+        print 'SetBias Vsig ->', Vsig
         self.VsigOut.SetVal(Vsig)
         self.Vin = Vsig
 
@@ -312,7 +309,7 @@ class ChannelsConfig():
     def _SortChannels(self, data, SortDict):
         (samps, inch) = data.shape
         sData = np.zeros((samps, len(SortDict)))
-        print samps, inch, data.shape, sData.shape
+#        print samps, inch, data.shape, sData.shape
         for chn, inds in SortDict.iteritems():
             sData[:, inds[1]] = data[:, inds[0]]
         return sData
@@ -401,7 +398,6 @@ class DataProcess(ChannelsConfig):
         self.GateDataEveryNEvent = None
 
     def GetContinuousCurrent(self, Fs, Refresh, GenTestSig):
-        print 'Cont GetContinuousCurrent'
         self.ClearEventsCallBacks()
         self.DCDataEveryNEvent = self.CalcDcContData
         if self.GateChannelIndex is not None:
@@ -419,9 +415,6 @@ class DataProcess(ChannelsConfig):
     # Continuous acquisition
     ####
     def CalcDcContData(self, Data):
-        print 'DataProcess CalcDCContData'
-        print np.mean(Data)
-        print self.Rds
 
 #        if self.Rharware:
 #            print self.Rds
@@ -452,7 +445,6 @@ class Charact(DataProcess):
     ContRecord = None
 
     def InitContMeas(self, Vin, Fs, Refresh, RecDC=True, GenTestSig=False):
-        print 'Charact InitContMeas'
         #  Init Neo record
         out_seg = neo.Segment(name='NewSeg')
 
@@ -477,7 +469,6 @@ class Charact(DataProcess):
         self.CharactRunning = True
 
     def ContDcDoneCallback(self, Vload):
-        print 'Charact Continuous Dc Data Done Callback'
         for chk, chi, in self.DCChannelIndex.iteritems():
             newvect = Vload[:, chi[1]].transpose()
             self.ContRecord.AppendSignal(chk, newvect[:, None])

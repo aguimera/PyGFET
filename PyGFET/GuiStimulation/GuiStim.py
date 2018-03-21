@@ -207,7 +207,6 @@ class CharactAPP(QtWidgets.QMainWindow):
                 del self.PlotCont
 
 #            self.SetTestSignalConfig()
-            print 'InitContMeas'
             self.Charac.InitContMeas(Vin=self.SpnSVinTP.value(),
                                      Fs=self.SpnFsTime.value(),
                                      Refresh=self.SpnRefresh.value(),
@@ -260,10 +259,9 @@ class CharactAPP(QtWidgets.QMainWindow):
 ###############################################################################
 
     def CharContDataCallback(self, tstop):
-        print 'Gui Continuous Data Done Callback'
         if not self.ChckPauseCont.isChecked():
             time = (tstop - self.SpnWindow.value()*pq.s, tstop)
-            print tstop, time
+            print tstop
             if self.PlotCont:
                 self.PlotCont.PlotUpdate(Time=time)
 
