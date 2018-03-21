@@ -8,6 +8,8 @@ Created on Fri Jun 16 17:43:50 2017
 
 import numpy as np
 from scipy.interpolate import interp1d
+import scipy.optimize as optim
+from scipy.integrate import simps
 
 import PlotDataClass
 import sys
@@ -103,7 +105,8 @@ class DataCharDC(object):
             muGM = (Gm[:, ivd]*L)/(self.FEMCdl*Vdseff*W)
             self.FEMmuGm[:, ivd] = muGM
 
-    def GetUd0(self, Vds=None, Vgs=None, Ud0Norm=False,  Normlize=False):
+    def GetUd0(self, Vds=None, Vgs=None, Ud0Norm=False,
+               Normlize=False, **kwargs):
         if 'Ud0' not in self.__dict__:
             self.CalcUd0()
 
@@ -134,7 +137,7 @@ class DataCharDC(object):
     def GetVds(self, **kwargs):
         return self.Vds
 
-    def GetVgs(self, Vgs=None, Vds=None, Ud0Norm=False):
+    def GetVgs(self, Vgs=None, Vds=None, Ud0Norm=False, **kwargs):
         if not Ud0Norm:
             return self.Vgs
 
@@ -170,7 +173,7 @@ class DataCharDC(object):
             iVds = range(len(self.Vds))
         return iVds
 
-    def GetIds(self, Vgs=None, Vds=None, Ud0Norm=False):
+    def GetIds(self, Vgs=None, Vds=None, Ud0Norm=False, **kwargs):
         iVds = self.GetVdsIndexes(Vds)
         if len(iVds) == 0:
             return None
@@ -199,7 +202,7 @@ class DataCharDC(object):
             return Ids[:, None]
         return Ids.transpose()
 
-    def GetGM(self, Vgs=None, Vds=None, Normlize=False, Ud0Norm=False):
+    def GetGM(self, Vgs=None, Vds=None, Normlize=False, Ud0Norm=False, **kwargs):
         iVds = self.GetVdsIndexes(Vds)
         if len(iVds) == 0:
             return None
@@ -237,7 +240,7 @@ class DataCharDC(object):
         else:
             return self.GetGM(**kwargs)
 
-    def GetGMMax(self, Vds=None, Normlize=False, Ud0Norm=False):
+    def GetGMMax(self, Vds=None, Normlize=False, Ud0Norm=False, **kwargs):
         iVds = self.GetVdsIndexes(Vds)
         if len(iVds) == 0:
             return None
@@ -270,7 +273,7 @@ class DataCharDC(object):
             return GMmax[:, None], VgsGMax[:, None]
         return GMmax.transpose(), VgsGMax.transpose()
 
-    def GetRds(self, Vgs=None, Vds=None, Ud0Norm=False):
+    def GetRds(self, Vgs=None, Vds=None, Ud0Norm=False, **kwargs):
         Ids = self.GetIds(Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm)
 
         if Ids is None:
@@ -290,22 +293,22 @@ class DataCharDC(object):
             return Rds[:, None]
         return Rds.transpose()
             
-    def GetFEMn(self, Vgs=None, Vds=None, Ud0Norm=False):
+    def GetFEMn(self, Vgs=None, Vds=None, Ud0Norm=False, **kwargs):
         if 'FEMn' not in self.__dict__:
             self.CalcFEM()
         return self._GetParam('FEMn', Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm)
 
-    def GetFEMmu(self, Vgs=None, Vds=None, Ud0Norm=False):
+    def GetFEMmu(self, Vgs=None, Vds=None, Ud0Norm=False, **kwargs):
         if 'FEMmu' not in self.__dict__:
             self.CalcFEM()
         return self._GetParam('FEMmu', Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm)
 
-    def GetFEMmuGm(self, Vgs=None, Vds=None, Ud0Norm=False):
+    def GetFEMmuGm(self, Vgs=None, Vds=None, Ud0Norm=False, **kwargs):
         if 'FEMmuGm' not in self.__dict__:
             self.CalcFEM()
         return self._GetParam('FEMmuGm', Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm)
 
-    def GetIg(self, Vgs=None, Vds=None, Ud0Norm=False):
+    def GetIg(self, Vgs=None, Vds=None, Ud0Norm=False, **kwargs):
         if 'Ig' not in self.__dict__:
 #            print 'No Gate data'
             return None
@@ -329,7 +332,7 @@ class DataCharDC(object):
             return self.Vgs
 
     def _GetParam(self, Param, Vgs=None, Vds=None,
-                  Ud0Norm=False, Normlize=False):
+                  Ud0Norm=False, Normlize=False, **kwargs):
 
         iVds = self.GetVdsIndexes(Vds)
         if len(iVds) == 0:
@@ -404,19 +407,48 @@ class DataCharDC(object):
     def GetAnalyteCon(self, **kwargs):
         return np.array(self.Info['AnalyteCon'])[None, None]
 
-    def GetGds(self, Vgs=None, Vds=None, Ud0Norm=False):
+    def GetGds(self, Vgs=None, Vds=None, Ud0Norm=False, **kwargs):
         Gds = 1 / self.GetRds(Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm)
         return Gds
 
-    def GetGMNorm(self, Vgs=None, Vds=None, Ud0Norm=False):
+    def GetGMNorm(self, Vgs=None, Vds=None, Ud0Norm=False, **kwargs):
         GMNorm = self.GetGM(Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm, Normlize=True)
         return GMNorm
 
-    def GetUd0Vds(self, Vgs=None, Vds=None, Ud0Norm=False):
+    def GetUd0Vds(self, Vgs=None, Vds=None, Ud0Norm=False, **kwargs):
         return self.GetUd0(Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm, Normlize=True)
 
 
+def Fnoise(f, a, b):
+    return a/f**b
+
+
+def LogFnoise(f, a, b):
+    return b*f+a
+
+
+def FitFNoise(Freq, psd):
+    poptV, pcov = optim.curve_fit(Fnoise, Freq, psd)
+    a = poptV[0]
+    b = poptV[1]
+
+    return a, b, np.sqrt(np.diag(pcov))
+
+
+def FitLogFnoise(Freq, psd):
+    poptV, pcov = optim.curve_fit(LogFnoise, np.log10(Freq),
+                                  np.log10(psd))
+
+    a = 10 ** poptV[0]
+    b = - poptV[1]
+    return a, b, np.sqrt(np.diag(pcov))
+
+
 class DataCharAC(DataCharDC):
+    FFmin = None
+    FFmax = None
+    NFmin = None
+    NFmax = None
 
     def _GetFreqVgsInd(self, Vgs=None, Vds=None, Ud0Norm=False):
         iVds = self.GetVdsIndexes(Vds)
@@ -434,21 +466,76 @@ class DataCharAC(DataCharDC):
         SiVds = ['Vd{}'.format(i) for i in iVds]
         return SiVds, VgsInd
 
-    def GetPSD(self, Vgs=None, Vds=None, Ud0Norm=False):
+    def _CheckFreqIndexes(self, Freq, Fmin, Fmax):
+        if Fmin is not None and Fmax is not None:
+            return np.where(np.logical_and(Freq > Fmin, Freq < Fmax))
+        if Fmin is not None:
+            return np.where(Freq > Fmin)
+        if Fmax is not None:
+            return np.where(Freq < Fmax)
+        return range(len(Freq))[1:]
+
+    def FitNoise(self, Fmin, Fmax):
+        nVgs = len(self.Vgs)
+        nVds = len(self.Vds)
+
+        NoA = np.ones((nVgs, nVds))*np.NaN
+        NoB = np.ones((nVgs, nVds))*np.NaN
+        FitErrA = np.ones((nVgs, nVds))*np.NaN
+        FitErrB = np.ones((nVgs, nVds))*np.NaN
+
+        for ivd in range(nVds):
+            for ivg in range(nVgs):
+                psd = self.PSD['Vd{}'.format(ivd)][ivg, :]
+                Fpsd = self.Fpsd
+                if np.any(np.isnan(psd)):
+                    continue
+
+                try:
+                    Inds = self._CheckFreqIndexes(Fpsd, Fmin, Fmax)
+                    a, b, err = FitLogFnoise(Fpsd[Inds], psd[Inds])
+                    NoA[ivg, ivd] = a
+                    NoB[ivg, ivd] = b
+                    FitErrA[ivg, ivd] = err[0]
+                    FitErrB[ivg, ivd] = err[1]
+                    self.NoA = NoA
+                    self.NoB = NoB
+                    self.FitErrA = FitErrA
+                    self.FitErrB = FitErrB
+                except:
+                    print "Fitting error:", sys.exc_info()[0]
+
+    def CalcIRMS(self, Fmin, Fmax):
+        nVgs = len(self.Vgs)
+        nVds = len(self.Vds)
+
+        Irms = np.ones((nVgs, nVds))*np.NaN
+        for ivd in range(nVds):
+            for ivg in range(nVgs):
+                psd = self.PSD['Vd{}'.format(ivd)][ivg, :]
+                Fpsd = self.Fpsd
+                if np.any(np.isnan(psd)):
+                    continue
+
+                Inds = self._CheckFreqIndexes(Fpsd, Fmin, Fmax)
+                Irms[ivg, ivd] = np.sqrt(simps(psd[Inds], Fpsd[Inds]))
+        self.Irms = Irms
+
+    def GetPSD(self, Vgs=None, Vds=None, Ud0Norm=False, **kwargs):
         SiVds, VgsInd = self._GetFreqVgsInd(Vgs, Vds, Ud0Norm)
         if VgsInd is None:
             return None
 
         return self.PSD[SiVds[0]][VgsInd, :].transpose()
 
-    def GetGmMag(self, Vgs=None, Vds=None, Ud0Norm=False):
+    def GetGmMag(self, Vgs=None, Vds=None, Ud0Norm=False, **kwargs):
         SiVds, VgsInd = self._GetFreqVgsInd(Vgs, Vds, Ud0Norm)
         if VgsInd is None:
             return None
 
         return np.abs(self.gm[SiVds[0]][VgsInd, :].transpose())
 
-    def GetGmPh(self, Vgs=None, Vds=None, Ud0Norm=False):
+    def GetGmPh(self, Vgs=None, Vds=None, Ud0Norm=False, **kwargs):
         SiVds, VgsInd = self._GetFreqVgsInd(Vgs, Vds, Ud0Norm)
         if VgsInd is None:
             return None
@@ -457,49 +544,74 @@ class DataCharAC(DataCharDC):
 
     def GetFpsd(self, **kwargs):
         return self.Fpsd
-    
+
     def GetFgm(self, **kwargs):
         return self.Fgm
 
-    def GetIrms(self, Vgs=None, Vds=None, Ud0Norm=False):
+    def _CheckRMS(self, NFmin, NFmax):
+        if NFmin is not None or NFmax is not None:
+            if self.NFmin != NFmin or self.NFmax != NFmax:
+                print 'Calc IRMS'
+                self.NFmin = NFmin
+                self.NFmax = NFmax
+                if self.IsOK:
+                    self.CalcIRMS(Fmin=NFmin, Fmax=NFmax)
+
+    def GetIrms(self, Vgs=None, Vds=None, Ud0Norm=False,
+                NFmin=None, NFmax=None, **kwargs):
+        self._CheckRMS(NFmax=NFmax, NFmin=NFmin)
         return self._GetParam('Irms', Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm)
 
-    def GetIrmsVds(self, Vgs=None, Vds=None, Ud0Norm=False):
-        return self._GetParam('Irms', Vgs=Vgs, Vds=Vds,
-                              Ud0Norm=Ud0Norm, Normlize=True)
-
-    def GetIrmsIds2(self, Vgs=None, Vds=None, Ud0Norm=False):
-        Irms = self._GetParam('Irms', Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm)
-        Ids = self.GetIds(Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm)
-        return Irms/(Ids**2)
-
-    def GetIrmsIds15(self, Vgs=None, Vds=None, Ud0Norm=False):
-        Irms = self._GetParam('Irms', Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm)
-        Ids = self.GetIds(Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm)
-        return Irms/(Ids**1.5)
-
-    def GetIrmsIds(self, Vgs=None, Vds=None, Ud0Norm=False):
-        Irms = self._GetParam('Irms', Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm)
-        Ids = self.GetIds(Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm)
-        return Irms/Ids
-
-    def GetNoA(self, Vgs=None, Vds=None, Ud0Norm=False):
-        return self._GetParam('NoA', Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm)
-
-    def GetNoAIds2(self, Vgs=None, Vds=None, Ud0Norm=False):
-        NoA=self._GetParam('NoA', Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm)
-        Ids = self.GetIds(Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm)
-        return NoA/(Ids**2)
-    
-    def GetNoB(self, Vgs=None, Vds=None, Ud0Norm=False):
-        return self._GetParam('NoB', Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm)
-
-    def GetVrms(self, Vgs=None, Vds=None, Ud0Norm=False):
-        Irms = self._GetParam('Irms', Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm)
+    def GetVrms(self, Vgs=None, Vds=None, Ud0Norm=False, **kwargs):
+        Irms = self.GetIrms(Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm, **kwargs)
         if Irms is None:
             return None
         gm = np.abs(self.GetGM(Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm))
         return Irms/gm
+
+    def _CheckFitting(self, FFmin, FFmax):
+        if FFmin is not None or FFmax is not None:
+            if self.FFmin != FFmin or self.FFmax != FFmax:
+                print 'Calc fitting'
+                self.FFmin = FFmin
+                self.FFmax = FFmax
+                if self.IsOK:
+                    self.FitNoise(Fmin=FFmin, Fmax=FFmax)
+
+    def GetNoA(self, Vgs=None, Vds=None, Ud0Norm=False,
+               FFmin=None, FFmax=None, **kwargs):
+        self._CheckFitting(FFmin, FFmax)
+        return self._GetParam('NoA', Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm)
+
+    def GetNoB(self, Vgs=None, Vds=None, Ud0Norm=False,
+               FFmin=None, FFmax=None, **kwargs):
+        self._CheckFitting(FFmin, FFmax)
+        return self._GetParam('NoB', Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm)
+
+    def GetNoAIds2(self, Vgs=None, Vds=None, Ud0Norm=False, **kwargs):
+        NoA = self._GetParam('NoA', Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm)
+        Ids = self.GetIds(Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm)
+        return NoA/(Ids**2)
+
+    def GetIrmsVds(self, Vgs=None, Vds=None, Ud0Norm=False, **kwargs):
+        return self._GetParam('Irms', Vgs=Vgs, Vds=Vds,
+                              Ud0Norm=Ud0Norm, Normlize=True)
+
+    def GetIrmsIds2(self, Vgs=None, Vds=None, Ud0Norm=False, **kwargs):
+        Irms = self._GetParam('Irms', Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm)
+        Ids = self.GetIds(Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm)
+        return Irms/(Ids**2)
+
+    def GetIrmsIds15(self, Vgs=None, Vds=None, Ud0Norm=False, **kwargs):
+        Irms = self._GetParam('Irms', Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm)
+        Ids = self.GetIds(Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm)
+        return Irms/(Ids**1.5)
+
+    def GetIrmsIds(self, Vgs=None, Vds=None, Ud0Norm=False, **kwargs):
+        Irms = self._GetParam('Irms', Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm)
+        Ids = self.GetIds(Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm)
+        return Irms/Ids
+
 
 
 class PyFETPlotDataClass(PlotDataClass.PyFETPlotBase):
@@ -562,7 +674,7 @@ class PyFETPlotDataClass(PlotDataClass.PyFETPlotBase):
 
     def PlotDataSet(self, DataDict, Trts=None,
                     Vgs=None, Vds=None, Ud0Norm=False,
-                    PltIsOK=True, ColorOn='Trt', MarkOn='Cycle'):
+                    PltIsOK=True, ColorOn='Trt', MarkOn='Cycle', **kwargs):
 
         if Trts is None:
             Trts = DataDict.keys()
@@ -588,12 +700,12 @@ class PyFETPlotDataClass(PlotDataClass.PyFETPlotBase):
 
                 try:
                     self.Plot(Dat, Vgs=Vgs, Vds=Vds,
-                              Ud0Norm=Ud0Norm, PltIsOK=PltIsOK)
+                              Ud0Norm=Ud0Norm, PltIsOK=PltIsOK, **kwargs)
                 except:  # catch *all* exceptions
                     print TrtN, sys.exc_info()[0]
 
     def Plot(self, Data, Vgs=None, Vds=None,
-             Ud0Norm=False, PltIsOK=True, ColorOnVgs=False):
+             Ud0Norm=False, PltIsOK=True, ColorOnVgs=False, **kwargs):
 
         label = Data.Name
 
@@ -609,14 +721,20 @@ class PyFETPlotDataClass(PlotDataClass.PyFETPlotBase):
                     Valx = Vgs
             else:
                 func = Data.__getattribute__('Get' + self.AxsProp[axn][2])
-                Valx = func(Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm)
+                Valx = func(Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm, **kwargs)
 
             func = Data.__getattribute__('Get' + axn)
-            Valy = func(Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm)
+            Valy = func(Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm, **kwargs)
 
             if Valx is not None and Valy is not None:
                 ax.plot(Valx, Valy, Mark, color=self.color, label=label)
 
+                if axn == 'PSD':
+                    a = Data.GetNoA(Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm, **kwargs)
+                    b = Data.GetNoB(Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm, **kwargs)
+                    Valy = Fnoise(Valx, a, b).transpose()                    
+                    ax.plot(Valx, Valy, Mark,'--', color=self.color, alpha=0.5)
+                    
                 if self.AxsProp[axn][0]:
                     ax.set_yscale('log')
                 if self.AxsProp[axn][1]:
