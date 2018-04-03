@@ -317,7 +317,7 @@ class DataCharDC(object):
     def CheckVgsRange(self, Vgs, iVds, Ud0Norm):
         if Vgs is not None:
             for ivd in iVds:
-                if Ud0Norm is None or Ud0Norm == False:
+                if Ud0Norm is None or Ud0Norm is False:
                     vg = Vgs
                     VgsM = self.Vgs
                 else:
@@ -459,6 +459,10 @@ class DataCharAC(DataCharDC):
         if vgs is None:
             return None, None
 
+# TODO check for more than 1 vds
+        if Ud0Norm is True:
+            vgs = vgs - self.Ud0[iVds[0]]
+
         VGS = self.GetVgs(Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm)
         vgsmeas = [min(VGS, key=lambda x:abs(x-vg)) for vg in vgs]
         VgsInd = [np.where(VGS == vg)[0][0] for vg in vgsmeas]
@@ -525,7 +529,6 @@ class DataCharAC(DataCharDC):
         SiVds, VgsInd = self._GetFreqVgsInd(Vgs, Vds, Ud0Norm)
         if VgsInd is None:
             return None
-
         return self.PSD[SiVds[0]][VgsInd, :].transpose()
 
     def GetGmMag(self, Vgs=None, Vds=None, Ud0Norm=False, **kwargs):
@@ -730,13 +733,15 @@ class PyFETPlotDataClass(PlotDataClass.PyFETPlotBase):
                 ax.plot(Valx, Valy, Mark, color=self.color, label=label)
 
                 if axn == 'PSD':
-                    a = Data.GetNoA(Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm, **kwargs)
-                    b = Data.GetNoB(Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm, **kwargs)
-                    Valy = Fnoise(Valx, a, b).transpose()                    
-                    ax.plot(Valx, Valy, Mark,'--', color=self.color, alpha=0.5)
-                    
+                    a = Data.GetNoA(Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm,
+                                    **kwargs)
+                    b = Data.GetNoB(Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm,
+                                    **kwargs)
+                    Valy = Fnoise(Valx, a, b).transpose()
+                    ax.plot(Valx, Valy, Mark, '--',
+                            color=self.color, alpha=0.5)
+
                 if self.AxsProp[axn][0]:
                     ax.set_yscale('log')
                 if self.AxsProp[axn][1]:
                     ax.set_xscale('log')
-
