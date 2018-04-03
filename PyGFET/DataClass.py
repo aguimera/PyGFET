@@ -19,10 +19,10 @@ DebugPrint = True
 
 class DataCharDC(object):
     PolyOrder = 10
-    FEMn0 = 8e11  # 1/cm^2
-    FEMq = 1.602176565e-19
-    FEMRc = 300  # absolute value Ohms
-    FEMCdl = 2e-6  # F/cm^2
+#    FEMn0 = 8e11  # 1/cm^2
+#    FEMq = 1.602176565e-19
+#    FEMRc = 300  # absolute value Ohms
+#    FEMCdl = 2e-6  # F/cm^2
     IntMethod = 'linear'
 
     def __init__(self, Data):
@@ -53,7 +53,8 @@ class DataCharDC(object):
 
         self.Ud0 = np.ones(len(self.Vds))*np.NaN
         for ivd, Vds in enumerate(self.Vds):
-            self.Ud0[ivd] = vgs[np.argmin(np.polyval(self.IdsPoly[:, ivd], vgs))]
+            self.Ud0[ivd] = vgs[np.argmin(np.polyval(self.IdsPoly[:, ivd],
+                                                     vgs))]
 
     def CalcIdsPoly(self, PolyOrder=None):
         if PolyOrder:
@@ -63,7 +64,6 @@ class DataCharDC(object):
         self.IdsPoly = np.ones((Ord+1, len(self.Vds)))*np.NaN
         for ivd, Vds in enumerate(self.Vds):
             self.IdsPoly[:, ivd] = np.polyfit(self.Vgs, self.Ids[:, ivd], Ord)
-            
 
     def CalcGMPoly(self, PolyOrder=None):
         if 'IdsPoly' not in self.__dict__:
@@ -78,8 +78,12 @@ class DataCharDC(object):
         for ivd, Vds in enumerate(self.Vds):
             self.GMPoly[:, ivd] = np.polyder(self.IdsPoly[:, ivd])
 
-
-    def CalcFEM(self):  # TODO interpolate IDSpoly from all vgs....
+    def CalcFEM(self,
+                FEMn0=8e11,  # 1/cm^2
+                FEMq=1.602176565e-19,
+                FEMRc=300,  # absolute value Ohms
+                FEMCdl=2e-6, **kwargs):  # F/cm^2)
+        # TODO interpolate IDSpoly from all vgs....
         if 'IdsPoly' not in self.__dict__:
             self.CalcIdsPoly()
 
@@ -94,15 +98,15 @@ class DataCharDC(object):
         Ids = self.GetIds()
         Gm = np.abs(self.GetGM())
         for ivd, Vds in enumerate(self.Vds):
-            n = (self.FEMCdl * VgUd[:, ivd])/self.FEMq
-            self.FEMn[:, ivd] = np.sqrt(n**2 + self.FEMn0**2)
+            n = (FEMCdl * VgUd[:, ivd])/FEMq
+            self.FEMn[:, ivd] = np.sqrt(n**2 + FEMn0**2)
 
-            Ieff = Vds/(Vds/Ids[:, ivd] - self.FEMRc)
-            mu = (Ieff*L)/(W*Vds*n*self.FEMq)
+            Ieff = Vds/(Vds/Ids[:, ivd] - FEMRc)
+            mu = (Ieff*L)/(W*Vds*n*FEMq)
             self.FEMmu[:, ivd] = mu
 
-            Vdseff = Vds - Ids[:, ivd]*self.FEMRc
-            muGM = (Gm[:, ivd]*L)/(self.FEMCdl*Vdseff*W)
+            Vdseff = Vds - Ids[:, ivd]*FEMRc
+            muGM = (Gm[:, ivd]*L)/(FEMCdl*Vdseff*W)
             self.FEMmuGm[:, ivd] = muGM
 
     def GetUd0(self, Vds=None, Vgs=None, Ud0Norm=False,
@@ -292,20 +296,20 @@ class DataCharDC(object):
         if len(s) == 1:
             return Rds[:, None]
         return Rds.transpose()
-            
+
     def GetFEMn(self, Vgs=None, Vds=None, Ud0Norm=False, **kwargs):
         if 'FEMn' not in self.__dict__:
-            self.CalcFEM()
+            self.CalcFEM(**kwargs)
         return self._GetParam('FEMn', Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm)
 
     def GetFEMmu(self, Vgs=None, Vds=None, Ud0Norm=False, **kwargs):
         if 'FEMmu' not in self.__dict__:
-            self.CalcFEM()
+            self.CalcFEM(**kwargs)
         return self._GetParam('FEMmu', Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm)
 
     def GetFEMmuGm(self, Vgs=None, Vds=None, Ud0Norm=False, **kwargs):
         if 'FEMmuGm' not in self.__dict__:
-            self.CalcFEM()
+            self.CalcFEM(**kwargs)
         return self._GetParam('FEMmuGm', Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm)
 
     def GetIg(self, Vgs=None, Vds=None, Ud0Norm=False, **kwargs):
