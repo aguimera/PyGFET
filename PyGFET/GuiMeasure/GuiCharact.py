@@ -159,8 +159,6 @@ class CharacLivePlot():
             self.PlotSwAC.Fig.canvas.draw()
 
     def PlotFFT(self, FFT):
-        print 'CharacLivePlot PlotFFT'
-        print FFT.shape
 #        self.FFTFig, self.FFTAxs = plt.subplots()
 #        self.FFTAxs.ticklabel_format(axis='y', style='sci',
 #                                     scilimits=(-2, 2))
@@ -400,7 +398,6 @@ class CharactAPP(QtWidgets.QMainWindow):
                 self.CheckPSDConfig()
 
             if self.ChckFFT.isChecked():
-                print 'FFT checked'
                 self.Charac.EventFFTDone = self.CharFFTCallBack
 
             if not self.ChckSaveData.isChecked():
@@ -564,7 +561,6 @@ class CharactAPP(QtWidgets.QMainWindow):
         self.SetEnableObjects(val=False, Objects=self.ConfigTP)
 
     def SetTestSignalConfig(self):
-        print 'Gui SetTestSignalConfig'
         self.Charac.SetContSig(FreqMin=self.SpnTestFreqMin.value(),
                                FreqMax=self.SpnTestFreqMax.value(),
                                nFreqs=self.SpnTestNFreqs.value(),
@@ -613,7 +609,6 @@ class CharactAPP(QtWidgets.QMainWindow):
 
     def CharSweepDoneCallBack(self, Dcdict, Acdict):
         print 'Gui sweep done save data'
-        print Dcdict, Acdict
         if self.ChckSaveData.isChecked():
             Filename = self.FileName + "{}-Cy{}.h5".format('', self.Cycle)
             self.LblPath.setText(Filename)
@@ -625,36 +620,29 @@ class CharactAPP(QtWidgets.QMainWindow):
         self.NextCycle()
 
     def CharBiasDoneCallBack(self, Dcdict):
-        print 'Gui bias done refresh'
         self.PlotSweep.UpdateSweepDcPlots(Dcdict)
 
     def CharFFTCallBack(self, FFT):
-        print 'Gui FFT done callback'
-        print FFT.shape
         if self.ChckFFT.isChecked():
             self.PlotSweep.PlotFFT(FFT[1:])
 
     def CharAcDataAcq(self, Ids, time):
-        print 'Gui AC attemp refresh'
         self.PlotSweep.UpdateTimeAcViewPlot(Ids, time)
 
     def CharACDoneCallBack(self, Acdict):
-        print' Gui ACPlots done refresh'
         self.PlotSweep.UpdateAcPlots(Acdict)
         if not self.Charac.CharactRunning:
             self.StopSweep()
 
     def CharBiasAttemptCallBack(self, Ids, Time, Dev):
-        print 'Gui attemp refresh'
         self.PlotSweep.UpdateTimeViewPlot(Ids, Time, Dev)
         if not self.Charac.CharactRunning:
             self.StopSweep()
 
     def CharContDataCallback(self, tstop):
-        print 'Gui Continuous Data Done Callback'
         if not self.ChckPauseCont.isChecked():
             time = (tstop - self.SpnWindow.value()*pq.s, tstop)
-            print tstop, time
+            print tstop
             if self.PlotCont:
                 self.PlotCont.PlotUpdate(Time=time)
 

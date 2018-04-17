@@ -46,8 +46,9 @@ def PlotMeanStd(Data, Xvar, Yvar, Vgs=None, Vds=None, Ax=None, Ud0Norm=True,
                 if Dat.IsOK:
                     funcX = Dat.__getattribute__('Get' + Xvar)
                     funcY = Dat.__getattribute__('Get' + Yvar)
-                    Valy = funcY(Vds=Vds, Ud0Norm=Ud0Norm) * ScaleFactor
-                    Valx = funcX(Vds=Vds, Ud0Norm=Ud0Norm)
+                    Valy = funcY(Vds=Vds, Ud0Norm=Ud0Norm,
+                                 **kwargs) * ScaleFactor
+                    Valx = funcX(Vds=Vds, Ud0Norm=Ud0Norm, **kwargs)
                     if Valy is not None:
                         Ax.plot(Valx, Valy, color=Color, alpha=0.2)
 
@@ -58,7 +59,7 @@ def PlotMeanStd(Data, Xvar, Yvar, Vgs=None, Vds=None, Ax=None, Ud0Norm=True,
         for Dat in Datas:
             if Dat.IsOK:
                 funcX = Dat.__getattribute__('Get' + Xvar)
-                Valx = funcX(Vds=Vds, Ud0Norm=Ud0Norm)
+                Valx = funcX(Vds=Vds, Ud0Norm=Ud0Norm, **kwargs)
                 if Valx is not None:
                     VxMax.append(np.max(Valx))
                     VxMin.append(np.min(Valx))
@@ -83,7 +84,8 @@ def PlotMeanStd(Data, Xvar, Yvar, Vgs=None, Vds=None, Ax=None, Ud0Norm=True,
         for Dat in Datas:
             if Dat.IsOK:
                 funcY = Dat.__getattribute__('Get' + Yvar)
-                Valy = funcY(Vgs=ValX, Vds=Vds, Ud0Norm=Ud0Norm) * ScaleFactor
+                Valy = funcY(Vgs=ValX, Vds=Vds, Ud0Norm=Ud0Norm,
+                             **kwargs) * ScaleFactor
                 if Valy is not None:
                     ValY = np.hstack((ValY, Valy)) if ValY.size else Valy
 
@@ -130,7 +132,6 @@ def PlotMeanStd(Data, Xvar, Yvar, Vgs=None, Vds=None, Ax=None, Ud0Norm=True,
     Ax.set_ylabel(Yvar, fontsize=fontsize)
     Ax.set_xlabel(Xvar, fontsize=fontsize)
     Ax.tick_params(axis='both', which='Both', labelsize=labelsize)
-
 
 
 def PlotXYVars(Data, Xvar, Yvar, Vgs, Vds, Ud0Norm=True, label=None,
@@ -239,7 +240,7 @@ def SearchAndGetParam(Groups, Plot=True, Boxplot=False, **kwargs):
         Ax.set_ylabel(kwargs['Param'])
         Ax.grid()
         Ax.ticklabel_format(axis='y', style='sci', scilimits=(2, 2))
-        if len(xPos)>1:
+        if len(xPos) > 1:
             Ax.set_xlim(min(xPos)-0.5, max(xPos)+0.5)
         if 'Vgs' in kwargs and 'Vds' in kwargs:
             title = 'Vgs {} Vds {}'.format(kwargs['Vgs'], kwargs['Vds'])
@@ -250,7 +251,6 @@ def SearchAndGetParam(Groups, Plot=True, Boxplot=False, **kwargs):
         if 'yscale' in kwargs.keys():
             Ax.set_yscale(kwargs['yscale'])
 
-
     if 'XlsFile' in kwargs.keys():
         xlswbook.close()
 
@@ -259,7 +259,7 @@ def SearchAndGetParam(Groups, Plot=True, Boxplot=False, **kwargs):
 
 def SearchAndPlot(Groups, Func=PlotMeanStd, **kwargs):
     col = CreateCycleColors(Groups)
-    
+
     if 'Ax' not in kwargs.keys():
         fig, Ax = plt.subplots()
         kwargs['Ax'] = Ax

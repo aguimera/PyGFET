@@ -181,7 +181,7 @@ class PltSlot():
             sig = neo.AnalogSignal(rs,
                                    units=sig.units,
                                    t_start=sig.t_start,
-                                   sampling_rate=sig.sampling_rate*f*pq.Hz,
+                                   sampling_rate=sig.sampling_rate*f,
                                    name= sig.name)
 
         if self.LSB:

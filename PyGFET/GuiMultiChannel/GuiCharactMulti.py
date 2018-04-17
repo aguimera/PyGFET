@@ -160,7 +160,6 @@ class CharacLivePlot():
 
     def PlotFFT(self, FFT):
         print 'CharacLivePlot PlotFFT'
-        print FFT.shape
 #        self.FFTFig, self.FFTAxs = plt.subplots()
 #        self.FFTAxs.ticklabel_format(axis='y', style='sci',
 #                                     scilimits=(-2, 2))
@@ -320,9 +319,11 @@ class CharactAPP(QtWidgets.QMainWindow):
         if self.Charac is not None:
             self.Charac.__del__()
 
+        Config = self.GetConfig(self.GrConfig)
+        self.TimePlotConfig(Config)
         self.Charac = PyCharact.Charact(Channels=Channels,
-                                        GateChannel=GateChannel)
-
+                                        GateChannel=GateChannel,
+                                        Configuration=Config)
 #        self.Charac = Charact(Channels=Channels,
 #                              GateChannel=GateChannel,
 #                              Configuration=Config)
@@ -339,7 +340,10 @@ class CharactAPP(QtWidgets.QMainWindow):
         self.Charac.EventSetBodeLabel = self.LabelsBodeChanged
 
         # Define Gains
-        self.Charac.IVGainAC = float(self.QGainAC.text())
+        if Config in ('DC', 'AC'):
+            self.Charac.IVGainAC = float(self.QGainDC.text())
+        else:
+            self.Charac.IVGainAC = float(self.QGainAC.text())
         self.Charac.IVGainDC = float(self.QGainDC.text())
         self.Charac.IVGainGate = float(self.QGainGate.text())
         self.Charac.Rhardware = float(self.QRhardware.text())
@@ -608,7 +612,6 @@ class CharactAPP(QtWidgets.QMainWindow):
 
     def CharSweepDoneCallBack(self, Dcdict, Acdict):
         print 'Gui sweep done save data'
-        print Dcdict, Acdict
         if self.ChckSaveData.isChecked():
             Filename = self.FileName + "{}-Cy{}.h5".format('', self.Cycle)
             self.LblPath.setText(Filename)
@@ -625,7 +628,6 @@ class CharactAPP(QtWidgets.QMainWindow):
 
     def CharFFTCallBack(self, FFT):
         print 'Gui FFT done callback'
-        print FFT.shape
         if self.ChckFFT.isChecked():
             self.PlotSweep.PlotFFT(FFT[1:])
 
@@ -649,7 +651,7 @@ class CharactAPP(QtWidgets.QMainWindow):
         print 'Gui Continuous Data Done Callback'
         if not self.ChckPauseCont.isChecked():
             time = (tstop - self.SpnWindow.value()*pq.s, tstop)
-            print tstop, time
+            print tstop
             if self.PlotCont:
                 self.PlotCont.PlotUpdate(Time=time)
 
