@@ -1098,10 +1098,10 @@ class Charact(DataProcess):
             self.EventCharBiasDone(self.DevDCVals)
         # Measure AC Data
         if self.CharactRunning:
-            if self.Bode:
-                self.GetBode()
-            elif self.PSD:
-                self.GetPSD()
+            if self.PSD:
+                self.GetPSD()                
+            elif self.Bode:
+                self.GetBode()        
             else:
                 self.ApplyNextBias()
 
@@ -1115,27 +1115,27 @@ class Charact(DataProcess):
                     self.SwVgsInd] = Gm[:, inds[1]]
             self.DevACVals[chn]['Fgm'] = SigFreqs
 
-        print Gm.shape, SigFreqs.shape
         if self.EventCharACDone:
             self.EventCharACDone(self.DevACVals)
 
-        if self.CharactRunning:
-            if self.PSD:
-                self.GetPSD()
-            else:
-                self.ApplyNextBias()
-        else:
-            self.StopCharac()
+        self.ApplyNextBias()
 
     def PSDDoneCallBack(self, psd, ff, data):
         for chn, inds in self.ACChannelIndex.iteritems():
             self.DevACVals[chn]['PSD']['Vd{}'.format(self.SwVdsInd)][
                     self.SwVgsInd] = psd[:, inds[1]]
             self.DevACVals[chn]['Fpsd'] = ff
+
         if self.EventCharACDone:
             self.EventCharACDone(self.DevACVals)
 
-        self.ApplyNextBias()
+        if self.CharactRunning:
+            if self.Bode:
+                self.GetBode()
+            else:
+                self.ApplyNextBias()
+        else:
+            self.StopCharac()
 
     def EventFFT(self, FFT):
         if self.EventFFTDone:
