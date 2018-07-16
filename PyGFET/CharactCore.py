@@ -5,15 +5,10 @@ Created on Thu Sep 28 16:03:58 2017
 @author: user
 """
 import sys
-
 import ctypes
-
 import PyGFET.DataStructures as PyData
-#from PyGFET.PyFETRecord import NeoRecord
 from PyGFET.RecordCore import NeoRecord
-
 import PyDAQmx as Daq
-
 from ctypes import byref, c_int32
 import numpy as np
 from scipy import signal
@@ -77,10 +72,6 @@ class ReadAnalog(Daq.Task):
         return Dev
 
     def ReadData(self, Fs=1000, nSamps=10000, EverySamps=1000):
-#        print 'ReadAnalog ReadData'
-#        print 'Fs', Fs
-#        print 'nSamps', nSamps
-#        print 'EverySamps', EverySamps
 
         self.Fs = Fs
         self.EverySamps = EverySamps
@@ -95,9 +86,6 @@ class ReadAnalog(Daq.Task):
         self.StartTask()
 
     def ReadContData(self, Fs=1000, EverySamps=1000):
-#        print 'ReadAnalog ReadContData'
-#        print 'Fs', Fs
-#        print 'EverySamps', EverySamps
 
         self.Fs = Fs
         self.EverySamps = np.int32(EverySamps)
@@ -1099,9 +1087,9 @@ class Charact(DataProcess):
         # Measure AC Data
         if self.CharactRunning:
             if self.PSD:
-                self.GetPSD()                
+                self.GetPSD()
             elif self.Bode:
-                self.GetBode()        
+                self.GetBode()
             else:
                 self.ApplyNextBias()
 
