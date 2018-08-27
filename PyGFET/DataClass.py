@@ -82,8 +82,7 @@ class DataCharDC(object):
                 FEMn0=8e11,  # 1/cm^2
                 FEMq=1.602176565e-19,
                 FEMRc=300,  # absolute value Ohms
-                FEMCdl=2e-6,
-                FEMRcVgs=None, **kwargs):  # F/cm^2)
+                FEMCdl=2e-6, **kwargs):  # F/cm^2)
         # TODO interpolate IDSpoly from all vgs....
         if 'IdsPoly' not in self.__dict__:
             self.CalcIdsPoly()
@@ -91,17 +90,6 @@ class DataCharDC(object):
         self.FEMn = np.ones((len(self.Vgs), len(self.Vds)))*np.NaN
         self.FEMmu = np.ones((len(self.Vgs), len(self.Vds)))*np.NaN
         self.FEMmuGm = np.ones((len(self.Vgs), len(self.Vds)))*np.NaN
-
-        if FEMRcVgs is not None:
-            FEMRc = np.ones(len(self.Vgs))*np.NaN 
-            RcVgs = FEMRcVgs[0, :]
-            RcVgsRc = FEMRcVgs[1, :]
-            rcint = interp1d(RcVgs, RcVgsRc)
-            Vgmeas = self.GetVgs(Ud0Norm=True)
-            VgInds =  np.where((Vgmeas>np.min(RcVgs)) & (Vgmeas<np.max(RcVgs)))[0]
-            FEMRc[VgInds] = rcint(Vgmeas[VgInds,0])
-            print FEMRc
-
 
         L = self.TrtTypes['Length']
         W = self.TrtTypes['Width']
