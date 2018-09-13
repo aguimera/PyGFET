@@ -247,38 +247,71 @@ class WriteDigital(Daq.Task):
 class ChannelsConfig():
 
     # Daq card connections mapping 'Chname' : (Daq Card Out)
+#    aiChannels = {'Ch01': 'ai8',
+#                  'Ch02': 'ai12',
+#                  'Ch03': 'ai9',
+#                  'Ch04': 'ai15',
+#                  'Ch05': 'ai10',
+#                  'Ch06': 'ai14',
+#                  'Ch07': 'ai11',
+#                  'Ch08': 'ai13',
+#                  'Ch09': 'ai0',
+#                  'Ch10': 'ai4',
+#                  'Ch11': 'ai1',
+#                  'Ch12': 'ai7',
+#                  'Ch13': 'ai2',
+#                  'Ch14': 'ai6',
+#                  'Ch15': 'ai3',
+#                  'Ch16': 'ai5',
+#                  'Ch17': 'ai27',
+#                  'Ch18': 'ai29',
+#                  'Ch19': 'ai26',
+#                  'Ch20': 'ai30',
+#                  'Ch21': 'ai25',
+#                  'Ch22': 'ai31',
+#                  'Ch23': 'ai24',
+#                  'Ch24': 'ai28',
+#                  'Ch25': 'ai19',
+#                  'Ch26': 'ai21',
+#                  'Ch27': 'ai18',
+#                  'Ch28': 'ai22',
+#                  'Ch29': 'ai17',
+#                  'Ch30': 'ai23',
+#                  'Ch31': 'ai16',
+#                  'Ch32': 'ai20'}
+
     aiChannels = {'Ch01': 'ai8',
-                  'Ch02': 'ai12',
+                  'Ch11': 'ai12',
                   'Ch03': 'ai9',
-                  'Ch04': 'ai15',
+                  'Ch09': 'ai15',
                   'Ch05': 'ai10',
-                  'Ch06': 'ai14',
+                  'Ch15': 'ai14',
                   'Ch07': 'ai11',
-                  'Ch08': 'ai13',
-                  'Ch09': 'ai0',
-                  'Ch10': 'ai4',
-                  'Ch11': 'ai1',
-                  'Ch12': 'ai7',
-                  'Ch13': 'ai2',
-                  'Ch14': 'ai6',
-                  'Ch15': 'ai3',
-                  'Ch16': 'ai5',
-                  'Ch17': 'ai27',
-                  'Ch18': 'ai29',
-                  'Ch19': 'ai26',
-                  'Ch20': 'ai30',
-                  'Ch21': 'ai25',
-                  'Ch22': 'ai31',
-                  'Ch23': 'ai24',
-                  'Ch24': 'ai28',
-                  'Ch25': 'ai19',
-                  'Ch26': 'ai21',
-                  'Ch27': 'ai18',
-                  'Ch28': 'ai22',
-                  'Ch29': 'ai17',
-                  'Ch30': 'ai23',
-                  'Ch31': 'ai16',
-                  'Ch32': 'ai20'}
+                  'Ch13': 'ai13',
+                  'Ch02': 'ai0',
+                  'Ch12': 'ai4',
+                  'Ch04': 'ai1',
+                  'Ch10': 'ai7',
+                  'Ch06': 'ai2',
+                  'Ch16': 'ai6',
+                  'Ch08': 'ai3',
+                  'Ch14': 'ai5',
+                  'Ch27': 'ai27',
+                  'Ch17': 'ai29',
+                  'Ch25': 'ai26',
+                  'Ch19': 'ai30',
+                  'Ch31': 'ai25',
+                  'Ch21': 'ai31',
+                  'Ch29': 'ai24',
+                  'Ch23': 'ai28',
+                  'Ch28': 'ai19',
+                  'Ch18': 'ai21',
+                  'Ch26': 'ai18',
+                  'Ch20': 'ai22',
+                  'Ch32': 'ai17',
+                  'Ch22': 'ai23',
+                  'Ch30': 'ai16',
+                  'Ch24': 'ai20'}
 
     DOChannels = ['port0/line0:9', ]
 
@@ -316,8 +349,8 @@ class ChannelsConfig():
             InChans.append(self.aiChannels[ch])
             self.ChannelIndex[ch] = (index)
 
-            if ch == 'Ch17' and GateChannel:
-                print 'Gate/Ch17'
+            if ch == 'Ch27' and GateChannel:
+                print 'Gate/Ch27'
                 self.GateChannelIndex = {'Gate': (index)}
             index += 1
 
@@ -386,10 +419,9 @@ class ChannelsConfig():
         self.SwitchOut.SetSignal(Signal)
 
     def _SortChannels(self, data, SortDict):
-        print data.shape, SortDict
+        print 'SortChannels'
         (samps, inch) = data.shape
         sData = np.zeros((samps, len(SortDict)))
-        print len(SortDict)
         for chn, inds in SortDict.iteritems():
             if chn == 'Gate':
                 sData[:, 0] = data[:, inds]
@@ -696,7 +728,7 @@ class DataProcess(ChannelsConfig, FFTBodeAnalysis):
     DCnSamps = 1000
     IVGainDC = 10e3
     IVGainAC = 1e6
-    IVGainGate = 2.2e6
+    IVGainGate = 2e6
     DevCondition = 5e-8
     PSDDuration = None
     GenTestSig = None
@@ -817,6 +849,7 @@ class DataProcess(ChannelsConfig, FFTBodeAnalysis):
 #            else:
 #                print 'WARNING !!! Gate slope ', mm
         Igs = oo/self.IVGainGate
+
         if self.EventGateDone:
             self.EventGateDone(Igs)
         return
@@ -834,7 +867,8 @@ class DataProcess(ChannelsConfig, FFTBodeAnalysis):
             self.EventContAcDone(Ids)
 
     def CalcGateContData(self, Data):
-        Igs = (Data-5e-3)/self.IVGainGate
+#        Igs = (Data-5e-3)/self.IVGainGate
+        Igs = (Data)/self.IVGainGate
 #        data = Data[1:, :]
 #        r, c = data.shape
 #        x = np.arange(0, r)
@@ -1197,6 +1231,7 @@ class Charact(DataProcess):
 #            self.GetGateCurrent()
 
         # Measure AC Data
+        print self.CharactRunning
         if self.CharactRunning:
             # Measure Gate Data
             if self.InitConfig['GateChannel'] is True:
@@ -1211,6 +1246,9 @@ class Charact(DataProcess):
                 self.GetBode()
             else:
                 self.ApplyNextBias()
+
+#        else:
+#            self.StopCharac()
 
     def GateDoneCallBack(self, Igs):
         print 'Charact GateDoneCallBack'
@@ -1228,6 +1266,9 @@ class Charact(DataProcess):
                 self.GetBode()
             else:
                 self.ApplyNextBias()
+
+#        else:
+#            self.StopCharac()
 
     def BodeDoneCallBack(self, Gm, SigFreqs):
         print 'Charact BodeDoneCallBack'
