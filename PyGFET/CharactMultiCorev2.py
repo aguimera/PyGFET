@@ -282,7 +282,7 @@ class ChannelsConfig():
                   'Ch28': ('ai22', ),
                   'Ch29': ('ai17', ),
                   'Ch30': ('ai23', ),
-                  'Ch31': ('ai1', ),
+                  'Ch31': ('ai16', ),
                   'Ch32': ('ai20', )}
 
     DOChannels = ['port0/line0:9', ]
