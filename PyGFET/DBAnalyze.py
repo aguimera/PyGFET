@@ -151,8 +151,8 @@ def PlotXYVars(Data, Xvar, Yvar, Vgs, Vds, Ud0Norm=True, label=None,
                 funcY = Dat.__getattribute__('Get' + Yvar)
 
                 try:
-                    Valx = funcX(Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm)
-                    Valy = funcY(Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm)
+                    Valx = funcX(Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm, **kwargs)
+                    Valy = funcY(Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm, **kwargs)
                     Ax.plot(Valx, Valy, '*', color=Color, label=label)
                 except:  # catch *all* exceptions
                     print Dat.Name, sys.exc_info()[0]
@@ -185,7 +185,7 @@ def GetParam(Data, Param, Vgs=None, Vds=None, Ud0Norm=False, **kwargs):
             func = Dat.__getattribute__('Get' + Param)
 
             try:
-                Val = func(Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm)
+                Val = func(Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm, **kwargs)
             except:  # catch *all* exceptions
                 print Dat.Name, sys.exc_info()[0]            
                 Val = None

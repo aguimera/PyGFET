@@ -32,7 +32,7 @@
        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -1008,7 +1008,7 @@
                     <double>-0.200000000000000</double>
                    </property>
                    <property name="maximum">
-                    <double>0.700000000000000</double>
+                    <double>2.000000000000000</double>
                    </property>
                    <property name="singleStep">
                     <double>0.100000000000000</double>
@@ -1135,7 +1135,7 @@
                     <double>-0.200000000000000</double>
                    </property>
                    <property name="maximum">
-                    <double>0.200000000000000</double>
+                    <double>0.300000000000000</double>
                    </property>
                    <property name="singleStep">
                     <double>0.015000000000000</double>
@@ -2145,7 +2145,7 @@
             <double>-0.100000000000000</double>
            </property>
            <property name="maximum">
-            <double>0.600000000000000</double>
+            <double>3.000000000000000</double>
            </property>
            <property name="singleStep">
             <double>0.100000000000000</double>
@@ -2165,7 +2165,7 @@
          <item row="1" column="1">
           <widget class="QDoubleSpinBox" name="SpnSVdsTP">
            <property name="maximum">
-            <double>0.100000000000000</double>
+            <double>0.300000000000000</double>
            </property>
            <property name="singleStep">
             <double>0.010000000000000</double>
