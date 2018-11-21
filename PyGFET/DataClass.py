@@ -576,6 +576,20 @@ class DataCharAC(DataCharDC):
         gm = np.abs(self.GetGM(Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm))
         return Irms/gm
 
+    def GetOpVgs(self, Vds=None, Ud0Norm=False, **kwargs):
+        Vgs = self.GetVgs(Ud0Norm=Ud0Norm, Vds=Vds)        
+        Vrms = self.GetVrms(Ud0Norm=Ud0Norm, Vds=Vds, **kwargs)
+        if Vrms is None:
+            return None
+       
+        OpVgs = Vgs[np.argmin(Vrms)]
+        if not hasattr(OpVgs, '__iter__'):
+            return OpVgs[None, None]
+        s = OpVgs.shape
+        if len(s) == 1:
+            return OpVgs[:, None]
+        return OpVgs.transpose()        
+
     def _CheckFitting(self, FFmin, FFmax):
         if FFmin is not None or FFmax is not None:
             if self.FFmin != FFmin or self.FFmax != FFmax:
