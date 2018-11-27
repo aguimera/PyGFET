@@ -104,7 +104,7 @@ def FindCommonValues(Parameter, Conditions, Table='ACcharacts', **kwargs):
 
 
 def GetFromDB(Conditions, Table='ACcharacts', Last=True, GetGate=True,
-              OutilerFilter=None):
+              OutilerFilter=None, DataSelectionConfig=None):
     """
     Get data from data base
 
@@ -162,19 +162,42 @@ def GetFromDB(Conditions, Table='ACcharacts', Last=True, GetGate=True,
                                 GetGate=GetGate)
 
     del(MyDb)
+    Trts = list(Trts)
+    Total = float(len(Trts))
 
     Data = {}
     for Trtn, Cys in DataD.iteritems():
-        print Trtn
         Chars = []
         for Cyn, Dat in Cys.iteritems():
             Char = DataCharAC(Dat)
             Chars.append(Char)
         Data[Trtn] = Chars
-    if OutilerFilter is None:
-        return Data, list(Trts)
 
-#   Find Outliers
+    print 'Trts Found ->', len(Trts)
+
+    if OutilerFilter is not None:
+        Data = RemoveOutilers(Data, OutilerFilter)
+        Trts = Data.keys()
+        print 'Outlier filter Yield -> ', len(Trts)/Total
+
+    if DataSelectionConfig is not None:
+        Trts = {}
+        Trts['Total'] = Data.keys()
+        for DataSel in DataSelectionConfig:
+            if 'Name' not in DataSel:
+                DataSel['Name'] = DataSel['Param']
+            Data = DataSelection(Data, **DataSel)
+            Trts[DataSel['Name']] = Data.keys()
+
+        for DataSel in DataSelectionConfig:
+            name = DataSel['Name']
+            v = float(len(Trts[name]))
+            print name, ' Yield -> ', v/Total
+
+    return Data, Trts
+
+
+def RemoveOutilers(Data, OutilerFilter):
     Vals = np.array([])
     for Trtn, Datas in Data.iteritems():
         for Dat in Datas:
@@ -191,10 +214,9 @@ def GetFromDB(Conditions, Table='ACcharacts', Last=True, GetGate=True,
     upper = p75 + 1.5 * (p75 - p25)
 
     Data = {}
-    for Trtn, Cys in DataD.iteritems():
+    for Trtn, Datas in Data.iteritems():
         Chars = []
-        for Cyn, Dat in Cys.iteritems():
-            Char = DataCharAC(Dat)
+        for Cyn, Char in enumerate(Datas):
             func = Char.__getattribute__('Get' + OutilerFilter['Param'])
             Val = func(Vgs=OutilerFilter['Vgs'],
                        Vds=OutilerFilter['Vds'],
@@ -206,7 +228,53 @@ def GetFromDB(Conditions, Table='ACcharacts', Last=True, GetGate=True,
                 Chars.append(Char)
         Data[Trtn] = Chars
 
-    return Data, list(Trts)
+    return Data
+
+
+def DataSelection(Data, Param, Range, Function=None, InSide=True, Name=None,
+                  ParArgs={'Vgs': None,
+                           'Vds': None,
+                           'Ud0Norm': False}):
+
+    DataFilt = {}
+    for Trtn, Datas in Data.iteritems():
+        DatTrt = []
+        for Dat in Datas:
+            func = Dat.__getattribute__('Get' + Param)
+            Val = func(**ParArgs)
+            if Function is not None:
+                Val = Function(Val)
+
+            if InSide:
+                if Range[0] is None:
+                    MinCond = False
+                else:
+                    MinCond = (Val < Range[0]).any()
+
+                if Range[1] is None:
+                    MaxCond = False
+                else:
+                    MaxCond = (Val > Range[1]).any()
+                FinalCond = MinCond | MaxCond
+            else:
+                if Range[0] is None:
+                    MinCond = True
+                else:
+                    MinCond = (Val > Range[0]).any()
+
+                if Range[1] is None:
+                    MaxCond = True
+                else:
+                    MaxCond = (Val < Range[1]).any()
+                FinalCond = MinCond & MaxCond
+
+            if FinalCond:
+                continue
+            DatTrt.append(Dat)
+        if len(DatTrt) > 0:
+            DataFilt[Trtn] = DatTrt
+    return DataFilt
+
 
 
 def UpdateCharTableField(Conditions, Value,

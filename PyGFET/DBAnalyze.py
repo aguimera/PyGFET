@@ -217,6 +217,7 @@ def SearchAndGetParam(Groups, Plot=True, Boxplot=False, **kwargs):
             if vals.size == 0:
                 continue
 
+            vals = vals[~np.isnan(vals)]
             Vals[Grn] = vals
 
             if 'XlsFile' in kwargs.keys():
@@ -229,7 +230,7 @@ def SearchAndGetParam(Groups, Plot=True, Boxplot=False, **kwargs):
                     Ax.boxplot(vals.transpose(), positions=(iGr+1,))
                     xPos.append(iGr+1)
                 else:
-                    Ax.plot(iGr, vals, '*')
+                    Ax.plot(np.ones(len(vals))*iGr, vals, '*')
                     xPos.append(iGr)
                 xLab.append(Grn)
         else:
@@ -394,6 +395,115 @@ def CalcTLM(Groups, Vds=None, Ax=None, Color=None,
         Rc[ivg] = res.params[0]
         RcMax[ivg] = res.bse[0]+res.params[0]
         RcMin[ivg] = -res.bse[0]+res.params[0]
+        LT[ivg] = (res.params[0]/res.params[1])/2
+
+    AxRc.plot(VGS, Rc, color=Color, label=Label)
+    AxRc.fill_between(VGS, RcMax, RcMin,
+                      color=Color,
+                      linewidth=0.0,
+                      alpha=0.3)
+    AxRs.plot(VGS, Rsheet, '--', color=Color)
+    AxRs.fill_between(VGS, RsheetMax, RsheetMin,
+                      color=Color,
+                      linewidth=0.0,
+                      alpha=0.3)
+
+    AxLT.plot(VGS, LT, color=Color)
+
+    AxRc.set_ylabel('Rc')
+    AxRs.set_ylabel('Rsheet')
+    AxRc.legend()
+
+    ContactVals = {}
+    ContactVals['Rsheet'] = Rsheet
+    ContactVals['RsheetMax'] = RsheetMax
+    ContactVals['RsheetMin'] = RsheetMin
+    ContactVals['Rc'] = Rc
+    ContactVals['RcMax'] = RcMax
+    ContactVals['RcMin'] = RcMin
+    ContactVals['VGS'] = VGS
+    ContactVals['LT'] = LT
+
+    return ContactVals
+
+
+def CalcTLM2(Groups, Vds=None, Ax=None, Color=None,
+            DebugPlot=False, Label=None, Lerror=0.4e-6, TrackResistance=None):
+    if Ax is None:
+        fig,  AxRs = plt.subplots()
+        AxRc = AxRs.twinx()
+        fig1,  AxLT = plt.subplots()
+    else:
+        AxRc = Ax[0]
+        AxRs = Ax[1]
+        AxLT = Ax[2]
+
+    PointsInRange = 100
+    DatV = []
+    for Grn, Grc in sorted(Groups.iteritems()):
+        print 'Getting data for ', Grn
+        Data, Trts = GetFromDB(**Grc)
+        DatV.append(Data)
+
+    # Find common Vgs Range
+    VxMin = []
+    VxMax = []
+    for Data in DatV:
+        if len(Data) > 0:
+            for Trtn, Datas in Data.iteritems():
+                for Dat in Datas:
+                    funcX = Dat.__getattribute__('GetVgs')
+                    Valx = funcX(Vds=Vds, Ud0Norm=True)
+                    if Valx is not None:
+                        VxMax.append(np.max(Valx))
+                        VxMin.append(np.min(Valx))
+
+    VxMax = np.min(VxMax)
+    VxMin = np.max(VxMin)
+    VGS = np.linspace(VxMin, VxMax, PointsInRange)  # Generate VGS common range
+
+    Rsheet = np.ones(VGS.size)*np.NaN
+    RsheetMax = np.ones(VGS.size)*np.NaN
+    RsheetMin = np.ones(VGS.size)*np.NaN
+    Rc = np.ones(VGS.size)*np.NaN
+    RcMax = np.ones(VGS.size)*np.NaN
+    RcMin = np.ones(VGS.size)*np.NaN
+    LT = np.ones(VGS.size)*np.NaN
+
+    if DebugPlot:
+        plt.figure()
+    Width = None
+    for ivg, vgs in enumerate(VGS):
+        X = np.array([])
+        Y = np.array([])
+        for Data in DatV:
+            if len(Data) > 0:
+                for Trtn, Datas in Data.iteritems():
+                    for Dat in Datas:
+                        rds = Dat.GetRds(Vgs=vgs, Vds=Vds, Ud0Norm=True)                        
+                        if TrackResistance is not None:
+                            rds = rds - TrackResistance[Dat.Name.split('-')[-1][1:]]
+                        Y = np.vstack((Y, rds)) if Y.size else rds
+                        L = np.array((Dat.TrtTypes['Length']))
+                        L = L - Lerror
+                        X = np.vstack((X, L)) if X.size else L
+                        if Width is None:
+                            Width = Dat.TrtTypes['Width']
+                        else:
+                            if not Width == Dat.TrtTypes['Width']:
+                                print Trtn, 'WARNING Bad width'
+        if DebugPlot:
+            plt.plot(X, Y, '*')
+
+        X = sm.add_constant(X)
+        res = sm.OLS(Y, X).fit()
+        Rsheet[ivg] = res.params[1] * Width
+        RsheetMax[ivg] = (res.bse[1]+res.params[1]) * Width
+        RsheetMin[ivg] = (-res.bse[1]+res.params[1]) * Width
+        Rc[ivg] = (res.params[0]/2) * (Width*1e6)
+        RcError = (res.bse[0]/2) * (Width*1e6)
+        RcMax[ivg] = RcError+Rc[ivg]
+        RcMin[ivg] = -RcError+Rc[ivg]
         LT[ivg] = (res.params[0]/res.params[1])/2
 
     AxRc.plot(VGS, Rc, color=Color, label=Label)
