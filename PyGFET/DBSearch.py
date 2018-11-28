@@ -213,7 +213,7 @@ def RemoveOutilers(Data, OutilerFilter):
     lower = p25 - 1.5 * (p75 - p25)
     upper = p75 + 1.5 * (p75 - p25)
 
-    Data = {}
+    DataFilt = {}
     for Trtn, Datas in Data.iteritems():
         Chars = []
         for Cyn, Char in enumerate(Datas):
@@ -226,9 +226,9 @@ def RemoveOutilers(Data, OutilerFilter):
                 print 'Outlier Removed ->', Val, Trtn, Cyn
             else:
                 Chars.append(Char)
-        Data[Trtn] = Chars
+        DataFilt[Trtn] = Chars
 
-    return Data
+    return DataFilt
 
 
 def DataSelection(Data, Param, Range, Function=None, InSide=True, Name=None,
