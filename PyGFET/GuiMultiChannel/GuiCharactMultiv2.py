@@ -22,7 +22,7 @@ import deepdish as dd
 
 #import PyGFET.DataStructures as PyData
 import PyGFET.PlotDataClass as PyFETpl
-import PyGFET.CharactMultiCore as PyCharact
+import CharactMultiCorev2 as PyCharact
 from PyGFET.RecordPlot import PltSlot, PlotRecord
 
 #import PyDAQmx as Daq
@@ -48,32 +48,14 @@ class ContinuousAcquisitionPlots():
         for ind, sign in enumerate(sorted(Rec.SigNames.keys())):
             sl = PltSlot()
             sl.rec = Rec
-
-            if sign.endswith('_DC'):
-                sl.Position = 0
-                sl.Color = cmap.to_rgba(ind)
-                sl.DispName = sign
-
-            if sign.endswith('_AC'):
-                sl.Position = 1
-                sl.Color = cmap.to_rgba(ind)
-                sl.DispName = sign
-
-            if sign.endswith('_Gate'):
-                sl.Position = 2
-                sl.DispName = sign
+            sl.Position = 0
+            sl.Color = cmap.to_rgba(ind)
+            sl.DispName = sign
 
             if not sign.startswith('V'):
                 sl.SigName = sign
                 sl.OutType = 'V'
                 slots.append(sl)
-
-#            sl.Position = ind
-
-#            if sign.endswith('_DC'):
-#                sl.FiltType = ('lp', )
-#                sl.FiltOrder = (2, )
-#                sl.FiltF1 = (1, )
 
         #  Init Plot figures
         self.PltRecs = PlotRecord()
@@ -219,7 +201,7 @@ class CharactAPP(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
 
         QtWidgets.QMainWindow.__init__(self)
-        uipath = os.path.join(os.path.dirname(__file__), 'GuiCharactMulti.ui')
+        uipath = os.path.join(os.path.dirname(__file__), 'GuiCharactMultiv2.ui')
         uic.loadUi(uipath, self)
         self.setWindowTitle('Characterization PyFET')
 
@@ -299,34 +281,18 @@ class CharactAPP(QtWidgets.QMainWindow):
     def ButInitChannelsClick(self):
         # Event InitChannels button
         Channels = self.GetSelectedChannels(self.GrChannels)
-        GateChannels = self.GetSelectedChannels(self.GrChannelGate)
-        self.GateCh = GateChannels
-        if len(GateChannels) > 0:
-            if len(GateChannels) > 1:
-                QMessageBox.question(self, 'Message',
-                                     "Warning: Select Only ONE Gate!",
-                                     QMessageBox.Ok)
-                return
-            GateChannel = GateChannels[0]
-        else:
-            GateChannel = None
-
-        if GateChannel in Channels:
-            QMessageBox.question(self, 'Message', "Warning: Gate Duplicated!",
-                                 QMessageBox.Ok)
-            return
 
         if self.Charac is not None:
             self.Charac.__del__()
 
-        Config = self.GetConfig(self.GrConfig)
-        self.TimePlotConfig(Config)
+        if self.ChckGate.isChecked() and 'Ch17' not in Channels:
+            for ck in self.GrChannels.findChildren(QtWidgets.QCheckBox):
+                if str(ck.text()) == 'Ch17':
+                    ck.setChecked(True)
+                    Channels = self.GetSelectedChannels(self.GrChannels)
+
         self.Charac = PyCharact.Charact(Channels=Channels,
-                                        GateChannel=GateChannel,
-                                        Configuration=Config)
-#        self.Charac = Charact(Channels=Channels,
-#                              GateChannel=GateChannel,
-#                              Configuration=Config)
+                                        GateChannel=self.ChckGate.isChecked())
 
         # Define events callbacks
         self.Charac.EventCharSweepDone = self.CharSweepDoneCallBack
@@ -339,11 +305,7 @@ class CharactAPP(QtWidgets.QMainWindow):
         self.Charac.EventSetLabel = self.LabelsChanged
         self.Charac.EventSetBodeLabel = self.LabelsBodeChanged
 
-        # Define Gains
-        if Config in ('DC', 'AC'):
-            self.Charac.IVGainAC = float(self.QGainDC.text())
-        else:
-            self.Charac.IVGainAC = float(self.QGainAC.text())
+        self.Charac.IVGainAC = float(self.QGainAC.text())
         self.Charac.IVGainDC = float(self.QGainDC.text())
         self.Charac.IVGainGate = float(self.QGainGate.text())
         self.Charac.Rhardware = float(self.QRhardware.text())
@@ -355,12 +317,6 @@ class CharactAPP(QtWidgets.QMainWindow):
                 Chs.append(str(ck.text()))
         return Chs  # Dictat amb els canals ['Ch08', 'Ch16', ...
 
-    def GetConfig(self, ConfGroup):
-        Config = []
-        for n in ConfGroup.findChildren(QtWidgets.QCheckBox):
-            if n.isChecked():
-                Config.append(str(n.text()))
-        return Config[0]
 
 # Sweep
 ###############################################################################
@@ -372,7 +328,7 @@ class CharactAPP(QtWidgets.QMainWindow):
 
         # Event Start button
         if self.Charac.CharactRunning:
-            print 'Stop'
+            print 'Stop Button'
             self.Charac.StopCharac()
         else:
             self.SetEnableObjects(val=False,
@@ -540,27 +496,26 @@ class CharactAPP(QtWidgets.QMainWindow):
                                      Refresh=self.SpnRefresh.value(),
                                      RecDC=self.chckTpDC.isChecked(),
                                      RecAC=self.chckTpAC.isChecked(),
-                                     RecGate=self.GateCh,
+                                     RecGate=self.ChckGate.isChecked(),
                                      GenTestSig=self.chckTestSig.isChecked())
             self.PlotCont = ContinuousAcquisitionPlots(self.Charac.ContRecord)
-
             if self.Charac.CharactRunning:
                 self.ButCont.setText('Stop')
             else:
                 print 'ERROR'
 
-    def TimePlotConfig(self, Config):
-        if Config == 'DC':
-            self.chckTpDC.setChecked(True)
-            self.chckTpAC.setChecked(False)
-        elif Config == 'AC':
-            self.chckTpDC.setChecked(False)
-            self.chckTpAC.setChecked(True)
-        else:
-            self.chckTpDC.setChecked(True)
-            self.chckTpAC.setChecked(True)
+#    def TimePlotConfig(self, Config):
+#        if Config == 'DC':
+#            self.chckTpDC.setChecked(True)
+#            self.chckTpAC.setChecked(False)
+#        elif Config == 'AC':
+#            self.chckTpDC.setChecked(False)
+#            self.chckTpAC.setChecked(True)
+#        else:
+#            self.chckTpDC.setChecked(True)
+#            self.chckTpAC.setChecked(False)
 
-        self.SetEnableObjects(val=False, Objects=self.ConfigTP)
+#        self.SetEnableObjects(val=False, Objects=self.ConfigTP)
 
     def SetTestSignalConfig(self):
         print 'Gui SetTestSignalConfig'
@@ -593,10 +548,7 @@ class CharactAPP(QtWidgets.QMainWindow):
         time = (self.SLTstart.value()*pq.s, self.SLTstop.value()*pq.s)
 
         if self.ChckPauseCont.isChecked():
-            if self.chckTpAC.isChecked():
-                Name = self.Charac.ChNamesList[0] + '_AC'
-            else:
-                Name = self.Charac.ChNamesList[0] + '_DC'
+            Name = self.Charac.ChNamesList[0]
             tstop = self.Charac.ContRecord.Signal(ChName=Name).t_stop
             self.SLTstart.setMaximum(tstop)
             self.SLTstop.setMaximum(tstop)
@@ -625,6 +577,8 @@ class CharactAPP(QtWidgets.QMainWindow):
     def CharBiasDoneCallBack(self, Dcdict):
         print 'Gui bias done refresh'
         self.PlotSweep.UpdateSweepDcPlots(Dcdict)
+        if not self.Charac.CharactRunning:
+            self.StopSweep()
 
     def CharFFTCallBack(self, FFT):
         print 'Gui FFT done callback'
@@ -661,6 +615,8 @@ class CharactAPP(QtWidgets.QMainWindow):
         print 'Stop'
         self.SetEnableObjects(val=True, Objects=self.SweepEnableObjects)
         self.Charac.SetBias(Vds=0, Vgs=0)
+        self.Charac.SetDigitalSignal(Signal=np.array([0, 0, 0, 0, 0, 0, 0, 0,
+                                                      0, 0], dtype=np.uint8))
         self.ButSweep.setText('Start')
         self.ChckSaveData.setChecked(False)
 
