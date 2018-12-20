@@ -176,7 +176,7 @@ def PlotXYVars(Data, Xvar, Yvar, Vgs, Vds, Ud0Norm=True, label=None,
     Ax.set_ylabel(Yvar, fontsize=fontsize)
     Ax.set_xlabel(Xvar, fontsize=fontsize)
     Ax.tick_params(axis='both', which='Both', labelsize=labelsize)
-
+    
 
 def GetParam(Data, Param, Vgs=None, Vds=None, Ud0Norm=False, **kwargs):
     Vals = np.array([])
@@ -195,7 +195,7 @@ def GetParam(Data, Param, Vgs=None, Vds=None, Ud0Norm=False, **kwargs):
     return Vals
 
 
-def SearchAndGetParam(Groups, Plot=True, Boxplot=False, **kwargs):
+def SearchAndGetParam(Groups, Plot=True, Boxplot=False, ParamUnits=None, **kwargs):
     if Plot:
         fig, Ax = plt.subplots()
         xLab = []
@@ -238,7 +238,11 @@ def SearchAndGetParam(Groups, Plot=True, Boxplot=False, **kwargs):
 
     if Plot:
         plt.xticks(xPos, xLab, rotation=45)
-        Ax.set_ylabel(kwargs['Param'])
+        if ParamUnits is not None:
+            Ax.set_ylabel(kwargs['Param']+ ParamUnits)
+        else:
+            Ax.set_ylabel(kwargs['Param'])
+            
         Ax.grid()
         Ax.ticklabel_format(axis='y', style='sci', scilimits=(2, 2))
         if len(xPos) > 1:
@@ -321,6 +325,22 @@ def PlotGroupBy(GroupBase, GroupBy, **kwargs):
         Groups[Item] = Cgr
 
     return SearchAndPlot(Groups=Groups, **kwargs)
+
+def PlotGroupBySearchAndGetParam(GroupBase, GroupBy, **kwargs):
+
+    GroupList = FindCommonValues(Table=GroupBase['Table'],
+                                 Conditions=GroupBase['Conditions'],
+                                 Parameter=GroupBy)
+
+    Groups = {}
+    for Item in sorted(GroupList):
+        Cgr = GroupBase.copy()
+        Cond = GroupBase['Conditions'].copy()
+        Cond.update({'{}='.format(GroupBy): (Item,)})
+        Cgr['Conditions'] = Cond
+        Groups[Item] = Cgr
+
+    return SearchAndGetParam(Groups=Groups, **kwargs)
 
 
 def CalcTLM(Groups, Vds=None, Ax=None, Color=None,

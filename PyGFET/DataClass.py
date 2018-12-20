@@ -122,7 +122,7 @@ class DataCharDC(object):
             self.FEMmuGm[:, ivd] = muGM
 
     def GetUd0(self, Vds=None, Vgs=None, Ud0Norm=False,
-               Normlize=False, **kwargs):
+               Normalize=False, **kwargs):
         if 'Ud0' not in self.__dict__:
             self.CalcUd0()
 
@@ -133,7 +133,7 @@ class DataCharDC(object):
         Ud0 = np.array([])
         for ivd in iVds:
             ud0 = self.Ud0[ivd]
-            if Normlize:
+            if Normalize:
                 ud0 = ud0-(self.Vds[ivd]/2)
             Ud0 = np.vstack((Ud0, ud0)) if Ud0.size else ud0
 
@@ -218,7 +218,7 @@ class DataCharDC(object):
             return Ids[:, None]
         return Ids.transpose()
 
-    def GetGM(self, Vgs=None, Vds=None, Normlize=False, Ud0Norm=False, **kwargs):
+    def GetGM(self, Vgs=None, Vds=None, Normalize=False, Ud0Norm=False, **kwargs):
         iVds = self.GetVdsIndexes(Vds)
         if len(iVds) == 0:
             return None
@@ -238,7 +238,7 @@ class DataCharDC(object):
             else:
                 vg = vgs
             gm = np.polyval(self.GMPoly[:, ivd], vg)
-            if Normlize:
+            if Normalize:
                 gm = gm/self.Vds[ivd] #*(self.TrtTypes['Length']/self.TrtTypes['Width'])/
             GM = np.vstack((GM, gm)) if GM.size else gm
 
@@ -250,45 +250,49 @@ class DataCharDC(object):
         return GM.transpose()
 
     def GetGMV(self, AbsVal=True, **kwargs):
-        kwargs.update({'Normlize': True})
+        kwargs.update({'Normalize': True})
         if AbsVal:
             return np.abs(self.GetGM(**kwargs))
         else:
             return self.GetGM(**kwargs)
+        
+    def GetGMMax(self, **kwargs):
+        return np.max(np.abs(self.GetGM(**kwargs)))
 
-    def GetGMMax(self, Vds=None, Normlize=False, Ud0Norm=False, **kwargs):
-        iVds = self.GetVdsIndexes(Vds)
-        if len(iVds) == 0:
-            return None
 
-        vgs = np.linspace(self.Vgs[0], self.Vgs[-1], len(self.Vgs)*1000)
-
-        if 'GMPoly' not in self.__dict__:
-            self.CalcGMPoly()
-
-        GMmax = np.array([])
-        VgsGMax = np.array([])
-        for ivd in iVds:
-            gm = np.polyval(self.GMPoly[:, ivd], vgs)
-            gm = np.abs(gm)
-            if Normlize:
-                gm = gm/self.Vds[ivd]
-            vgmax = vgs[np.argmax(gm)]
-            gmmax = np.polyval(self.GMPoly[:, ivd], vgmax)
-            if Normlize:
-                gmmax = gmmax/self.Vds[ivd]
-            GMmax = np.vstack((GMmax, gmmax)) if GMmax.size else gmmax
-            if Ud0Norm:
-                vgmax = vgmax - self.Ud0[ivd]
-            VgsGMax = np.vstack((VgsGMax, vgmax)) if VgsGMax.size else vgmax
-
-        if not hasattr(GMmax, '__iter__'):
-            return GMmax[None, None], VgsGMax[None, None]
-        s = GMmax.shape
-        if len(s) == 1:
-            return GMmax[:, None], VgsGMax[:, None]
-        return GMmax.transpose(), VgsGMax.transpose()
-
+#    def GetGMMax(self, Vds=None, Normalize=False, Ud0Norm=False, **kwargs):
+#        iVds = self.GetVdsIndexes(Vds)
+#        if len(iVds) == 0:
+#            return None
+#
+#        vgs = np.linspace(self.Vgs[0], self.Vgs[-1], len(self.Vgs)*1000)
+#
+#        if 'GMPoly' not in self.__dict__:
+#            self.CalcGMPoly()
+#
+#        GMmax = np.array([])
+#        VgsGMax = np.array([])
+#        for ivd in iVds:
+#            gm = np.polyval(self.GMPoly[:, ivd], vgs)
+#            gm = np.abs(gm)
+#            if Normalize:
+#                gm = gm/self.Vds[ivd]
+#            vgmax = vgs[np.argmax(gm)]
+#            gmmax = np.polyval(self.GMPoly[:, ivd], vgmax)
+#            if Normalize:
+#                gmmax = gmmax/self.Vds[ivd]
+#            GMmax = np.vstack((GMmax, gmmax)) if GMmax.size else gmmax
+#            if Ud0Norm:
+#                vgmax = vgmax - self.Ud0[ivd]
+#            VgsGMax = np.vstack((VgsGMax, vgmax)) if VgsGMax.size else vgmax
+#
+#        if not hasattr(GMmax, '__iter__'):
+#            return GMmax[None, None], VgsGMax[None, None]
+#        s = GMmax.shape
+#        if len(s) == 1:
+#            return GMmax[:, None], VgsGMax[:, None]
+#        return GMmax.transpose(), VgsGMax.transpose()
+     
     def GetRds(self, Vgs=None, Vds=None, Ud0Norm=False, **kwargs):
         Ids = self.GetIds(Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm)
 
@@ -348,7 +352,7 @@ class DataCharDC(object):
             return self.Vgs
 
     def _GetParam(self, Param, Vgs=None, Vds=None,
-                  Ud0Norm=False, Normlize=False, **kwargs):
+                  Ud0Norm=False, Normalize=False, **kwargs):
 
         iVds = self.GetVdsIndexes(Vds)
         if len(iVds) == 0:
@@ -374,7 +378,7 @@ class DataCharDC(object):
                 vg = vgs
 
             par = interp1d(self.Vgs, Par[:, ivd], kind=self.IntMethod)(vg)
-            if Normlize:
+            if Normalize:
                 par = par/self.Vds[ivd]
             PAR = np.vstack((PAR, par)) if PAR.size else par
 
@@ -428,11 +432,11 @@ class DataCharDC(object):
         return Gds
 
     def GetGMNorm(self, Vgs=None, Vds=None, Ud0Norm=False, **kwargs):
-        GMNorm = self.GetGM(Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm, Normlize=True)
+        GMNorm = self.GetGM(Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm, Normalize=True)
         return GMNorm
 
     def GetUd0Vds(self, Vgs=None, Vds=None, Ud0Norm=False, **kwargs):
-        return self.GetUd0(Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm, Normlize=True)
+        return self.GetUd0(Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm, Normalize=True)
 
 
 def Fnoise(f, a, b):
@@ -614,7 +618,7 @@ class DataCharAC(DataCharDC):
 
     def GetIrmsVds(self, Vgs=None, Vds=None, Ud0Norm=False, **kwargs):
         return self._GetParam('Irms', Vgs=Vgs, Vds=Vds,
-                              Ud0Norm=Ud0Norm, Normlize=True)
+                              Ud0Norm=Ud0Norm, Normalize=True)
 
     def GetIrmsIds2(self, Vgs=None, Vds=None, Ud0Norm=False, **kwargs):
         Irms = self._GetParam('Irms', Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm)
