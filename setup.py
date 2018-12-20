@@ -29,7 +29,7 @@ from setuptools import setup, find_packages
 _version = '0.1.3'
 
 long_description = """
-                   Library for GFET analysis tools                   
+                   Library for GFET analysis tools
                    """
 
 install_requires = ['pymysql',
@@ -68,9 +68,9 @@ setup(name="PyGFET",
       version=_version,
       description="GFET Analysis tools",
       long_description=long_description,
-      author="Anton Guimerà-Brunet",
+      author="Anton Guimera-Brunet",
       author_email="anton.guimera@csic.es",
-      maintainer="Anton Guimerà-Brunet",
+      maintainer="Anton Guimera-Brunet",
       maintainer_email="anton.guimera@csic.es",
       url="https://github.com/aguimera/PyGFET",
       download_url="https://github.com/aguimera/PyGFET",
