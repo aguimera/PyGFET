@@ -29,8 +29,8 @@ def CreateCycleColors(Vals):
 
 
 def PlotMeanStd(Data, Xvar, Yvar, Vgs=None, Vds=None, Ax=None, Ud0Norm=True,
-                Color='r', PlotOverlap=False, PlotOverlapMean=False,
-                label=None, ScaleFactor=1, **kwargs):
+                Color='r', PlotOverlap=False, PlotOverlapMean=False, nobs=False,
+                label=None, ScaleFactor=1, PlotMean=True, PlotStd=True,alpha=0.2, **kwargs):
 
     fontsize = 'medium'
     labelsize = 5
@@ -40,17 +40,17 @@ def PlotMeanStd(Data, Xvar, Yvar, Vgs=None, Vds=None, Ax=None, Ud0Norm=True,
     if Ax is None:
         fig, Ax = plt.subplots()
 
-    if PlotOverlap:
-        for Trtn, Datas in Data.iteritems():
-            for Dat in Datas:
-                if Dat.IsOK:
-                    funcX = Dat.__getattribute__('Get' + Xvar)
-                    funcY = Dat.__getattribute__('Get' + Yvar)
-                    Valy = funcY(Vds=Vds, Ud0Norm=Ud0Norm,
-                                 **kwargs) * ScaleFactor
-                    Valx = funcX(Vds=Vds, Ud0Norm=Ud0Norm, **kwargs)
-                    if Valy is not None:
-                        Ax.plot(Valx, Valy, color=Color, alpha=0.2)
+#    if PlotOverlap:
+#        for Trtn, Datas in Data.iteritems():
+#            for Dat in Datas:
+#                if Dat.IsOK:
+#                    funcX = Dat.__getattribute__('Get' + Xvar)
+#                    funcY = Dat.__getattribute__('Get' + Yvar)
+#                    Valy = funcY(Vds=Vds, Ud0Norm=Ud0Norm,
+#                                 **kwargs) * ScaleFactor
+#                    Valx = funcX(Vds=Vds, Ud0Norm=Ud0Norm, **kwargs)
+#                    if Valy is not None:
+#                        Ax.plot(Valx, Valy, color=Color, alpha=0.2)
 
     # Search Vgs Vals
     VxMin = []
@@ -95,14 +95,23 @@ def PlotMeanStd(Data, Xvar, Yvar, Vgs=None, Vds=None, Ax=None, Ud0Norm=True,
                         for ivr, vr in enumerate(Valy):
                             kwargs['xlsSheet'].write(ivr+1, xlscol, vr)
 
-                    if PlotOverlapMean:
-                        plt.plot(ValX, Valy, color=Color, alpha=0.2)
+    if PlotOverlapMean:
+        if PlotMean:    
+            plt.plot(ValX, ValY, color=Color, alpha=alpha)
+        else:
+            if ValY.size:
+                if nobs:
+                    nobs=ValY.shape[1] #number of trts
+                    label=label+'[n='+ str(nobs) + ']'
+                plt.plot(ValX, ValY, color=Color, alpha=alpha,label=label)
 
     if ValY.size:
         avg = np.mean(ValY, axis=1)
         std = np.std(ValY, axis=1)
-        plt.plot(ValX, avg, color=Color, label=label)
-        plt.fill_between(ValX, avg+std, avg-std,
+        if PlotMean:
+            plt.plot(ValX, avg, color=Color, label=label)
+        if PlotStd:    
+            plt.fill_between(ValX, avg+std, avg-std,
                          color=Color,
                          linewidth=0.0,
                          alpha=0.3)
