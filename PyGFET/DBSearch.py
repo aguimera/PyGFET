@@ -9,6 +9,7 @@ Created on Fri Jan 12 13:12:37 2018
 from PyGFET.DataClass import DataCharAC
 import PyGFET.DBCore as PyFETdb
 import numpy as np
+import logging
 
 
 def GenGroups(GroupBase, GroupBy, LongName=True):
@@ -173,21 +174,26 @@ def GetFromDB(Conditions, Table='ACcharacts', Last=True, GetGate=True,
             Chars.append(Char)
         Data[Trtn] = Chars
 
+    logging.debug('Getting Data from %s', Conditions)
     print 'Trts Found ->', len(Trts)
 
     if OutilerFilter is not None:
+        logging.debug('Look for Outliers %s', OutilerFilter)
         Data = RemoveOutilers(Data, OutilerFilter)
         Trts = Data.keys()
+        logging.debug('Input Trts %d Output Trts d', Total, len(Trts))
         print 'Outlier filter Yield -> ', len(Trts)/Total
 
     if DataSelectionConfig is not None:
         Trts = {}
         Trts['Total'] = Data.keys()
         for DataSel in DataSelectionConfig:
+            logging.debug('Look for data in range %s', DataSel)
             if 'Name' not in DataSel:
                 DataSel['Name'] = DataSel['Param']
             Data = DataSelection(Data, **DataSel)
             Trts[DataSel['Name']] = Data.keys()
+            logging.debug('Input Trts %d Output Trts %d', Total, len(Trts))
 
         for DataSel in DataSelectionConfig:
             name = DataSel['Name']
@@ -269,6 +275,7 @@ def DataSelection(Data, Param, Range, Function=None, InSide=True, Name=None,
                 FinalCond = MinCond & MaxCond
 
             if FinalCond:
+                logging.debug('Meas Out %s %s %f' , Trtn, Dat.GetTime(), Val)
                 continue
             DatTrt.append(Dat)
         if len(DatTrt) > 0:
