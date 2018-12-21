@@ -301,10 +301,16 @@ def SearchAndPlot(Groups, Func=PlotMeanStd, **kwargs):
                 print 'Error in excel generation'
 
             try:
-                Func(Data,
-                     Color=col.next(),
-                     label=Grn,
-                     **kwargs)
+                if Color:
+                    Func(Data,
+                         Color=Color,
+                         label=Grn,
+                         **kwargs)      
+                else:    
+                    Func(Data,
+                         Color=col.next(),
+                         label=Grn,
+                         **kwargs)
             except:
                 print Grn, 'ERROR --> ', sys.exc_info()[0]
         else:
