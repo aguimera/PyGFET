@@ -109,6 +109,9 @@ def PlotMeanStd(Data, Xvar, Yvar, Vgs=None, Vds=None, Ax=None, Ud0Norm=True,
         avg = np.mean(ValY, axis=1)
         std = np.std(ValY, axis=1)
         if PlotMean:
+            if nobs:
+                nobs=ValY.shape[1] #number of trts
+                label=label+'[n='+ str(nobs) + ']'
             plt.plot(ValX, avg, color=Color, label=label)
         if PlotStd:    
             plt.fill_between(ValX, avg+std, avg-std,
@@ -153,7 +156,7 @@ def PlotXYVars(Data, Xvar, Yvar, Vgs, Vds, Ud0Norm=True, label=None,
     if Ax is None:
         fig, Ax = plt.subplots()
 
-    for Trtn, Datas in Data.iteritems():
+    for Trtn, Datas in Data.iteritems():           
         for Dat in Datas:
             if Dat.IsOK:
                 funcX = Dat.__getattribute__('Get' + Xvar)
@@ -191,16 +194,17 @@ def GetParam(Data, Param, Vgs=None, Vds=None, Ud0Norm=False, **kwargs):
     Vals = np.array([])
     for Trtn, Datas in Data.iteritems():
         for Dat in Datas:
-            func = Dat.__getattribute__('Get' + Param)
-
-            try:
-                Val = func(Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm, **kwargs)
-            except:  # catch *all* exceptions
-                print Dat.Name, sys.exc_info()[0]            
-                Val = None
+            if Dat.IsOK:
+                func = Dat.__getattribute__('Get' + Param)
     
-            if Val is not None:
-                Vals = np.hstack((Vals, Val)) if Vals.size else Val
+                try:
+                    Val = func(Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm, **kwargs)
+                except:  # catch *all* exceptions
+                    print Dat.Name, sys.exc_info()[0]            
+                    Val = None
+        
+                if Val is not None:
+                    Vals = np.hstack((Vals, Val)) if Vals.size else Val
     return Vals
 
 
@@ -221,6 +225,7 @@ def SearchAndGetParam(Groups, Plot=True, Boxplot=False, ParamUnits=None, **kwarg
 
         if len(Data) > 0:
             vals = GetParam(Data, **kwargs)
+            print len(vals)
             if vals is None:
                 continue
             if vals.size == 0:
@@ -237,11 +242,14 @@ def SearchAndGetParam(Groups, Plot=True, Boxplot=False, ParamUnits=None, **kwarg
             if Plot:
                 if Boxplot:
                     Ax.boxplot(vals.transpose(), positions=(iGr+1,))
+                    Grn=Grn+'[n='+ str(len(vals)) + ']'
+#                    print vals.transpose()
                     xPos.append(iGr+1)
                 else:
                     Ax.plot(np.ones(len(vals))*iGr, vals, '*')
                     xPos.append(iGr)
-                xLab.append(Grn)
+#                xLab.append(Grn)
+                xLab.append(Grn)   
         else:
             print 'Empty data for ', Grn
 
