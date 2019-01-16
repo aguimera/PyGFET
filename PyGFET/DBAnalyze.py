@@ -208,7 +208,7 @@ def GetParam(Data, Param, Vgs=None, Vds=None, Ud0Norm=False, **kwargs):
     return Vals
 
 
-def SearchAndGetParam(Groups, Plot=True, Boxplot=False, ParamUnits=None, **kwargs):
+def SearchAndGetParam(Groups, Plot=True, Boxplot=False, ParamUnits=None,nobs=False, Normalize=False, **kwargs):
     if Plot:
         fig, Ax = plt.subplots()
         xLab = []
@@ -241,8 +241,13 @@ def SearchAndGetParam(Groups, Plot=True, Boxplot=False, ParamUnits=None, **kwarg
 
             if Plot:
                 if Boxplot:
-                    Ax.boxplot(vals.transpose(), positions=(iGr+1,))
-                    Grn=Grn+'[n='+ str(len(vals)) + ']'
+                    if Normalize:
+                        Ax.boxplot(vals.transpose()-np.median(vals.transpose()), positions=(iGr+1,))
+                    else:    
+                        Ax.boxplot(vals.transpose(), positions=(iGr+1,))
+                        
+                    if nobs: 
+                        Grn=Grn+'[n='+ str(len(vals)) + ']'
 #                    print vals.transpose()
                     xPos.append(iGr+1)
                 else:
