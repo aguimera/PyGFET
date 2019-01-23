@@ -565,7 +565,7 @@ class CharactAPP(QtWidgets.QMainWindow):
                                FreqMax=self.SpnTestFreqMax.value(),
                                nFreqs=self.SpnTestNFreqs.value(),
                                Arms=self.SpnTestAmp.value(),
-                               Fs=self.SpnFsTime.value()))
+                               Fs=self.SpnFsTime.value())
 
     def VgsTimePlotChanged(self):
         if self.Charac.CharactRunning:
