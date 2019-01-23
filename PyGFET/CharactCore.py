@@ -560,7 +560,8 @@ class FFTBodeAnalysis():
         self.BodeOut = BodeOut
         self.RemoveDC = RemoveDC
 
-    def SetContSig(self, FreqMin=0.1, FreqMax=15000, nFreqs=10, Arms=10e-3):
+    def SetContSig(self, FreqMin=0.1, FreqMax=15000, nFreqs=10, Arms=10e-3,
+                   Fs=1000):
 
         self.ContSig = FFTTestSignal(FreqMin=FreqMin,
                                      FreqMax=FreqMax,
@@ -568,7 +569,7 @@ class FFTBodeAnalysis():
                                      Arms=Arms,
                                      nAvg=1)
         self.ContSig.FMinLow = None
-        self.ContSig.FsH = 1000
+        self.ContSig.FsH = Fs
         self.ContSig.__init__(FreqMin=FreqMin,
                               FreqMax=FreqMax,
                               nFreqs=nFreqs,
