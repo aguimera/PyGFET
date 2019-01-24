@@ -2307,7 +2307,7 @@
            <item>
             <widget class="QDoubleSpinBox" name="SpnTestFreqMin">
              <property name="maximum">
-              <double>5000.000000000000000</double>
+              <double>6000.000000000000000</double>
              </property>
              <property name="singleStep">
               <double>0.010000000000000</double>
@@ -2329,12 +2329,18 @@
             </widget>
            </item>
            <item>
-            <widget class="QSpinBox" name="SpnTestFreqMax">
+            <widget class="QDoubleSpinBox" name="SpnTestFreqMax">
+             <property name="minimum">
+              <double>0.000000000000000</double>
+             </property>
              <property name="maximum">
-              <number>10000000</number>
+              <double>6000.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.010000000000000</double>
              </property>
              <property name="value">
-              <number>100</number>
+              <double>100.000000000000000</double>
              </property>
             </widget>
            </item>
