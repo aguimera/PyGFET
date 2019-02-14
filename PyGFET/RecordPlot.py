@@ -176,7 +176,7 @@ class PltSlot():
                 uprate = 1
 
         if dowrate > 0:
-            print sig.sampling_rate*f, f, uprate, dowrate
+#            print sig.sampling_rate*f, f, uprate, dowrate
             rs = signal.resample_poly(sig, uprate, dowrate)
             sig = neo.AnalogSignal(rs,
                                    units=sig.units,
