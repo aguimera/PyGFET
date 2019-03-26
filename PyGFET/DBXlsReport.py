@@ -74,7 +74,7 @@ def PlotXYLine(Data, Xvar, Yvar, Vgs, Vds, Ud0Norm=True, label=None,
                     ValY = np.vstack((ValY, Valy)) if ValY.size else Valy
 #                    Ax.plot(Valx, Valy, '*', color=Color, label=label)
                 except:  # catch *all* exceptions
-                    print Dat.Name, sys.exc_info()[0]
+                    print (Dat.Name, sys.exc_info()[0])
 
         try:
             if ValX.size == 0:
@@ -86,7 +86,7 @@ def PlotXYLine(Data, Xvar, Yvar, Vgs, Vds, Ud0Norm=True, label=None,
                     color=Color,
                     label=label)
         except:
-            print Trtn, sys.exc_info()[0]
+            print (Trtn, sys.exc_info()[0])
 
     if 'xscale' in kwargs.keys():
         Ax.set_xscale(kwargs['xscale'])
@@ -321,21 +321,21 @@ class XlsReportBase(object):
                                   'CharTable.FuncStep=': ('Report', )}
         Data, _ = Dban.GetFromDB(**CondBase)
         if len(Data) > 0:
-            print DeviceName, 'Getting data from Report Flag'
+            print (DeviceName, 'Getting data from Report Flag')
             self.DevGroups[DeviceName] = CondBase
             return Data, CondBase
 
         CondBase['Conditions'] = {'Devices.Name=': DeviceNames}
         Data, _ = Dban.GetFromDB(**CondBase)
         if len(Data) > 0:
-            print DeviceName, 'Getting data from last ACcharacts'
+            print (DeviceName, ('Getting data from last ACcharacts'))
             self.DevGroups[DeviceName] = CondBase
             return Data, CondBase
 
         CondBase['Table'] = 'DCcharacts'
         Data, _ = Dban.GetFromDB(**CondBase)
         if len(Data) > 0:
-            print DeviceName, 'Getting data from last DCcharacts'
+            print (DeviceName, 'Getting data from last DCcharacts')
             self.DevGroups[DeviceName] = CondBase
             return Data, CondBase
 
@@ -460,7 +460,7 @@ class XlsReportBase(object):
                 try:
                     Sheet.write(row, col, val, Format)
                 except:
-                    print 'Error writing', par, val
+                    print ('Error writing', par, val)
             DictOff += len(Dict)
 
     def WriteTrtMeasHist(self, TrtName, Sheet, Loc, Vertical=False):
@@ -877,7 +877,7 @@ class FittingReport(object):
                 col = Loc[1]+v[1]
                 Sheet.write(row, col, val)
             except:
-                print 'Error in fitting write'
+                print ('Error in fitting write')
 
     def __init__(self, XVar, XVarLog, YVar, YVarLog, GroupBase, XlsRep):
         self.XVar = XVar
@@ -1061,7 +1061,7 @@ class GenXlsFittingReport(XlsReportBase):
                                            WriteHeaders=False)
                 ic += 1
             else:
-                print cal, caltype, 'Not found'
+                print (cal, caltype, 'Not found')
 
 
         row = len(self.InfoTrtFields) + 12 + len(CalList)*25
@@ -1276,7 +1276,7 @@ class XlsGraphPadPrism(XlsReportBase):
                                            WriteHeaders=False)
                 ic += 1
             else:
-                print cal, caltype, 'Not found'
+                print (cal, caltype, 'Not found')
 
 
         row = len(self.InfoTrtFields) + 12 + len(CalList)*25
@@ -1455,7 +1455,7 @@ class GenXlsFittingReport1(XlsReportBase):
                                            WriteHeaders=False)
                 ic += 1
             else:
-                print cal, caltype, 'Not found'
+                print (cal, caltype, 'Not found')
 
 
         row = len(self.InfoTrtFields) + 12 + len(CalList)*25

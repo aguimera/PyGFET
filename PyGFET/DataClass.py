@@ -11,7 +11,7 @@ from scipy.interpolate import interp1d
 import scipy.optimize as optim
 from scipy.integrate import simps
 
-import PlotDataClass
+import PyGFET.PlotDataClass
 import sys
 
 DebugPrint = True
@@ -30,10 +30,10 @@ class DataCharDC(object):
             if k == 'Gate':
                 if v is None:
                     if DebugPrint:
-                        print 'No gate values'
+                        print ('No gate values')
                 elif np.isnan(v['Ig']).any():
                     if DebugPrint:
-                        print 'NaN in gate values'
+                        print ('NaN in gate values')
                 else:
                     self.__setattr__('Ig', v['Ig'])
             self.__setattr__(k, v)
@@ -100,7 +100,7 @@ class DataCharDC(object):
             Vgmeas = self.GetVgs(Ud0Norm=True)
             VgInds =  np.where((Vgmeas>np.min(RcVgs)) & (Vgmeas<np.max(RcVgs)))[0]
             FEMRc[VgInds] = rcint(Vgmeas[VgInds,0])
-            print FEMRc
+            print (FEMRc)
 
 
         L = self.TrtTypes['Length']
@@ -184,7 +184,7 @@ class DataCharDC(object):
                 if len(ind) > 0:
                     iVds.append(ind[0])
                 else:
-                    print 'Vds = ', vd, 'Not in data'
+                    print ('Vds = ', vd, 'Not in data')
         else:
             iVds = range(len(self.Vds))
         return iVds
@@ -345,7 +345,7 @@ class DataCharDC(object):
                     VgsM = self.Vgs
 
                 if (np.min(vg) < np.min(VgsM)) or (np.max(vg) > np.max(VgsM)):
-                    print self.Name, 'Vgs range not valid', vg, VgsM, self.Ud0
+                    print (self.Name, 'Vgs range not valid', vg, VgsM, self.Ud0)
                     return None
             return Vgs
         else:
@@ -362,11 +362,11 @@ class DataCharDC(object):
         if vgs is None:
             return None
         if len(self.Vgs) < 2:
-            print 'self Vgs len error', self.Vgs
+            print ('self Vgs len error', self.Vgs)
             return None
 
         if Param not in self.__dict__:
-            print 'Not Data'
+            print ('Not Data')
             return None
         Par = self.__getattribute__(Param)
 
@@ -527,7 +527,7 @@ class DataCharAC(DataCharDC):
                     self.FitErrA = FitErrA
                     self.FitErrB = FitErrB
                 except:
-                    print "Fitting error:", sys.exc_info()[0]
+                    print ("Fitting error:", sys.exc_info()[0])
 
     def CalcIRMS(self, Fmin, Fmax):
         nVgs = len(self.Vgs)
@@ -574,7 +574,7 @@ class DataCharAC(DataCharDC):
     def _CheckRMS(self, NFmin, NFmax):
         if NFmin is not None or NFmax is not None:
             if self.NFmin != NFmin or self.NFmax != NFmax:
-                print 'Calc IRMS'
+                print ('Calc IRMS')
                 self.NFmin = NFmin
                 self.NFmax = NFmax
                 if self.IsOK:
@@ -595,7 +595,7 @@ class DataCharAC(DataCharDC):
     def _CheckFitting(self, FFmin, FFmax):
         if FFmin is not None or FFmax is not None:
             if self.FFmin != FFmin or self.FFmax != FFmax:
-                print 'Calc fitting'
+                print ('Calc fitting')
                 self.FFmin = FFmin
                 self.FFmax = FFmax
                 if self.IsOK:
@@ -637,7 +637,7 @@ class DataCharAC(DataCharDC):
 
 
 
-class PyFETPlotDataClass(PlotDataClass.PyFETPlotBase):
+class PyFETPlotDataClass(PyGFET.PlotDataClass.PyFETPlotBase):
 
     # (logY, logX, X variable)
     AxsProp = {'Vrms': (1, 0, 'Vgs'),
@@ -693,7 +693,7 @@ class PyFETPlotDataClass(PlotDataClass.PyFETPlotBase):
                 self.Plot(DataDict, Vgs=Vgs, Vds=Vds,
                           Ud0Norm=Ud0Norm, PltIsOK=PltIsOK)
             except:  # catch *all* exceptions
-                print sys.exc_info()[0]
+                print (sys.exc_info()[0])
 
     def PlotDataSet(self, DataDict, Trts=None,
                     Vgs=None, Vds=None, Ud0Norm=False,
@@ -725,7 +725,7 @@ class PyFETPlotDataClass(PlotDataClass.PyFETPlotBase):
                     self.Plot(Dat, Vgs=Vgs, Vds=Vds,
                               Ud0Norm=Ud0Norm, PltIsOK=PltIsOK, **kwargs)
                 except:  # catch *all* exceptions
-                    print TrtN, sys.exc_info()[0]
+                    print (TrtN, sys.exc_info()[0])
 
     def Plot(self, Data, Vgs=None, Vds=None,
              Ud0Norm=False, PltIsOK=True, ColorOnVgs=False, **kwargs):

@@ -175,14 +175,14 @@ def GetFromDB(Conditions, Table='ACcharacts', Last=True, GetGate=True,
         Data[Trtn] = Chars
 
     logging.debug('Getting Data from %s', Conditions)
-    print 'Trts Found ->', len(Trts)
+    print ('Trts Found ->', len(Trts))
 
     if OutilerFilter is not None:
         logging.debug('Look for Outliers %s', OutilerFilter)
         Data = RemoveOutilers(Data, OutilerFilter)
         Trts = Data.keys()
         logging.debug('Input Trts %d Output Trts d', Total, len(Trts))
-        print 'Outlier filter Yield -> ', len(Trts)/Total
+        print ('Outlier filter Yield -> ', len(Trts)/Total)
 
     if DataSelectionConfig is not None:
         Trts = {}
@@ -198,7 +198,7 @@ def GetFromDB(Conditions, Table='ACcharacts', Last=True, GetGate=True,
         for DataSel in DataSelectionConfig:
             name = DataSel['Name']
             v = float(len(Trts[name]))
-            print name, ' Yield -> ', v/Total
+            print (name, ' Yield -> ', v/Total)
 
     return Data, Trts
 
@@ -229,7 +229,7 @@ def RemoveOutilers(Data, OutilerFilter):
                        Ud0Norm=OutilerFilter['Ud0Norm'])
 
             if (Val <= lower or Val >= upper):
-                print 'Outlier Removed ->', Val, Trtn, Cyn
+                print ('Outlier Removed ->', Val, Trtn, Cyn)
             else:
                 Chars.append(Char)
         DataFilt[Trtn] = Chars
@@ -296,17 +296,17 @@ def UpdateCharTableField(Conditions, Value,
                              Conditions=Conditions,
                              Output=(out, ))
 
-    print re
+    print (re)
     text = "Do you wan to update {} in {} for {} y/n ?".format(Field, Table, Value)
     inText = raw_input(text)
     if inText =='y':
-        print 'Updated'
+        print ('Updated')
         field = '{}.{}'.format(Table, Field)
         fields = {field: Value}
         for r in re:
             condition = ('{}.id{}='.format(Table, Table), r.values()[0])
             MyDb.UpdateRow(Table=Table, Fields=fields, Condition=condition)
     else:
-        print 'Cancelled'
+        print ('Cancelled')
 
     MyDb.db.commit()

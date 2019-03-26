@@ -33,11 +33,11 @@ class PyFETdb():
     def _execute(self, query, values, LastRowID=False):
         cur = self.db.cursor()
         if self.PrintQuery:
-            print query, values
+            print (query, values)
         try:
             cur.execute(query, values)
         except:
-            print 'Error'
+            print ('Error')
             self.db.connect()
             cur = self.db.cursor()
             cur.execute(query, values)
@@ -64,7 +64,7 @@ class PyFETdb():
             ID = Res[0][0]
 
         if len(Res) > 1:
-            print 'Warning', query, Res
+            print ('Warning', query, Res)
             ID = Res[0][0]
 
         return ID
@@ -120,10 +120,10 @@ class PyFETdb():
         if len(Rows) == 0:  # New Record
             Gate_id = self.NewRow(Table='Gcharacts', Fields=NewData)
         else:
-            print 'WARNING EXISTS', Rows
+            print ('WARNING EXISTS', Rows)
             if OverWrite:  # OverWrite
                 Gate_id = Rows[0][0]
-                print 'Overwrite Record id ', Gate_id
+                print ('Overwrite Record id ', Gate_id)
                 self.UpdateRow(Table='Gcharacts',
                                Fields=NewData,
                                Condition=('idGcharacts=', Gate_id))
@@ -188,10 +188,10 @@ class PyFETdb():
         if len(Rows) == 0:  # New Record
             DCchatact_id = self.NewRow(Table='DCcharacts', Fields=NewData)
         else:
-            print 'WARNING EXISTS', Rows
+            print ('WARNING EXISTS', Rows)
             if OverWrite:  # OverWrite
                 DCchatact_id = Rows[0][1]
-                print 'Overwrite Record id ', DCchatact_id
+                print ('Overwrite Record id ', DCchatact_id)
                 self.UpdateRow(Table='DCcharacts',
                                Fields=NewData,
                                Condition=('idDCcharacts=', DCchatact_id))
@@ -221,10 +221,10 @@ class PyFETdb():
             if len(Rows) == 0:  # New Record
                 self.NewRow(Table='ACcharacts', Fields=NewData)
             else:
-                print 'WARNING EXISTS', Rows
+                print ('WARNING EXISTS', Rows)
                 if OverWrite:  # OverWrite
                     ACchatact_id = Rows[0][1]
-                    print 'Overwrite Record id ', ACchatact_id
+                    print ('Overwrite Record id ', ACchatact_id)
                     self.UpdateRow(Table='ACcharacts',
                                    Fields=NewData,
                                    Condition=('idACcharacts=', ACchatact_id))

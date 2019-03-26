@@ -14,7 +14,7 @@ import matplotlib.cm as cmx
 from itertools import cycle
 import numpy as np
 import math
-import NoiseModel as noise
+import PyGFET.NoiseModel as noise
 from scipy.interpolate import interp1d
 import sys
 
@@ -24,8 +24,9 @@ class MyCycle():
         self.iterable = iterable
         self.cy = cycle(self.iterable)
 
-    def next(self):
-        return self.cy.next()
+    def nextt(self):
+#        return self.cy.next()
+        return next(self.cy)
 
     def reset(self):
         del self.cy
@@ -37,8 +38,8 @@ class PyFETPlotBase:
                      '*', 'D'))
     lines = MyCycle(('-', '--', '-.', ':'))
     ColorSet = cmx.jet
-    mark = marks.next()
-    line = lines.next()
+    mark = marks.nextt()
+    line = lines.nextt()
 
     def setNColors(self, ncolors):
         cmap = cmx.ScalarMappable(mpcolors.Normalize(vmin=0, vmax=ncolors),
@@ -49,13 +50,13 @@ class PyFETPlotBase:
         self.colors = MyCycle(col)
 
     def NextColor(self):
-        self.color = self.colors.next()
+        self.color = self.colors.nextt()
 
     def NextMark(self):
-        self.mark = self.marks.next()
+        self.mark = self.marks.nextt()
 
     def NextLine(self):
-        self.line = self.lines.next()
+        self.line = self.lines.nextt()
     
     def CreateFigure(self, Size=(9, 6)):
         self.Fig = plt.figure(figsize=Size)
@@ -359,7 +360,7 @@ class PyFETPlotParam(PyFETPlotBase):
                 try:
                     self.Plot(cy, xVar, Bias, PltUd0)
                 except:  # catch *all* exceptions
-                    print TrtN, cyn, sys.exc_info()[0]
+                    print (TrtN, cyn, sys.exc_info()[0])
 
     def Plot(self, Data, xVar, Bias, PltUd0):
 
@@ -481,7 +482,7 @@ class PyFETPlot(PyFETPlotBase):
             try:
                 self.Plot(Trtv, PltUd0=PltUd0, PltIsOK=PltIsOK)
             except:  # catch *all* exceptions
-                print sys.exc_info()[0]
+                print (sys.exc_info()[0])
 
     def PlotDataSet(self, Data, Trts, PltUd0=False, PltIsOK=False,
                     ColorOn='Trt'):
@@ -507,7 +508,7 @@ class PyFETPlot(PyFETPlotBase):
                 try:
                     self.Plot(cy, PltUd0=PltUd0, PltIsOK=PltIsOK)
                 except:  # catch *all* exceptions
-                    print TrtN, cyn, sys.exc_info()[0]
+                    print (TrtN, cyn, sys.exc_info()[0])
 
     def Plot(self, Data, iVds=None, iVgs=None,
              PltUd0=False, PltIsOK=False, ColorOnVgs=False):

@@ -167,7 +167,7 @@ def PlotXYVars(Data, Xvar, Yvar, Vgs, Vds, Ud0Norm=True, label=None,
                     Valy = funcY(Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm, **kwargs)
                     Ax.plot(Valx, Valy, '*', color=Color, label=label)
                 except:  # catch *all* exceptions
-                    print Dat.Name, sys.exc_info()[0]
+                    print (Dat.Name, sys.exc_info()[0])
 
     if 'xscale' in kwargs.keys():
         Ax.set_xscale(kwargs['xscale'])
@@ -175,7 +175,7 @@ def PlotXYVars(Data, Xvar, Yvar, Vgs, Vds, Ud0Norm=True, label=None,
         try:
             Ax.ticklabel_format(axis='x', style='sci', scilimits=scilimits)
         except:
-            print 'Formating error'
+            print ('Formating error')
 
     if 'yscale' in kwargs.keys():
         Ax.set_yscale(kwargs['yscale'])
@@ -200,7 +200,7 @@ def GetParam(Data, Param, Vgs=None, Vds=None, Ud0Norm=False, **kwargs):
                 try:
                     Val = func(Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm, **kwargs)
                 except:  # catch *all* exceptions
-                    print Dat.Name, sys.exc_info()[0]            
+                    print (Dat.Name, sys.exc_info()[0])            
                     Val = None
         
                 if Val is not None:
@@ -220,12 +220,12 @@ def SearchAndGetParam(Groups, Plot=True, Boxplot=False, ParamUnits=None,nobs=Fal
 
     Vals = {}
     for iGr, (Grn, Grc) in enumerate(sorted(Groups.iteritems())):
-        print 'Getting data for ', Grn
+        print ('Getting data for ', Grn)
         Data, Trts = GetFromDB(**Grc)
 
         if len(Data) > 0:
             vals = GetParam(Data, **kwargs)
-            print len(vals)
+            print (len(vals))
             if vals is None:
                 continue
             if vals.size == 0:
@@ -256,7 +256,7 @@ def SearchAndGetParam(Groups, Plot=True, Boxplot=False, ParamUnits=None,nobs=Fal
 #                xLab.append(Grn)
                 xLab.append(Grn)   
         else:
-            print 'Empty data for ', Grn
+            print ('Empty data for ', Grn)
 
     if Plot:
         plt.xticks(xPos, xLab, rotation=45)
@@ -295,7 +295,7 @@ def SearchAndPlot(Groups, Func=PlotMeanStd, **kwargs):
         xlswbook = xlsw.Workbook(kwargs['XlsFile'])
 
     for Grn, Grc in sorted(Groups.iteritems()):
-        print 'Getting data for ', Grn
+        print ('Getting data for ', Grn)
         Data, Trts = GetFromDB(**Grc)
         if len(Data) > 0:
             try:
@@ -303,7 +303,7 @@ def SearchAndPlot(Groups, Func=PlotMeanStd, **kwargs):
                     xlssheet = xlswbook.add_worksheet(str(Grn))
                     kwargs['xlsSheet'] = xlssheet
             except:
-                print 'Error in excel generation'
+                print ('Error in excel generation')
 
             try:
                 Func(Data,
@@ -311,9 +311,9 @@ def SearchAndPlot(Groups, Func=PlotMeanStd, **kwargs):
                      label=Grn,
                      **kwargs)
             except:
-                print Grn, 'ERROR --> ', sys.exc_info()[0]
+                print (Grn, 'ERROR --> ', sys.exc_info()[0])
         else:
-            print 'Empty data for ', Grn
+            print ('Empty data for ', Grn)
 
     Ax = kwargs['Ax']
 
@@ -379,7 +379,7 @@ def CalcTLM(Groups, Vds=None, Ax=None, Color=None,
     PointsInRange = 100
     DatV = []
     for Grn, Grc in sorted(Groups.iteritems()):
-        print 'Getting data for ', Grn
+        print ('Getting data for ', Grn)
         Data, Trts = GetFromDB(**Grc)
         DatV.append(Data)
 
@@ -425,7 +425,7 @@ def CalcTLM(Groups, Vds=None, Ax=None, Color=None,
                             Width = Dat.TrtTypes['Width']
                         else:
                             if not Width == Dat.TrtTypes['Width']:
-                                print Trtn, 'WARNING Bad width'
+                                print (Trtn, 'WARNING Bad width')
         if DebugPlot:
             plt.plot(X, Y, '*')
 
@@ -483,7 +483,7 @@ def CalcTLM2(Groups, Vds=None, Ax=None, Color=None,
     PointsInRange = 100
     DatV = []
     for Grn, Grc in sorted(Groups.iteritems()):
-        print 'Getting data for ', Grn
+        print ('Getting data for ', Grn)
         Data, Trts = GetFromDB(**Grc)
         DatV.append(Data)
 
@@ -533,7 +533,7 @@ def CalcTLM2(Groups, Vds=None, Ax=None, Color=None,
                             Width = Dat.TrtTypes['Width']
                         else:
                             if not Width == Dat.TrtTypes['Width']:
-                                print Trtn, 'WARNING Bad width'
+                                print (Trtn, 'WARNING Bad width')
         if DebugPlot:
             plt.plot(X, Y, '*')
 
