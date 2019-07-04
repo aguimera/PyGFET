@@ -5,7 +5,7 @@ Created on Tue Jun 27 15:08:05 2017
 
 @author: aguimera
 """
-
+import matplotlib.dates as dts
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.colors as mpcolors
@@ -17,20 +17,29 @@ import xlsxwriter as xlsw
 from PyGFET.DBSearch import GetFromDB, FindCommonValues
 
 
-def CreateCycleColors(Vals):
+def CreateCycleColors(Vals,Colorbar=None):
     ncolors = len(Vals)
-    cmap = cmx.ScalarMappable(mpcolors.Normalize(vmin=0, vmax=ncolors),
+#    print sorted(Vals.keys())[0],dts.date2num(sorted(Vals.keys())[0])
+##    print Vals.keys()[-1],dts.date2num(Vals.keys()[-1])
+    if Colorbar:
+        cmap = cmx.ScalarMappable(mpcolors.Normalize(vmin=dts.date2num(sorted(Vals.keys())[0]), vmax=dts.date2num(sorted(Vals.keys())[-1])),
                               cmx.jet)
-    colors = []
-    for i in range(ncolors):
-        colors.append(cmap.to_rgba(i))
+        colors = []
+        for i in range(ncolors):
+            colors.append(cmap.to_rgba(dts.date2num(sorted(Vals.keys())[i])))       
+    else:
+        cmap = cmx.ScalarMappable(mpcolors.Normalize(vmin=0, vmax=ncolors),
+                              cmx.jet)
+        colors = []
+        for i in range(ncolors):
+            colors.append(cmap.to_rgba(i))
 
-    return cycle(colors)
+    return cycle(colors), cmap
 
 
 def PlotMeanStd(Data, Xvar, Yvar, Vgs=None, Vds=None, Ax=None, Ud0Norm=True,
-                Color='r', PlotOverlap=False, PlotOverlapMean=False,
-                label=None, ScaleFactor=1, **kwargs):
+                Color='r', PlotOverlap=False, PlotOverlapMean=False, nobs=False,
+                label=None, ScaleFactor=1, PlotMean=True, PlotStd=True,alpha=0.2, **kwargs):
 
     fontsize = 'medium'
     labelsize = 5
@@ -40,17 +49,17 @@ def PlotMeanStd(Data, Xvar, Yvar, Vgs=None, Vds=None, Ax=None, Ud0Norm=True,
     if Ax is None:
         fig, Ax = plt.subplots()
 
-    if PlotOverlap:
-        for Trtn, Datas in Data.iteritems():
-            for Dat in Datas:
-                if Dat.IsOK:
-                    funcX = Dat.__getattribute__('Get' + Xvar)
-                    funcY = Dat.__getattribute__('Get' + Yvar)
-                    Valy = funcY(Vds=Vds, Ud0Norm=Ud0Norm,
-                                 **kwargs) * ScaleFactor
-                    Valx = funcX(Vds=Vds, Ud0Norm=Ud0Norm, **kwargs)
-                    if Valy is not None:
-                        Ax.plot(Valx, Valy, color=Color, alpha=0.2)
+#    if PlotOverlap:
+#        for Trtn, Datas in Data.iteritems():
+#            for Dat in Datas:
+#                if Dat.IsOK:
+#                    funcX = Dat.__getattribute__('Get' + Xvar)
+#                    funcY = Dat.__getattribute__('Get' + Yvar)
+#                    Valy = funcY(Vds=Vds, Ud0Norm=Ud0Norm,
+#                                 **kwargs) * ScaleFactor
+#                    Valx = funcX(Vds=Vds, Ud0Norm=Ud0Norm, **kwargs)
+#                    if Valy is not None:
+#                        Ax.plot(Valx, Valy, color=Color, alpha=0.2)
 
     # Search Vgs Vals
     VxMin = []
@@ -95,14 +104,26 @@ def PlotMeanStd(Data, Xvar, Yvar, Vgs=None, Vds=None, Ax=None, Ud0Norm=True,
                         for ivr, vr in enumerate(Valy):
                             kwargs['xlsSheet'].write(ivr+1, xlscol, vr)
 
-                    if PlotOverlapMean:
-                        plt.plot(ValX, Valy, color=Color, alpha=0.2)
+    if PlotOverlapMean:
+        if PlotMean:    
+            plt.plot(ValX, ValY, color=Color, alpha=alpha)
+        else:
+            if ValY.size:
+                if nobs:
+                    nobs=ValY.shape[1] #number of trts
+                    label=label+'[n='+ str(nobs) + ']'
+                plt.plot(ValX, ValY, color=Color, alpha=alpha,label=label)
 
     if ValY.size:
         avg = np.mean(ValY, axis=1)
         std = np.std(ValY, axis=1)
-        plt.plot(ValX, avg, color=Color, label=label)
-        plt.fill_between(ValX, avg+std, avg-std,
+        if PlotMean:
+            if nobs:
+                nobs=ValY.shape[1] #number of trts
+                label=label+'[n='+ str(nobs) + ']'
+            plt.plot(ValX, avg, color=Color, label=label)
+        if PlotStd:    
+            plt.fill_between(ValX, avg+std, avg-std,
                          color=Color,
                          linewidth=0.0,
                          alpha=0.3)
@@ -144,7 +165,7 @@ def PlotXYVars(Data, Xvar, Yvar, Vgs, Vds, Ud0Norm=True, label=None,
     if Ax is None:
         fig, Ax = plt.subplots()
 
-    for Trtn, Datas in Data.iteritems():
+    for Trtn, Datas in Data.iteritems():           
         for Dat in Datas:
             if Dat.IsOK:
                 funcX = Dat.__getattribute__('Get' + Xvar)
@@ -182,22 +203,33 @@ def GetParam(Data, Param, Vgs=None, Vds=None, Ud0Norm=False, **kwargs):
     Vals = np.array([])
     for Trtn, Datas in Data.iteritems():
         for Dat in Datas:
-            func = Dat.__getattribute__('Get' + Param)
-
-            try:
-                Val = func(Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm, **kwargs)
-            except:  # catch *all* exceptions
-                print Dat.Name, sys.exc_info()[0]            
-                Val = None
+#            if Dat.IsOK:
+                func = Dat.__getattribute__('Get' + Param)
     
-            if Val is not None:
-                Vals = np.hstack((Vals, Val)) if Vals.size else Val
+                try:
+                    Val = func(Vgs=Vgs, Vds=Vds, Ud0Norm=Ud0Norm, **kwargs)
+                except:  # catch *all* exceptions
+                    print Dat.Name, sys.exc_info()[0]            
+                    Val = None
+        
+                if Val is not None:
+#                    if Dat.IsOK:
+                        Vals = np.hstack((Vals, Val)) if Vals.size else Val
+#                    else:    #new
+#                        print Val.shape, Val
+#                        print Vals.shape
+#                        Vals = np.hstack((Vals, np.array(np.NaN))) if Vals.size else np.array(np.NaN)
     return Vals
 
 
-def SearchAndGetParam(Groups, Plot=True, Boxplot=False, ParamUnits=None, **kwargs):
+def SearchAndGetParam(Groups, Plot=True, Boxplot=False, ParamUnits=None,nobs=False, Normalize=False, Timeplot=False,Ax=None,Fig=None, **kwargs):
     if Plot:
-        fig, Ax = plt.subplots()
+        if Ax is None:
+            fig, Ax = plt.subplots()
+        else:
+#            fig=Fig
+            Ax=Ax
+            
         xLab = []
         xPos = []
 
@@ -206,20 +238,27 @@ def SearchAndGetParam(Groups, Plot=True, Boxplot=False, ParamUnits=None, **kwarg
         xlssheet = xlswbook.add_worksheet('W1')
 
     Vals = {}
+    AllGrn=list()
+    ValY=np.array([])
     for iGr, (Grn, Grc) in enumerate(sorted(Groups.iteritems())):
         print 'Getting data for ', Grn
         Data, Trts = GetFromDB(**Grc)
+#        print Trts
 
         if len(Data) > 0:
             vals = GetParam(Data, **kwargs)
+#            print 'vals length'
+#            print vals.shape
             if vals is None:
                 continue
             if vals.size == 0:
                 continue
 
-            vals = vals[~np.isnan(vals)]
+#            vals = vals[~np.isnan(vals)]
             Vals[Grn] = vals
-
+            Valy=vals
+            ValY=np.vstack((ValY, Valy)) if ValY.size else Valy
+            AllGrn.append(Grn)
             if 'XlsFile' in kwargs.keys():
                 xlssheet.write(0, iGr, Grn)
                 for ivr, vr in enumerate(vals):
@@ -227,17 +266,32 @@ def SearchAndGetParam(Groups, Plot=True, Boxplot=False, ParamUnits=None, **kwarg
 
             if Plot:
                 if Boxplot:
-                    Ax.boxplot(vals.transpose(), positions=(iGr+1,))
+                    if Normalize:
+                        Ax.boxplot(vals.transpose()-np.median(vals.transpose()), positions=(iGr+1,))
+                    else:    
+                        Ax.boxplot(vals.transpose(), positions=(iGr+1,))
+                        
+                    if nobs: 
+                        Grn=Grn+'[n='+ str(len(vals)) + ']'
+#                    print vals.transpose()
                     xPos.append(iGr+1)
+                if Timeplot:
+                    continue
                 else:
                     Ax.plot(np.ones(len(vals))*iGr, vals, '*')
                     xPos.append(iGr)
-                xLab.append(Grn)
+#                xLab.append(Grn)
+                xLab.append(Grn)   
         else:
             print 'Empty data for ', Grn
 
     if Plot:
-        plt.xticks(xPos, xLab, rotation=45)
+        if Timeplot:
+            dates = dts.date2num(AllGrn)
+#            print str(len(dates))
+#            print str(ValY.shape)
+            Ax.plot_date(dates,ValY,'-o',label=Trts)
+#        plt.xticks(xPos, xLab, rotation=45)
         if ParamUnits is not None:
             Ax.set_ylabel(kwargs['Param']+ ParamUnits)
         else:
@@ -262,8 +316,8 @@ def SearchAndGetParam(Groups, Plot=True, Boxplot=False, ParamUnits=None, **kwarg
     return Vals
 
 
-def SearchAndPlot(Groups, Func=PlotMeanStd, **kwargs):
-    col = CreateCycleColors(Groups)
+def SearchAndPlot(Groups, Func=PlotMeanStd,Colorbar=None, **kwargs):
+    col,cmap = CreateCycleColors(Groups,Colorbar=Colorbar)
 
     if 'Ax' not in kwargs.keys():
         fig, Ax = plt.subplots()
@@ -292,17 +346,22 @@ def SearchAndPlot(Groups, Func=PlotMeanStd, **kwargs):
                 print Grn, 'ERROR --> ', sys.exc_info()[0]
         else:
             print 'Empty data for ', Grn
-
+    
+            
     Ax = kwargs['Ax']
-
-    handles, labels = Ax.get_legend_handles_labels()
-    hh = []
-    ll = []
-    for h, l in zip(handles, labels):
-        if l not in ll:
-            hh.append(h)
-            ll.append(l)
-    Ax.legend(hh, ll)
+    if Colorbar:
+        cmap.set_array([])
+        fig.colorbar(cmap,ax=Ax,format=dts.DateFormatter('%d %b %y'))
+       
+    else:    
+        handles, labels = Ax.get_legend_handles_labels()
+        hh = []
+        ll = []
+        for h, l in zip(handles, labels):
+            if l not in ll:
+                hh.append(h)
+                ll.append(l)
+        Ax.legend(hh, ll)
 
     if 'XlsFile' in kwargs.keys():
         xlswbook.close()
