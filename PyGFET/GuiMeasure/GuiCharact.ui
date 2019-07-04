@@ -32,7 +32,7 @@
        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -1008,7 +1008,7 @@
                     <double>-0.200000000000000</double>
                    </property>
                    <property name="maximum">
-                    <double>2.00000000000000</double>
+                    <double>2.000000000000000</double>
                    </property>
                    <property name="singleStep">
                     <double>0.100000000000000</double>
@@ -1135,7 +1135,7 @@
                     <double>-0.200000000000000</double>
                    </property>
                    <property name="maximum">
-                    <double>0.200000000000000</double>
+                    <double>0.300000000000000</double>
                    </property>
                    <property name="singleStep">
                     <double>0.015000000000000</double>
@@ -2145,10 +2145,10 @@
             <double>-0.100000000000000</double>
            </property>
            <property name="maximum">
-            <double>0.600000000000000</double>
+            <double>3.000000000000000</double>
            </property>
            <property name="singleStep">
-            <double>0.100000000000000</double>
+            <double>0.010000000000000</double>
            </property>
            <property name="value">
             <double>-0.100000000000000</double>
@@ -2165,7 +2165,7 @@
          <item row="1" column="1">
           <widget class="QDoubleSpinBox" name="SpnSVdsTP">
            <property name="maximum">
-            <double>0.100000000000000</double>
+            <double>0.300000000000000</double>
            </property>
            <property name="singleStep">
             <double>0.010000000000000</double>
@@ -2290,7 +2290,7 @@
          <rect>
           <x>32</x>
           <y>417</y>
-          <width>250</width>
+          <width>262</width>
           <height>43</height>
          </rect>
         </property>
@@ -2306,6 +2306,9 @@
            </item>
            <item>
             <widget class="QDoubleSpinBox" name="SpnTestFreqMin">
+             <property name="maximum">
+              <double>6000.000000000000000</double>
+             </property>
              <property name="singleStep">
               <double>0.010000000000000</double>
              </property>
@@ -2326,12 +2329,21 @@
             </widget>
            </item>
            <item>
-            <widget class="QSpinBox" name="SpnTestFreqMax">
+            <widget class="QDoubleSpinBox" name="SpnTestFreqMax">
+             <property name="decimals">
+              <number>3</number>
+             </property>
+             <property name="minimum">
+              <double>1.000000000000000</double>
+             </property>
              <property name="maximum">
-              <number>10000000</number>
+              <double>1000.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.010000000000000</double>
              </property>
              <property name="value">
-              <number>100</number>
+              <double>100.000000000000000</double>
              </property>
             </widget>
            </item>

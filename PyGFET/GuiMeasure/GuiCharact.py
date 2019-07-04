@@ -564,7 +564,8 @@ class CharactAPP(QtWidgets.QMainWindow):
         self.Charac.SetContSig(FreqMin=self.SpnTestFreqMin.value(),
                                FreqMax=self.SpnTestFreqMax.value(),
                                nFreqs=self.SpnTestNFreqs.value(),
-                               Arms=self.SpnTestAmp.value())
+                               Arms=self.SpnTestAmp.value(),
+                               Fs=self.SpnFsTime.value())
 
     def VgsTimePlotChanged(self):
         if self.Charac.CharactRunning:
