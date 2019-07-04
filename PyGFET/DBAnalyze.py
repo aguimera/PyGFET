@@ -5,7 +5,7 @@ Created on Tue Jun 27 15:08:05 2017
 
 @author: aguimera
 """
-
+import matplotlib.dates as dts
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.colors as mpcolors
@@ -194,7 +194,7 @@ def GetParam(Data, Param, Vgs=None, Vds=None, Ud0Norm=False, **kwargs):
     Vals = np.array([])
     for Trtn, Datas in Data.iteritems():
         for Dat in Datas:
-            if Dat.IsOK:
+#            if Dat.IsOK:
                 func = Dat.__getattribute__('Get' + Param)
     
                 try:
@@ -204,13 +204,22 @@ def GetParam(Data, Param, Vgs=None, Vds=None, Ud0Norm=False, **kwargs):
                     Val = None
         
                 if Val is not None:
-                    Vals = np.hstack((Vals, Val)) if Vals.size else Val
+#                    if Dat.IsOK:
+                        Vals = np.hstack((Vals, Val)) if Vals.size else Val
+#                    else:    #new
+#                        print Val.shape, Val
+#                        print Vals.shape
+#                        Vals = np.hstack((Vals, np.array(np.NaN))) if Vals.size else np.array(np.NaN)
     return Vals
 
 
-def SearchAndGetParam(Groups, Plot=True, Boxplot=False, ParamUnits=None,nobs=False, Normalize=False, **kwargs):
+def SearchAndGetParam(Groups, Plot=True, Boxplot=False, ParamUnits=None,nobs=False, Normalize=False, Timeplot=False,Ax=None, **kwargs):
     if Plot:
-        fig, Ax = plt.subplots()
+        if Ax is None:
+            fig, Ax = plt.subplots()
+        else:
+            Ax=Ax
+            
         xLab = []
         xPos = []
 
@@ -219,21 +228,27 @@ def SearchAndGetParam(Groups, Plot=True, Boxplot=False, ParamUnits=None,nobs=Fal
         xlssheet = xlswbook.add_worksheet('W1')
 
     Vals = {}
+    AllGrn=list()
+    ValY=np.array([])
     for iGr, (Grn, Grc) in enumerate(sorted(Groups.iteritems())):
         print 'Getting data for ', Grn
         Data, Trts = GetFromDB(**Grc)
+#        print Trts
 
         if len(Data) > 0:
             vals = GetParam(Data, **kwargs)
-            print len(vals)
+#            print 'vals length'
+            print vals.shape
             if vals is None:
                 continue
             if vals.size == 0:
                 continue
 
-            vals = vals[~np.isnan(vals)]
+#            vals = vals[~np.isnan(vals)]
             Vals[Grn] = vals
-
+            Valy=vals
+            ValY=np.vstack((ValY, Valy)) if ValY.size else Valy
+            AllGrn.append(Grn)
             if 'XlsFile' in kwargs.keys():
                 xlssheet.write(0, iGr, Grn)
                 for ivr, vr in enumerate(vals[0]):
@@ -250,6 +265,8 @@ def SearchAndGetParam(Groups, Plot=True, Boxplot=False, ParamUnits=None,nobs=Fal
                         Grn=Grn+'[n='+ str(len(vals)) + ']'
 #                    print vals.transpose()
                     xPos.append(iGr+1)
+                if Timeplot:
+                    continue
                 else:
                     Ax.plot(np.ones(len(vals))*iGr, vals, '*')
                     xPos.append(iGr)
@@ -259,7 +276,12 @@ def SearchAndGetParam(Groups, Plot=True, Boxplot=False, ParamUnits=None,nobs=Fal
             print 'Empty data for ', Grn
 
     if Plot:
-        plt.xticks(xPos, xLab, rotation=45)
+        if Timeplot:
+            dates = dts.date2num(AllGrn)
+#            print str(len(dates))
+#            print str(ValY.shape)
+            plt.plot_date(dates,ValY,'-o',label=Trts)
+#        plt.xticks(xPos, xLab, rotation=45)
         if ParamUnits is not None:
             Ax.set_ylabel(kwargs['Param']+ ParamUnits)
         else:
