@@ -222,7 +222,7 @@ def SearchAndGetParam(Groups, Plot=True, Boxplot=False, ParamUnits=None, **kwarg
 
             if 'XlsFile' in kwargs.keys():
                 xlssheet.write(0, iGr, Grn)
-                for ivr, vr in enumerate(vals[0]):
+                for ivr, vr in enumerate(vals):
                     xlssheet.write(ivr+1, iGr, vr)
 
             if Plot:
