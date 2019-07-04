@@ -17,15 +17,24 @@ import xlsxwriter as xlsw
 from PyGFET.DBSearch import GetFromDB, FindCommonValues
 
 
-def CreateCycleColors(Vals):
+def CreateCycleColors(Vals,Colorbar=None):
     ncolors = len(Vals)
-    cmap = cmx.ScalarMappable(mpcolors.Normalize(vmin=0, vmax=ncolors),
+#    print sorted(Vals.keys())[0],dts.date2num(sorted(Vals.keys())[0])
+##    print Vals.keys()[-1],dts.date2num(Vals.keys()[-1])
+    if Colorbar:
+        cmap = cmx.ScalarMappable(mpcolors.Normalize(vmin=dts.date2num(sorted(Vals.keys())[0]), vmax=dts.date2num(sorted(Vals.keys())[-1])),
                               cmx.jet)
-    colors = []
-    for i in range(ncolors):
-        colors.append(cmap.to_rgba(i))
+        colors = []
+        for i in range(ncolors):
+            colors.append(cmap.to_rgba(dts.date2num(sorted(Vals.keys())[i])))       
+    else:
+        cmap = cmx.ScalarMappable(mpcolors.Normalize(vmin=0, vmax=ncolors),
+                              cmx.jet)
+        colors = []
+        for i in range(ncolors):
+            colors.append(cmap.to_rgba(i))
 
-    return cycle(colors)
+    return cycle(colors), cmap
 
 
 def PlotMeanStd(Data, Xvar, Yvar, Vgs=None, Vds=None, Ax=None, Ud0Norm=True,
@@ -213,11 +222,12 @@ def GetParam(Data, Param, Vgs=None, Vds=None, Ud0Norm=False, **kwargs):
     return Vals
 
 
-def SearchAndGetParam(Groups, Plot=True, Boxplot=False, ParamUnits=None,nobs=False, Normalize=False, Timeplot=False,Ax=None, **kwargs):
+def SearchAndGetParam(Groups, Plot=True, Boxplot=False, ParamUnits=None,nobs=False, Normalize=False, Timeplot=False,Ax=None,Fig=None, **kwargs):
     if Plot:
         if Ax is None:
             fig, Ax = plt.subplots()
         else:
+#            fig=Fig
             Ax=Ax
             
         xLab = []
@@ -238,7 +248,7 @@ def SearchAndGetParam(Groups, Plot=True, Boxplot=False, ParamUnits=None,nobs=Fal
         if len(Data) > 0:
             vals = GetParam(Data, **kwargs)
 #            print 'vals length'
-            print vals.shape
+#            print vals.shape
             if vals is None:
                 continue
             if vals.size == 0:
@@ -280,7 +290,7 @@ def SearchAndGetParam(Groups, Plot=True, Boxplot=False, ParamUnits=None,nobs=Fal
             dates = dts.date2num(AllGrn)
 #            print str(len(dates))
 #            print str(ValY.shape)
-            plt.plot_date(dates,ValY,'-o',label=Trts)
+            Ax.plot_date(dates,ValY,'-o',label=Trts)
 #        plt.xticks(xPos, xLab, rotation=45)
         if ParamUnits is not None:
             Ax.set_ylabel(kwargs['Param']+ ParamUnits)
@@ -306,8 +316,8 @@ def SearchAndGetParam(Groups, Plot=True, Boxplot=False, ParamUnits=None,nobs=Fal
     return Vals
 
 
-def SearchAndPlot(Groups, Func=PlotMeanStd, **kwargs):
-    col = CreateCycleColors(Groups)
+def SearchAndPlot(Groups, Func=PlotMeanStd,Colorbar=None, **kwargs):
+    col,cmap = CreateCycleColors(Groups,Colorbar=Colorbar)
 
     if 'Ax' not in kwargs.keys():
         fig, Ax = plt.subplots()
@@ -336,17 +346,22 @@ def SearchAndPlot(Groups, Func=PlotMeanStd, **kwargs):
                 print Grn, 'ERROR --> ', sys.exc_info()[0]
         else:
             print 'Empty data for ', Grn
-
+    
+            
     Ax = kwargs['Ax']
-
-    handles, labels = Ax.get_legend_handles_labels()
-    hh = []
-    ll = []
-    for h, l in zip(handles, labels):
-        if l not in ll:
-            hh.append(h)
-            ll.append(l)
-    Ax.legend(hh, ll)
+    if Colorbar:
+        cmap.set_array([])
+        fig.colorbar(cmap,ax=Ax,format=dts.DateFormatter('%d %b %y'))
+       
+    else:    
+        handles, labels = Ax.get_legend_handles_labels()
+        hh = []
+        ll = []
+        for h, l in zip(handles, labels):
+            if l not in ll:
+                hh.append(h)
+                ll.append(l)
+        Ax.legend(hh, ll)
 
     if 'XlsFile' in kwargs.keys():
         xlswbook.close()
